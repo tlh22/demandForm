@@ -129,9 +129,10 @@ dmypy.json
 .pyre/
 
 *.pyc
-.idea
+/.idea/
 *.orig
 /venv/
+/__pychache__/
 
 *.pyc
 .idea
