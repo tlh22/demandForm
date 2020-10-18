@@ -135,12 +135,11 @@ dmypy.json
 /__pychache__/
 
 *.pyc
+
 .idea
 *.orig
 
 .idea/workspace.xml
 __pycache__/fieldRestrictionTypeUtilsClass.cpython-37.pyc
 
-
-*.pyc
 
