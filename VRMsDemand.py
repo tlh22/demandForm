@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- Test5Class
+ VRMsDemand
                                  A QGIS plugin
  Start of TOMs
                               -------------------
@@ -55,7 +55,7 @@ from qgis.core import (
 )
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
-from .manage_feature_creation import captureGPSFeatures
+from .demand_VRMs_form import demandVRMsForm
 
 
 import os.path
@@ -63,12 +63,12 @@ import time
 import datetime
 
 
-class featuresWithGPS:
+class VRMsDemand:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
 
-        QgsMessageLog.logMessage("Starting featuresWithGPS ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("Starting VRMsDemand ... ", tag="TOMs panel")
 
         """Constructor.
         
@@ -122,56 +122,50 @@ class featuresWithGPS:
         QgsMessageLog.logMessage("Adding toolbar", tag="TOMs panel")
 
         # Add toolbar 
-        self.featuresWithGPSToolbar = self.iface.addToolBar("featuresWithGPS Toolbar")
-        self.featuresWithGPSToolbar.setObjectName("featuresWithGPSToolbar Toolbar")
+        self.demandVRMsToolbar = self.iface.addToolBar("VRMsDemand Toolbar")
+        self.demandVRMsToolbar.setObjectName("demandVRMsToolbar Toolbar")
 
-        self.actionGPSToolbar = QAction(QIcon(":/plugins/featureswithgps/resources/GPS.png"),
-                               QCoreApplication.translate("MyPlugin", "Start GPS Tools"), self.iface.mainWindow())
-        self.actionGPSToolbar.setCheckable(True)
+        self.actionVRMToolbar = QAction(QIcon(":/plugins/featureswithgps/resources/GPS.png"),
+                                        QCoreApplication.translate("MyPlugin", "Start Demand Tools"), self.iface.mainWindow())
+        self.actionVRMToolbar.setCheckable(True)
 
-        self.featuresWithGPSToolbar.addAction(self.actionGPSToolbar)
+        self.demandVRMsToolbar.addAction(self.actionVRMToolbar)
 
-        self.actionGPSToolbar.triggered.connect(self.onInitGPSTools)
-
-        #self.currGPSManager = gpsManager(self.iface)
-        #self.tableNames = self.gpsManager.tableNames
-
+        self.actionVRMToolbar.triggered.connect(self.onInitVRMTools)
+        
         # Now set up the toolbar
 
-        self.gpsTools = captureGPSFeatures(self.iface, self.featuresWithGPSToolbar)
-        #self.gpsTools.disableFeaturesWithGPSToolbarItems()
+        self.demandTools = demandVRMsForm(self.iface, self.demandVRMsToolbar)
+        #self.demandTools.disableFeaturesWithGPSToolbarItems()
 
-    def onInitGPSTools(self):
+    def onInitVRMTools(self):
 
-        QgsMessageLog.logMessage("In onInitGPSTools", tag="TOMs panel")
+        QgsMessageLog.logMessage("In onInitVRMTools", tag="TOMs panel")
 
-        if self.actionGPSToolbar.isChecked():
+        if self.actionVRMToolbar.isChecked():
 
-            QgsMessageLog.logMessage("In onInitGPSTools. Activating ...", tag="TOMs panel")
-            self.openGPSTools()
+            QgsMessageLog.logMessage("In onInitVRMTools. Activating ...", tag="TOMs panel")
+            self.openVRMTools()
 
         else:
 
-            QgsMessageLog.logMessage("In onInitGPSTools. Deactivating ...", tag="TOMs panel")
-            self.closeGPSTools()
+            QgsMessageLog.logMessage("In onInitVRMTools. Deactivating ...", tag="TOMs panel")
+            self.closeVRMTools()
 
-    def openGPSTools(self):
+    def openVRMTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
 
         QgsMessageLog.logMessage("In openGPSTools. Activating ...", tag="TOMs panel")
 
         if self.closeGPSToolsFlag:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start GPSTools ..."))
-            self.actionGPSToolbar.setChecked(False)
+            self.actionVRMToolbar.setChecked(False)
             return
 
-        self.gpsTools.enableFeaturesWithGPSToolbarItems()
+        self.demandTools.enableVRMToolbarItems()
         # TODO: connect close project signal to closeGPSTools
 
-    def setCloseGPSToolsFlag(self):
-        self.closeGPSToolsFlag = True
-
-    def closeGPSTools(self):
+    def closeVRMTools(self):
         # actions when the Proposals Panel is closed or the toolbar "start" is toggled
 
         QgsMessageLog.logMessage("In closeGPSTools. Deactivating ...", tag="TOMs panel")
@@ -183,16 +177,16 @@ class featuresWithGPS:
 
         # Now disable the items from the Toolbar
 
-        self.gpsTools.disableFeaturesWithGPSToolbarItems()
+        self.demandTools.disableVRMToolbarItems()
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
 
         # remove the toolbar
         QgsMessageLog.logMessage("Clearing toolbar ... ", tag="TOMs panel")
-        self.featuresWithGPSToolbar.clear()
+        self.demandVRMsToolbar.clear()
         QgsMessageLog.logMessage("Deleting toolbar ... ", tag="TOMs panel")
-        del self.featuresWithGPSToolbar
+        del self.demandVRMsToolbar
         #self.restoreMenusToolbars()
 
         QgsMessageLog.logMessage("Unload comnpleted ... ", tag="TOMs panel")

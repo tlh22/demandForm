@@ -59,24 +59,25 @@ import os, time
 # from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.search_bar import searchBar
+from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
 from .mapTools import CreateRestrictionTool, CreatePointTool
 from .gnss_thread import GPS_Thread
 #from TOMsUtils import *
 
-from .fieldRestrictionTypeUtilsClass import FieldRestrictionTypeUtilsMixin, gpsLayers, gpsParams
-from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
+from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
+from .SelectTool import demandVRMInfoMapTool, RemoveRestrictionTool
 from .formManager import mtrForm
 
 
 import functools
 
-class captureGPSFeatures(FieldRestrictionTypeUtilsMixin):
+class captureGPSFeatures(VRMsUtilsMixin):
 
     def __init__(self, iface, featuresWithGPSToolbar):
 
         TOMsMessageLog.logMessage("In captureGPSFeatures::init", level=Qgis.Info)
 
-        FieldRestrictionTypeUtilsMixin.__init__(self, iface)
+        VRMsUtilsMixin.__init__(self, iface)
 
         # Save reference to the QGIS interface
         self.iface = iface
@@ -126,9 +127,9 @@ class captureGPSFeatures(FieldRestrictionTypeUtilsMixin):
         self.featuresWithGPSToolbar.addAction(self.actionCreateRestriction)
         self.featuresWithGPSToolbar.addAction(self.actionAddGPSLocation)
         self.featuresWithGPSToolbar.addAction(self.actionRestrictionDetails)
-        #self.featuresWithGPSToolbar.addAction(self.actionRemoveRestriction)
+        #self.demandVRMsToolbar.addAction(self.actionRemoveRestriction)
         self.featuresWithGPSToolbar.addAction(self.actionCreateSign)
-        #self.featuresWithGPSToolbar.addAction(self.actionCreateMTR)
+        #self.demandVRMsToolbar.addAction(self.actionCreateMTR)
 
         self.gnssToolGroup.addAction(self.actionCreateRestriction)
         #self.gnssToolGroup.addAction(self.actionAddGPSLocation)
@@ -169,8 +170,8 @@ class captureGPSFeatures(FieldRestrictionTypeUtilsMixin):
         self.gpsAvailable = False
         self.closeTOMs = False
 
-        self.tableNames = gpsLayers(self.iface)
-        self.params = gpsParams()
+        self.tableNames = TOMsLayers(self.iface)
+        self.params = vrmParams()
 
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
         #self.tableNames.gpsLayersNotFound.connect(self.setCloseCaptureGPSFeaturesFlag)

@@ -63,20 +63,20 @@ from .mapTools import CreateRestrictionTool, CreatePointTool
 from .gnss_thread import GPS_Thread
 #from TOMsUtils import *
 
-from .fieldRestrictionTypeUtilsClass import FieldRestrictionTypeUtilsMixin, gpsLayers, gpsParams
+from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
 from .formManager import mtrForm
-
+from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
 
 import functools
 
-class demandVRMsForm(FieldRestrictionTypeUtilsMixin):
+class demandVRMsForm(VRMsUtilsMixin):
 
     def __init__(self, iface, demandVRMsToolbar):
 
         TOMsMessageLog.logMessage("In captureGPSFeatures::init", level=Qgis.Info)
 
-        FieldRestrictionTypeUtilsMixin.__init__(self, iface)
+        VRMsUtilsMixin.__init__(self, iface)
 
         # Save reference to the QGIS interface
         self.iface = iface
@@ -138,27 +138,24 @@ class demandVRMsForm(FieldRestrictionTypeUtilsMixin):
         self.gpsConnection = None
         self.createMapToolDict = {}
 
-    def enableFeaturesWithGPSToolbarItems(self):
+    def enableVRMToolbarItems(self):
 
-        TOMsMessageLog.logMessage("In enablefeaturesWithGPSToolbarItems", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In enableVRMToolbarItems", level=Qgis.Warning)
         self.gpsAvailable = False
         self.closeTOMs = False
 
-        self.tableNames = gpsLayers(self.iface)
-        self.params = gpsParams()
+        self.tableNames = TOMsLayers(self.iface)
+        self.params = vrmParams()
 
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
         #self.tableNames.gpsLayersNotFound.connect(self.setCloseCaptureGPSFeaturesFlag)
-        self.params.TOMsParamsNotFound.connect(self.setCloseCaptureGPSFeaturesFlag)
+        self.params.TOMsParamsNotFound.connect(self.setCloseDemandFlag)
 
-        self.prj = QgsProject().instance()
-        self.dest_crs = self.prj.crs()
-        TOMsMessageLog.logMessage("In captureGPSFeatures::init project CRS is " + self.dest_crs.description(),
-                                 level=Qgis.Warning)
-        self.transformation = QgsCoordinateTransform(QgsCoordinateReferenceSystem("EPSG:4326"), self.dest_crs,
-                                                     self.prj)
+        self.TOMsConfigFileObject = TOMsConfigFile(self.iface)
+        self.TOMsConfigFileObject.TOMsConfigFileNotFound.connect(self.setCloseTOMsFlag)
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile()
 
-        self.tableNames.getLayers()
+        self.tableNames.getLayers(self.TOMsConfigFileObject)
         self.params.getParams()
 
         if self.closeTOMs:
@@ -166,83 +163,32 @@ class demandVRMsForm(FieldRestrictionTypeUtilsMixin):
             #self.actionProposalsPanel.setChecked(False)
             return   # TODO: allow function to continue without GPS enabled ...
 
-        # Now check to see if the port is set. If not assume that just normal tools
-
-        gpsPort = self.params.setParam("gpsPort")
-        TOMsMessageLog.logMessage("In enableFeaturesWithGPSToolbarItems: GPS port is: {}".format(gpsPort), level=Qgis.Warning)
-        self.gpsConnection = None
-
-        if gpsPort:
-            self.gpsAvailable = True
-
-        if self.gpsAvailable == True:
-            self.curr_gps_location = None
-            self.curr_gps_info = None
-
-            TOMsMessageLog.logMessage("In enableFeaturesWithGPSToolbarItems - GPS port is specified ",
-                                     level=Qgis.Info)
-            self.gps_thread = GPS_Thread(self.dest_crs, gpsPort)
-            thread = QThread()
-            self.gps_thread.moveToThread(thread)
-            self.gps_thread.gpsActivated.connect(self.gpsStarted)
-            self.gps_thread.gpsPosition.connect(self.gpsPositionProvided)
-            self.gps_thread.gpsDeactivated.connect(functools.partial(self.gpsStopped))
-            self.gps_thread.gpsError.connect(self.gpsErrorEncountered)
-            #self.gps_thread.progress.connect(progressBar.setValue)
-            thread.started.connect(self.gps_thread.startGPS)
-            #thread.finished.connect(functools.partial(self.gpsStopped, thread))
-            thread.start()
-            self.thread = thread
-
-            TOMsMessageLog.logMessage("In enableFeaturesWithGPSToolbarItems - attempting connection ",
-                                     level=Qgis.Info)
-
-            time.sleep(1.0)
-
-            try:
-                self.roamDistance = float(self.params.setParam("roamDistance"))
-            except Exception as e:
-                TOMsMessageLog.logMessage("In enableFeaturesWithGPSToolbarItems:init: roamDistance issue: {}".format(e), level=Qgis.Warning)
-                self.roamDistance = 5.0
-
         self.enableToolbarItems()
 
         self.createMapToolDict = {}
 
     def enableToolbarItems(self):
         TOMsMessageLog.logMessage("In enableToolbarItems", level=Qgis.Warning)
-        self.actionCreateVRM.setEnabled(True)
+        #self.actionCreateVRM.setEnabled(True)
         self.actionRestrictionDetails.setEnabled(True)
         #self.actionRemoveVRM.setEnabled(True)
-        #self.actionCreateSign.setEnabled(True)
-        #self.actionCreateMTR.setEnabled(True)
 
-        self.searchBar.enableSearchBar()
+        #self.searchBar.enableSearchBar()
 
         self.currMapTool = None
         self.theCurrentMapTool = None
 
-        self.iface.currentLayerChanged.connect(self.changeCurrLayer2)
-        self.canvas.mapToolSet.connect(self.changeMapTool2)
-        self.canvas.extentsChanged.connect(self.changeExtents)
+        #self.createConnection()
 
-    def enableGnssToolbarItem(self):
-        if self.gpsConnection:
-            self.actionAddGPSLocation.setEnabled(True)
-            self.actionCreateSign.setEnabled(True)
-            self.lastCentre = QgsPointXY(0,0)
-
-    def disableGnssToolbarItem(self):
-        self.actionAddGPSLocation.setEnabled(False)
-        self.actionCreateSign.setEnabled(False)
+        #self.iface.currentLayerChanged.connect(self.changeCurrLayer2)
+        #self.canvas.mapToolSet.connect(self.changeMapTool2)
+        #self.canvas.extentsChanged.connect(self.changeExtents)
 
     def disableToolbarItems(self):
 
         self.actionCreateVRM.setEnabled(False)
         self.actionRestrictionDetails.setEnabled(False)
         self.actionRemoveVRM.setEnabled(False)
-        self.actionCreateSign.setEnabled(False)
-        self.actionCreateMTR.setEnabled(False)
 
         self.searchBar.disableSearchBar()
 
@@ -253,11 +199,9 @@ class demandVRMsForm(FieldRestrictionTypeUtilsMixin):
         self.closeTOMs = True
         QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Now closing TOMs ..."))
 
-    def disableFeaturesWithGPSToolbarItems(self):
+    def disableVRMToolbarItems(self):
 
-        TOMsMessageLog.logMessage("In disablefeaturesWithGPSToolbarItems", level=Qgis.Warning)
-        if self.gpsConnection and not self.closeTOMs:
-            self.gps_thread.endGPS()
+        TOMsMessageLog.logMessage("In disableVRMToolbarItems", level=Qgis.Warning)
 
         self.disableToolbarItems()
 
@@ -278,7 +222,7 @@ class demandVRMsForm(FieldRestrictionTypeUtilsMixin):
             self.iface.currentLayerChanged.disconnect(self.changeCurrLayer2)
         except Exception as e:
             TOMsMessageLog.logMessage(
-                "In disableFeaturesWithGPSToolbarItems. Issue with disconnects for currentLayerChanged {}".format(e),
+                "In disableVRMToolbarItems. Issue with disconnects for currentLayerChanged {}".format(e),
                 level=Qgis.Warning)
 
         try:
@@ -299,7 +243,7 @@ class demandVRMsForm(FieldRestrictionTypeUtilsMixin):
 
         self.tableNames.removePathFromLayerForms()
 
-    def setCloseCaptureGPSFeaturesFlag(self):
+    def setCloseDemandFlag(self):
         self.closeCaptureGPSFeatures = True
         self.gpsAvailable = True
 

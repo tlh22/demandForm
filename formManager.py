@@ -65,7 +65,7 @@ from .MTR_Restriction_dialog import MTR_RestrictionDialog
 from .mapTools import CreateRestrictionTool, CreatePointTool
 #from TOMsUtils import *
 
-from .fieldRestrictionTypeUtilsClass import FieldRestrictionTypeUtilsMixin, gpsLayers, gpsParams
+from .demand_VRMs_UtilsClass import VRMsUtilsMixin
 from .SelectTool import GeometryInfoMapTool
 from .MTR_Tools import getLinkDetailsMapTool
 from TOMs.core.TOMsMessageLog import TOMsMessageLog

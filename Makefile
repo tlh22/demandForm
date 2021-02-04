@@ -1,5 +1,5 @@
 #/***************************************************************************
-# featuresWithGPS
+# VRMsDemand
 #
 # Features with GPS
 #							 -------------------
@@ -38,13 +38,13 @@ LOCALES =
 # translation
 SOURCES = \
 	__init__.py \
-	featuresWithGPS.py featuresWithGPS_dialog.py
+	VRMsDemand.py featuresWithGPS_dialog.py
 
-PLUGINNAME = featuresWithGPS
+PLUGINNAME = VRMsDemand
 
 PY_FILES = \
 	__init__.py \
-	featuresWithGPS.py featuresWithGPS_dialog.py
+	VRMsDemand.py featuresWithGPS_dialog.py
 
 UI_FILES = featuresWithGPS_dialog_base.ui
 
