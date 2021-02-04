@@ -70,8 +70,9 @@ from qgis.gui import (
     QgsMapToolEmitPoint
 )
 
-from .fieldRestrictionTypeUtilsClass import FieldRestrictionTypeUtilsMixin, gpsLayers, gpsParams
+from .demand_VRMs_UtilsClass import VRMsUtilsMixin
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
+from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
 
 import functools
 
@@ -246,7 +247,7 @@ class MapToolMixin:
 
 #############################################################################
 
-class CreateRestrictionTool(FieldRestrictionTypeUtilsMixin, QgsMapToolCapture):
+class CreateRestrictionTool(VRMsUtilsMixin, QgsMapToolCapture):
     # helpful link - http://apprize.info/python/qgis/7.html ??
     #deActivatedInProcess = pyqtSignal(bool)
 
@@ -264,15 +265,18 @@ class CreateRestrictionTool(FieldRestrictionTypeUtilsMixin, QgsMapToolCapture):
             return
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget(), captureMode)
-        FieldRestrictionTypeUtilsMixin.__init__(self, iface)
+        VRMsUtilsMixin.__init__(self, iface)
 
         # https: // qgis.org / api / classQgsMapToolCapture.html
         self.canvas = iface.mapCanvas()
         self.iface = iface
         self.layer = layer
 
-        self.tableNames = gpsLayers(self.iface)
-        self.tableNames.getLayers()
+        self.tableNames = TOMsLayers(self.iface)
+        self.TOMsConfigFileObject = TOMsConfigFile(self.iface)
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile()
+
+        self.tableNames.getLayers(self.TOMsConfigFileObject)
 
         #self.inProcess = True
 
@@ -509,7 +513,7 @@ class CreateRestrictionTool(FieldRestrictionTypeUtilsMixin, QgsMapToolCapture):
 
         return status
 
-class CreatePointTool(FieldRestrictionTypeUtilsMixin, QgsMapToolCapture):
+class CreatePointTool(VRMsUtilsMixin, QgsMapToolCapture):
 
     def __init__(self, iface, layer):
 
@@ -522,7 +526,7 @@ class CreatePointTool(FieldRestrictionTypeUtilsMixin, QgsMapToolCapture):
             return
 
         QgsMapToolCapture.__init__(self, iface.mapCanvas(), iface.cadDockWidget(), captureMode)
-        FieldRestrictionTypeUtilsMixin.__init__(self, iface)
+        VRMsUtilsMixin.__init__(self, iface)
 
         # TODO: change pointer type so that know in this tool
 

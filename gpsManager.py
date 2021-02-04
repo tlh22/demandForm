@@ -27,7 +27,7 @@ from qgis.core import (
     QgsProject, QgsRectangle
 )
 
-from ..restrictionTypeUtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
+from ..demand_VRMs_UtilsClass import RestrictionTypeUtilsMixin, TOMSLayers
 from ..proposalTypeUtilsClass import ProposalTypeUtilsMixin
 from ..constants import (
     ProposalStatus,

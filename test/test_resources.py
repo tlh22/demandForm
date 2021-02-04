@@ -31,7 +31,7 @@ class featuresWithGPSDialogTest(unittest.TestCase):
 
     def test_icon_png(self):
         """Test we can click OK."""
-        path = ':/plugins/featuresWithGPS/icon.png'
+        path = ':/plugins/VRMsDemand/icon.png'
         icon = QIcon(path)
         self.assertFalse(icon.isNull())
 

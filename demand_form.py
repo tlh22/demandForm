@@ -1,6 +1,6 @@
 # Using model/view for demand VRM form
 
------ trials
+#----- trials
 # https://stackoverflow.com/questions/49752388/editable-qtableview-of-complex-sql-query
 
 # setup relational model
@@ -11,7 +11,7 @@
 # https://deptinfo-ensip.univ-poitiers.fr/ENS/pyside-docs/PySide/QtSql/QSqlRelationalTableModel.html?highlight=relational
 
 from qgis.PyQt.QtCore import (
-    Qt, QgsMessageLog
+    Qt
 )
 from qgis.PyQt.QtWidgets import (
 QMessageBox, QWidget, QTableView, QVBoxLayout, QMainWindow,
@@ -22,6 +22,7 @@ from qgis.PyQt.QtSql import (
 )
 
 from qgis.core import (
+    Qgis,
     QgsExpressionContextUtils,
     QgsProject,
     QgsMessageLog,
@@ -47,18 +48,34 @@ from qgis.PyQt.QtWidgets import (
     QHBoxLayout, QComboBox, QGroupBox, QFormLayout, QStackedWidget, QPushButton, QLineEdit
 )
 
-from .VRM_Demand_dialog import VRM_DemandDialog
+from .ui.VRM_Demand_dialog import VRM_DemandDialog
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
+import os, uuid
 
 def createConnection():
     con = QSqlDatabase.addDatabase("QSQLITE")
+
+    photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('DemandGpkg')
+    projectFolder = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_folder')
+
+    path_absolute = os.path.join(projectFolder, photoPath)
+
+    if path_absolute == None:
+        reply = QMessageBox.information(None, "Information", "Please set value for Demand Gpkg.", QMessageBox.Ok)
+        return
+
     #con.setDatabaseName("C:\\Users\\marie_000\\Documents\\MHTC\\VRM_Test.gpkg")
-    con.setDatabaseName("Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand_VRMs.gpkg")
+    #con.setDatabaseName("Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand_VRMs.gpkg")
+    con.setDatabaseName(path_absolute)
     # "Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand.gpkg"
     if not con.open():
         QMessageBox.critical(None, "Cannot open memory database",
                              "Unable to establish a database connection.\n\n"
                              "Click Cancel to exit.", QMessageBox.Cancel)
         return False
+
+    TOMsMessageLog.logMessage("In createConnection: db name: {} ".format(con.databaseName()),
+                              level=Qgis.Warning)
     #query = QtSql.QSqlQuery()
     return True
 
@@ -94,9 +111,13 @@ class testWidget(QWidget):
         rel = my_model.relation(int(my_model.fieldIndex("VehicleTypeID")))
         if not rel.isValid():
             print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In testWidget: Relation not valid ... {} ".format(my_model.lastError().text()),
+                                      level=Qgis.Warning)
         result = my_model.select()
         if result == False:
-            print ('Select: {}'.format(q.lastError().text()))
+            TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(my_model.lastError().text()),
+                                      level=Qgis.Warning)
+            #print ('Select: {}'.format(my_model.lastError().text()))
         #show the view with model
         my_view.setModel(my_model)
         my_view.setColumnHidden(my_model.fieldIndex('fid'), True)
@@ -129,12 +150,12 @@ class VRM_DemandForm(VRM_DemandDialog):
 
         QgsMessageLog.logMessage("In VRM_DemandForm::init", tag="TOMs panel")
 
-        self.setupThisUi()
+        self.setupThisUi(parent)
 
-    def setupThisUi(self):
-
-        self.VRMtab = self.findChild(QWidget, "VRMs")
-        self.VRMtab.setWidget(testWidget())
+    def setupThisUi(self, parent):
+        grid = parent.layout()
+        vrmForm = testWidget(parent)
+        grid.addWidget(vrmForm, 0, 0, 1, 1)
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):

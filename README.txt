@@ -1,6 +1,6 @@
 Plugin Builder Results
 
-Your plugin featuresWithGPS was created in:
+Your plugin VRMsDemand was created in:
     C:/Users/Tim/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\featureswithgps
 
 Your QGIS plugin directory is located at:
@@ -17,7 +17,7 @@ What's Next:
 
   * Test the plugin by enabling it in the QGIS plugin manager
 
-  * Customize it by editing the implementation file: ``featuresWithGPS.py``
+  * Customize it by editing the implementation file: ``VRMsDemand.py``
 
   * Create your own custom icon, replacing the default icon.png
 
