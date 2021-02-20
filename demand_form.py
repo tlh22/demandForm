@@ -42,7 +42,7 @@ from qgis.PyQt.QtWidgets import (
     QMessageBox,
     QAction,
     QDialogButtonBox,
-    QLabel,
+    QLabel, QTabWidget,
     QDockWidget,
     QWidget,
     QHBoxLayout, QComboBox, QGroupBox, QFormLayout, QStackedWidget, QPushButton, QLineEdit
@@ -54,41 +54,41 @@ import os, uuid
 
 def createConnection():
     con = QSqlDatabase.addDatabase("QSQLITE")
-
-    photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('DemandGpkg')
-    projectFolder = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_folder')
-
-    path_absolute = os.path.join(projectFolder, photoPath)
-
-    if path_absolute == None:
-        reply = QMessageBox.information(None, "Information", "Please set value for Demand Gpkg.", QMessageBox.Ok)
-        return
-
+    #
+    #photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('DemandGpkg')
+    #projectFolder = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_folder')
+    #
+    #path_absolute = os.path.join(projectFolder, photoPath)
+    #
+    #if path_absolute == None:
+    #    reply = QMessageBox.information(None, "Information", "Please set value for Demand Gpkg.", QMessageBox.Ok)
+    #    return
+    #
     #con.setDatabaseName("C:\\Users\\marie_000\\Documents\\MHTC\\VRM_Test.gpkg")
-    #con.setDatabaseName("Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand_VRMs.gpkg")
-    con.setDatabaseName(path_absolute)
+    con.setDatabaseName("Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand_VRMs.gpkg")
+    #con.setDatabaseName(path_absolute)
     # "Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand.gpkg"
     if not con.open():
         QMessageBox.critical(None, "Cannot open memory database",
                              "Unable to establish a database connection.\n\n"
                              "Click Cancel to exit.", QMessageBox.Cancel)
         return False
-
+    #
     TOMsMessageLog.logMessage("In createConnection: db name: {} ".format(con.databaseName()),
                               level=Qgis.Warning)
     #query = QtSql.QSqlQuery()
     return True
 
-class testWidget(QWidget):
+class vrmWidget(QWidget):
     def __init__(self, parent=None):
-        super(testWidget, self).__init__(parent)
+        super(vrmWidget, self).__init__(parent)
         # this layout_box can be used if you need more widgets
         # I used just one named WebsitesWidget
-        layout_box = QVBoxLayout(self)
+        #layout_box = QVBoxLayout(self)
         #
-        my_view = QTableView()
+        #vrmView = QTableView()
         # put view in layout_box area
-        layout_box.addWidget(my_view)
+        #layout_box.addWidget(vrmView)
         # create a table model
         """
         my_model = SqlQueryModel()
@@ -98,21 +98,14 @@ class testWidget(QWidget):
         my_model.select()
         my_view.setModel(my_model)
         """
-        my_model = QSqlRelationalTableModel(self)
-        my_model.setTable("VRMs")
+
         #q = QSqlQuery()
         #result = q.prepare("SELECT PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes FROM VRMs")
         #if result == False:
         #    print ('Prepare: {}'.format(q.lastError().text()))
         #my_model.setQuery(q)
-        my_model.setFilter("SurveyID = 1 AND SectionID = 5")
-        my_model.setSort(int(my_model.fieldIndex("PositionID")), Qt.AscendingOrder)
-        my_model.setRelation(int(my_model.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
-        rel = my_model.relation(int(my_model.fieldIndex("VehicleTypeID")))
-        if not rel.isValid():
-            print ('Relation not valid ...')
-            TOMsMessageLog.logMessage("In testWidget: Relation not valid ... {} ".format(my_model.lastError().text()),
-                                      level=Qgis.Warning)
+
+        """
         result = my_model.select()
         if result == False:
             TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(my_model.lastError().text()),
@@ -126,36 +119,109 @@ class testWidget(QWidget):
         my_view.setColumnHidden(my_model.fieldIndex('SectionID'), True)
         my_view.setColumnHidden(my_model.fieldIndex('GeometryID'), True)
         my_view.setItemDelegate(QSqlRelationalDelegate(my_view))
+        """
 
-    def new_line(self):
-        row = my_model.rowCount()
-        record = my_model.record()
-        record.setGenerated('id', False)
-        record.setValue('empid', self.ui.emp_id.text())
-        record.setValue('weekending', self.ui.weekending.date())
-        record.setValue('department', self.ui.department.currentText())
-        record.setValue('pay_type', 'Regular')
-        record.setValue('starttime', QDateTime.currentDateTime())
-        record.setValue('endtime', QDateTime.currentDateTime())
-        my_model.insertRecord(row, record)
-        my_view.edit(QModelIndex(my_model.index(row, self.hours_model.fieldIndex('department'))))
+    def createLayoutForFeature(self, surveyID, GeometryID):
+
+        # keep pks
+        self.surveyID = surveyID
+        self.GeometryID = GeometryID
+
+        layout_box = QVBoxLayout(self)
+        #
+        vrmView = QTableView()
+
+        vrmModel = QSqlRelationalTableModel(self)
+        vrmModel.setTable("VRMs")
+
+        filterString = "SurveyID = {} AND SectionID = {}".format(surveyID, GeometryID)
+        vrmModel.setFilter(filterString)
+        #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
+        vrmModel.setSort(int(vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
+        vrmModel.setRelation(int(vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
+        rel = vrmModel.relation(int(vrmModel.fieldIndex("VehicleTypeID")))
+        if not rel.isValid():
+            print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In testWidget: Relation not valid ... {} ".format(vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+
+        result = vrmModel.select()
+        if result == False:
+            TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+            #print ('Select: {}'.format(my_model.lastError().text()))
+        #show the view with model
+        vrmView.setModel(vrmModel)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('fid'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('ID'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('SurveyID'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('SectionID'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('GeometryID'), True)
+        vrmView.setItemDelegate(QSqlRelationalDelegate(vrmModel))
+
+        self.vrmView = vrmView
+        self.vrmModel = vrmModel
+
+        # put view in layout_box area
+        layout_box.addWidget(vrmView)
+
+        return layout_box
+
+    def insertRow(self):
+        print ("Inserting row ...")
+
+        row = self.vrmModel.rowCount()
+        record = self.vrmModel.record()
+        #record.setGenerated('id', False)
+        record.setValue('SurveyID', self.surveyID)
+        record.setValue('GeometryID', self.GeometryID)
+        #record.setValue('department', self.ui.department.currentText())
+
+        #record.setValue('starttime', QDateTime.currentDateTime())
+        #record.setValue('endtime', QDateTime.currentDateTime())
+
+        self.vrmModel.insertRecord(row, record)
+        #self.vrmModel.edit(QModelIndex(self.vrmModel.index(row, self.hours_model.fieldIndex('department'))))
+
+    def deleteRow(self):
+        pass
 
 class VRM_DemandForm(VRM_DemandDialog):
     def __init__(self, iface, parent=None):
         if not parent:
             parent = iface.mainWindow()
         super().__init__(parent)
-
         self.iface = iface
-
         QgsMessageLog.logMessage("In VRM_DemandForm::init", tag="TOMs panel")
-
-        self.setupThisUi(parent)
-
+        #self.setupThisUi(parent)
     def setupThisUi(self, parent):
-        grid = parent.layout()
-        vrmForm = testWidget(parent)
-        grid.addWidget(vrmForm, 0, 0, 1, 1)
+
+        vrmsTab = self.demandDialog.findChild(QWidget, "VRMs")
+        vrmsLayout = vrmsTab.layout()
+        vrmForm = vrmWidget(vrmsTab)
+        vrmsLayout.addWidget(vrmForm)
+
+
+
+        # set up connections
+
+        #grid = detailsTab.layout()
+        #print (grid)
+        #grid.addWidget(vrmForm)
+        #grid.addWidget(vrmForm, 0, 0, 1, 1)
+
+
+        # add + and - buttons
+        buttonLayout = QVBoxLayout()
+        addButton = QPushButton("+")
+        removeButton = QPushButton("-")
+        buttonLayout.addWidget(addButton)
+        buttonLayout.addWidget(removeButton)
+        vrmsLayout.addWidget(buttonLayout)
+
+        addButton.connect(vrmForm.insertRow)
+
+
 
 class MainWindow(QMainWindow):
     def __init__(self, parent=None):
@@ -170,4 +236,18 @@ class MainWindow(QMainWindow):
         #SubWindow2 = QtWidgets.QMdiSubWindow()
 
 
+"""
+***
+to run in console
 
+import demandVRMsForm.demand_form as t
+createConnection()
+t.VRM_DemandForm(iface)
+
+
+from demandVRMsForm.ui.VRM_Demand_dialog import VRM_DemandDialog
+...
+t = VRM_DemandForm(iface)
+
+***
+"""

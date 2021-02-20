@@ -347,7 +347,11 @@
        <attribute name="title">
         <string>VRMs</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_5"/>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_4"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="Suspension_Details">
        <attribute name="title">
