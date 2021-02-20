@@ -74,18 +74,46 @@ from restrictionsWithGNSS.SelectTool import (GeometryInfoMapTool, RemoveRestrict
 
 #############################################################################
 
-class demandVRMInfoMapTool(GeometryInfoMapTool):
+class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
     notifyFeatureFound = pyqtSignal(QgsVectorLayer, QgsFeature)
 
-    def __init__(self, iface):
-        GeometryInfoMapTool.__init__(self, iface.mapCanvas())
+    def __init__(self, iface, surveyID):
+        GeometryInfoMapTool.__init__(self, iface)
         self.iface = iface
         VRMsUtilsMixin.__init__(self, iface)
 
-class demandVRMRemoveRestrictionTool(RemoveRestrictionTool):
-    #notifyFeatureFound = QtCore.pyqtSignal(QgsVectorLayer, QgsFeature)
+        self.surveyID = surveyID
 
-    def __init__(self, iface):
-        RemoveRestrictionTool.__init__(self, iface)
-        self.iface = iface
+        """def showRestrictionDetails(self, closestLayer, closestFeature):
+        TOMsMessageLog.logMessage(
+            "In showRestrictionDetails ... Layer: " + str(closestLayer.name()),
+            level=Qgis.Info)
+
+        #self.showRestrictionMapTool.notifyFeatureFound.disconnect(self.showRestrictionDetails)
+
+        # TODO: could improve ... basically check to see if transaction in progress ...
+        if closestLayer.isEditable() == True:
+            if closestLayer.commitChanges() == False:
+                reply = QMessageBox.information(None, "Information",
+                                                "Problem committing changes" + str(closestLayer.commitErrors()),
+                                                QMessageBox.Ok)
+            else:
+                TOMsMessageLog.logMessage("In showRestrictionDetails: changes committed", level=Qgis.Info)
+
+        status = self.iface.activeLayer().startEditing()"""
+        """if self.iface.activeLayer().readOnly() == True:
+            TOMsMessageLog.logMessage("In showSignDetails - Not able to start transaction ...",
+                                     level=Qgis.Info)
+        else:
+            if self.iface.activeLayer().startEditing() == False:
+                reply = QMessageBox.information(None, "Information",
+                                                "Could not start transaction on " + self.currLayer.name(),
+                                                QMessageBox.Ok)
+                return"""
+
+        """dialog = self.iface.getFeatureForm(closestLayer, closestFeature)
+        #self.TOMsUtils.setupRestrictionDialog(self.dialog, closestLayer, closestFeature)
+        self.setupVrmDialog(dialog, closestLayer, closestFeature)
+
+        dialog.show()"""

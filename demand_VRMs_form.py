@@ -35,6 +35,10 @@ from qgis.PyQt.QtWidgets import (
     QDockWidget, QComboBox, QActionGroup
 )
 
+from qgis.PyQt.QtSql import (
+    QSqlDatabase, QSqlQuery, QSqlQueryModel, QSqlRelation, QSqlRelationalTableModel, QSqlRelationalDelegate
+)
+
 from qgis.core import (
     Qgis,
     QgsExpressionContextUtils,
@@ -67,7 +71,7 @@ from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
 from .formManager import mtrForm
 from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
-
+from .SelectTool import demandVRMInfoMapTool
 import functools
 
 class demandVRMsForm(VRMsUtilsMixin):
@@ -83,14 +87,14 @@ class demandVRMsForm(VRMsUtilsMixin):
         self.canvas = self.iface.mapCanvas()
 
         self.demandVRMsToolbar = demandVRMsToolbar
-        self.gpsMapTool = False
+        #self.gpsMapTool = False
         self.marker = None
 
         # This will set up the items on the toolbar
         # Create actions
 
         self.demandVRMsGroup = QActionGroup(demandVRMsToolbar)
-        self.actionCreateVRM = QAction(QIcon(":/plugins/featureswithgps/resources/mActionAddTrack.svg"),
+        """self.actionCreateVRM = QAction(QIcon(":/plugins/featureswithgps/resources/mActionAddTrack.svg"),
                                        QCoreApplication.translate("MyPlugin", "Add VRM"),
                                        self.iface.mainWindow())
         self.actionCreateVRM.setCheckable(True)
@@ -99,6 +103,7 @@ class demandVRMsForm(VRMsUtilsMixin):
                                        QCoreApplication.translate("MyPlugin", "Remove VRM"),
                                        self.iface.mainWindow())
         self.actionRemoveVRM.setCheckable(True)
+        """
 
         self.actionRestrictionDetails = QAction(QIcon(":/plugins/featureswithgps/resources/mActionGetInfo.svg"),
                                          QCoreApplication.translate("MyPlugin", "Get Section Details"),
@@ -108,13 +113,13 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         # Add actions to the toolbar
 
-        self.demandVRMsToolbar.addAction(self.actionCreateVRM)
+        #self.demandVRMsToolbar.addAction(self.actionCreateVRM)
         self.demandVRMsToolbar.addAction(self.actionRestrictionDetails)
-        self.demandVRMsToolbar.addAction(self.actionRemoveVRM)
+        #self.demandVRMsToolbar.addAction(self.actionRemoveVRM)
 
 
-        self.demandVRMsGroup.addAction(self.actionCreateVRM)
-        self.demandVRMsGroup.addAction(self.actionRemoveVRM)
+        #self.demandVRMsGroup.addAction(self.actionCreateVRM)
+        #self.demandVRMsGroup.addAction(self.actionRemoveVRM)
         self.demandVRMsGroup.addAction(self.actionRestrictionDetails)
 
         self.demandVRMsGroup.setExclusive(True)
@@ -122,26 +127,26 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         # Connect action signals to slots
 
-        self.actionCreateVRM.triggered.connect(self.doCreateRestriction)
+        #self.actionCreateVRM.triggered.connect(self.doCreateRestriction)
         self.actionRestrictionDetails.triggered.connect(self.doRestrictionDetails)
-        self.actionRemoveVRM.triggered.connect(self.doRemoveRestriction)
+        #self.actionRemoveVRM.triggered.connect(self.doRemoveRestriction)
 
-        self.actionCreateVRM.setEnabled(False)
+        #self.actionCreateVRM.setEnabled(False)
         self.actionRestrictionDetails.setEnabled(False)
-        self.actionRemoveVRM.setEnabled(False)
+        #self.actionRemoveVRM.setEnabled(False)
 
         self.searchBar = searchBar(self.iface, self.demandVRMsToolbar)
         self.searchBar.disableSearchBar()
 
         self.mapTool = None
-        self.currGnssAction = None
-        self.gpsConnection = None
+        #self.currGnssAction = None
+        #self.gpsConnection = None
         self.createMapToolDict = {}
 
     def enableVRMToolbarItems(self):
 
         TOMsMessageLog.logMessage("In enableVRMToolbarItems", level=Qgis.Warning)
-        self.gpsAvailable = False
+        #self.gpsAvailable = False
         self.closeTOMs = False
 
         self.tableNames = TOMsLayers(self.iface)
@@ -162,6 +167,26 @@ class demandVRMsForm(VRMsUtilsMixin):
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start editing tool ..."))
             #self.actionProposalsPanel.setChecked(False)
             return   # TODO: allow function to continue without GPS enabled ...
+
+        # new get the connection details for "VRMs"
+        vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
+        #uri = QgsDataSourceUri(vrmsLayer.dataProvider().dataSourceUri())
+        #vrmsProvider = vrmsLayer.dataProvider()
+        #vrmsUri = vrmsProvider.uri()
+        vrmsUriName = vrmsLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
+        dbName = vrmsUriName[:vrmsUriName.find('|')]
+
+        self.dbConn = QSqlDatabase.addDatabase("QSQLITE")
+        self.dbConn.setDatabaseName(dbName)
+        if not self.dbConn.open():
+            QMessageBox.critical(None, "Cannot open memory database",
+                                 "Unable to establish a database connection.\n\n"
+                                 "Click Cancel to exit.", QMessageBox.Cancel)
+
+        # now get user / survey id details - and check previous pass and whether it is to be included ...
+
+        QMessageBox.information(self.iface.mainWindow(), "Info", ("This is were we get user / survey id details ..."))
+        self.surveyID = 1
 
         self.enableToolbarItems()
 
@@ -186,9 +211,9 @@ class demandVRMsForm(VRMsUtilsMixin):
 
     def disableToolbarItems(self):
 
-        self.actionCreateVRM.setEnabled(False)
+        #self.actionCreateVRM.setEnabled(False)
         self.actionRestrictionDetails.setEnabled(False)
-        self.actionRemoveVRM.setEnabled(False)
+        #self.actionRemoveVRM.setEnabled(False)
 
         self.searchBar.disableSearchBar()
 
@@ -255,14 +280,14 @@ class demandVRMsForm(VRMsUtilsMixin):
     """ 
         Using signals for ChangeTool and ChangeLayer to manage the tools - with the following functions
     """
-    def isGnssTool(self, mapTool):
+    """def isGnssTool(self, mapTool):
 
         if (isinstance(mapTool, CreateRestrictionTool) or
            isinstance(mapTool, GeometryInfoMapTool) or
            isinstance(mapTool, RemoveRestrictionTool)):
             return True
 
-        return False
+        return False"""
 
     def changeMapTool2(self):
         TOMsMessageLog.logMessage(
@@ -304,106 +329,12 @@ class demandVRMsForm(VRMsUtilsMixin):
         print('layer changed')
 
 
-    def doCreateRestriction(self):
-
-        TOMsMessageLog.logMessage("In doCreateRestriction", level=Qgis.Info)
-
-        self.currLayer = self.iface.activeLayer()
-        if not self.currLayer:
-            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Please choose a layer ...",
-                                            QMessageBox.Ok)
-            return
-
-        # TODO: Check that this is a restriction layer
-
-        if self.actionCreateVRM.isChecked():
-
-            TOMsMessageLog.logMessage("In doCreateRestriction - tool activated", level=Qgis.Info)
-            TOMsMessageLog.logMessage(
-                "In doCreateRestriction: current map tool {}".format(type(self.iface.mapCanvas().mapTool()).__name__),
-                level=Qgis.Info)
-
-            self.createRestrictionMapTool = self.createMapToolDict.get(self.currLayer)
-
-            if not self.createRestrictionMapTool:
-                TOMsMessageLog.logMessage("In doCreateRestriction. creating new map tool", level=Qgis.Info)
-                self.createRestrictionMapTool = CreateRestrictionTool(self.iface, self.currLayer)
-                self.createMapToolDict[self.currLayer] = self.createRestrictionMapTool
-
-            TOMsMessageLog.logMessage("In doCreateRestriction. Here 1", level=Qgis.Info)
-
-            self.iface.mapCanvas().setMapTool(self.createRestrictionMapTool)
-
-            TOMsMessageLog.logMessage("In doCreateRestriction. Here 2", level=Qgis.Info)
-
-            if not self.createRestrictionMapTool.isCapturing():
-                if self.currLayer.isEditable() == True:
-                    if self.currLayer.commitChanges() == False:
-                        reply = QMessageBox.information(None, "Information",
-                                                        "Problem committing changes" + str(self.currLayer.commitErrors()),
-                                                        QMessageBox.Ok)
-                    else:
-                        TOMsMessageLog.logMessage("In doCreateRestriction: changes committed", level=Qgis.Info)
-
-                if self.currLayer.readOnly() == True:
-                    TOMsMessageLog.logMessage("In doCreateRestriction - Not able to start transaction ...",
-                                             level=Qgis.Info)
-                else:
-                    if self.currLayer.startEditing() == False:
-                        reply = QMessageBox.information(None, "Information",
-                                                        "Could not start transaction on " + self.currLayer.name(),
-                                                        QMessageBox.Ok)
-                        return
-
-            TOMsMessageLog.logMessage("In doCreateRestriction. Here 3", level=Qgis.Info)
-
-        else:
-
-            TOMsMessageLog.logMessage("In doCreateRestriction - tool deactivated", level=Qgis.Info)
-
-            if self.createRestrictionMapTool:
-                self.iface.mapCanvas().unsetMapTool(self.createRestrictionMapTool)
-
-            self.currMapTool = None
-            self.currentlySelectedLayer = None
-
-            self.actionCreateVRM.setChecked(False)
-
-            # TODO: stop editting on layers??
-
-        TOMsMessageLog.logMessage("In doCreateRestriction. Here 4", level=Qgis.Info)
-
-
 
     # -- end of tools for signals
 
     def changeExtents(self):
         TOMsMessageLog.logMessage("In changeExtents ... ", level=Qgis.Info)
 
-    def doAddGPSLocation(self):
-
-        # need to have a addPointFromGPS function within each tool
-
-        TOMsMessageLog.logMessage("In doAddGPSLocation", level=Qgis.Info)
-
-        if self.gpsConnection:
-
-            if self.curr_gps_location:
-                try:
-                    status = self.createRestrictionMapTool.addPointFromGPS(self.curr_gps_location, self.curr_gps_info)
-                except Exception as e:
-                    TOMsMessageLog.logMessage("In doAddGPSLocation: Problem adding gnss location: {}".format(e), level=Qgis.Warning)
-                    reply = QMessageBox.information(self.iface.mainWindow(), "Error",
-                                                    "Problem adding gnss location ... ",
-                                                    QMessageBox.Ok)
-            else:
-                reply = QMessageBox.information(self.iface.mainWindow(), "Information",
-                                                "No position found ...",
-                                                QMessageBox.Ok)
-        else:
-
-            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "You need to activate the tool first ...",
-                                            QMessageBox.Ok)
 
     def doRestrictionDetails(self):
         """
@@ -422,7 +353,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
             TOMsMessageLog.logMessage("In doRestrictionDetails - tool activated", level=Qgis.Warning)
 
-            self.showRestrictionMapTool = GeometryInfoMapTool(self.iface)
+            self.showRestrictionMapTool = demandVRMInfoMapTool(self.iface, self.surveyID)
             self.iface.mapCanvas().setMapTool(self.showRestrictionMapTool)
             self.showRestrictionMapTool.notifyFeatureFound.connect(self.showRestrictionDetails)
 
@@ -470,284 +401,8 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         self.dialog = self.iface.getFeatureForm(closestLayer, closestFeature)
         #self.TOMsUtils.setupRestrictionDialog(self.dialog, closestLayer, closestFeature)
+
         self.setupFieldRestrictionDialog(self.dialog, closestLayer, closestFeature)
 
         self.dialog.show()
-
-    """
-        Decided that it is best to use the QGIS select/delete tools to manage removals. So these functions are not used
-    """
-    def doRemoveRestriction(self):
-
-        TOMsMessageLog.logMessage("In doRemoveRestriction", level=Qgis.Info)
-
-        self.currLayer = self.iface.activeLayer()
-
-        if not self.currLayer:
-            reply = QMessageBox.information(self.iface.mainWindow(), "Information", "Please choose a layer ...",
-                                            QMessageBox.Ok)
-            return
-
-        if self.currLayer.readOnly() == True:
-            """reply = QMessageBox.information(None, "Information",
-                                            "Could not start transaction on " + self.currLayer.name(), QMessageBox.Ok)"""
-            TOMsMessageLog.logMessage("In doRemoveRestriction - Not able to start transaction ...", level=Qgis.Info)
-            self.actionRemoveVRM.setChecked(False)
-            return
-
-        if self.actionRemoveVRM.isChecked():
-
-            TOMsMessageLog.logMessage("In doRemoveRestriction - tool activated", level=Qgis.Warning)
-
-            """self.mapTool = self.deleteMapToolDict.get(self.currLayer)
-
-            if not self.mapTool:
-                self.mapTool = RemoveRestrictionTool(self.iface)
-                self.deleteMapToolDict[self.currLayer] =  self.mapTool"""
-
-            self.mapTool = RemoveRestrictionTool(self.iface)
-            #self.removeRestrictionMapTool.setAction(self.actionRemoveVRM)
-            self.iface.mapCanvas().setMapTool(self.removeRestrictionMapTool)
-            #self.gpsMapTool = True
-            #self.removeRestrictionMapTool.deactivated.connect(functools.partial(self.deactivateAction, self.actionRemoveVRM))
-            #self.iface.currentLayerChanged.connect(self.changeCurrLayer)
-            #self.canvas.mapToolSet.connect(self.changeMapTool)
-
-            self.removeRestrictionMapTool.notifyFeatureFound.connect(self.removeRestriction)
-
-        else:
-
-            TOMsMessageLog.logMessage("In doRemoveRestriction - tool deactivated", level=Qgis.Warning)
-
-            self.removeRestrictionMapTool.notifyFeatureFound.disconnect(self.removeRestriction)
-
-            #self.canvas.mapToolSet.disconnect(self.changeMapTool)
-            #self.iface.currentLayerChanged.disconnect(self.changeCurrLayer)
-
-            self.iface.mapCanvas().unsetMapTool(self.removeRestrictionMapTool)
-            #self.removeRestrictionMapTool.deactivate()
-            #self.mapTool = None
-            self.actionRemoveVRM.setChecked(False)
-
-    #@pyqtSlot(str)
-    def removeRestriction(self, closestLayer, closestFeature):
-
-        TOMsMessageLog.logMessage(
-            "In removeRestriction ... Layer: " + str(closestLayer.name()),
-            level=Qgis.Info)
-
-        if closestLayer.isEditable() == True:
-            if closestLayer.commitChanges() == False:
-                reply = QMessageBox.information(None, "Information",
-                                                "Problem committing changes" + str(closestLayer.commitErrors()),
-                                                QMessageBox.Ok)
-            else:
-                TOMsMessageLog.logMessage("In removeRestriction: changes committed", level=Qgis.Info)
-
-        if self.currLayer.startEditing() == False:
-            reply = QMessageBox.information(None, "Information",
-                                            "Could not start transaction on " + self.currLayer.name(),
-                                            QMessageBox.Ok)
-            return
-
-        # TODO: Sort out this for UPDATE
-        # self.setDefaultRestrictionDetails(closestFeature, closestLayer)
-
-        closestLayer.deleteFeature(closestFeature.id())
-
-        if closestLayer.commitChanges() == False:
-            reply = QMessageBox.information(None, "Information",
-                                            "Problem committing changes" + str(closestLayer.commitErrors()),
-                                            QMessageBox.Ok)
-        else:
-            TOMsMessageLog.logMessage("In removeRestriction: changes committed", level=Qgis.Info)
-
-    """
-        This is a tool for adding a point feature. currently only used for signs, but could be used for any point
-    """
-    def doCreateSign(self):
-
-        TOMsMessageLog.logMessage("In doCreateSign", level=Qgis.Info)
-
-        if self.actionCreateSign.isChecked():
-
-            self.currMapTool = self.canvas.mapTool()
-            self.currentlySelectedLayer = self.iface.activeLayer()
-            self.signsLayer = self.tableNames.setLayer("Signs")
-
-            self.iface.setActiveLayer(self.signsLayer)
-
-            self.createPointMapTool = CreatePointTool(self.iface, self.signsLayer)
-
-            TOMsMessageLog.logMessage("In doCreateSign - tool activated", level=Qgis.Info)
-
-            self.signsLayer.editingStopped.connect(self.reinstateMapTool)
-
-            self.actionCreateSign.setChecked(False)
-
-            self.iface.mapCanvas().setMapTool(self.createPointMapTool)
-
-            """ add the point from the gnss """
-            try:
-                status = self.canvas.mapTool().addPointFromGPS(self.curr_gps_location, self.curr_gps_info)
-            except Exception as e:
-                TOMsMessageLog.logMessage("In doCreateSign: Problem adding gnss location: {}".format(e),
-                                          level=Qgis.Warning)
-                reply = QMessageBox.information(self.iface.mainWindow(), "Error",
-                                                "Problem adding gnss location ... ",
-                                                QMessageBox.Ok)
-
-    """
-        Not currently used, but want to develop ...
-    """
-    def doCreateMTR(self):
-
-        TOMsMessageLog.logMessage("In doCreateMTR", level=Qgis.Info)
-
-        if self.actionCreateMTR.isChecked():
-
-            TOMsMessageLog.logMessage("In doCreateMTR - tool activated", level=Qgis.Info)
-
-            # Open MTR form ...
-
-            try:
-                self.thisMtrForm
-            except AttributeError:
-                self.thisMtrForm = mtrForm(self.iface)
-
-            #res = mtrFormFactory.prepareForm(self.iface, self.dbConn, self.dialog)
-            #self.mtrTypeCB = self.dialog.findChild(QComboBox, "cmb_MTR_list")
-            #self.mtrTypeCB.activated[str].connect(self.onLocalChanged)
-            #self.currDialog.findChild(QComboBox, "cmb_MTR_list").activated[str].connect(self.onChanged)
-
-
-            """ Need to setup dialog:
-                a. create drop down
-                b. link structure of form to different options from drop down, e.g., Access Restriction needs ?? attributes and one point, Turn Restriction needs ?? attributes and two points
-                c. link getPoint actions to buttons
-            """
-            status = self.thisMtrForm.show()
-            # Run the dialog event loop
-            result = self.thisMtrForm.exec_()
-            #
-
-        else:
-
-            TOMsMessageLog.logMessage("In doCreateMTR - tool deactivated", level=Qgis.Info)
-
-            #self.iface.mapCanvas().unsetMapTool(self.mapTool)
-            #self.mapTool = None
-            self.actionCreateMTR.setChecked(False)
-            self.gpsMapTool = False
-
-    def onLocalChanged(self, text):
-        TOMsMessageLog.logMessage(
-            "In generateFirstStageForm::selectionchange.  " + text, level=Qgis.Info)
-        res = mtrFormFactory.prepareForm(self.iface, self.dbConn, self.dialog, text)
-
-    """
-        Used with the createSign tool to reinstate the last used maptool, i.e., to allow the interupt of feature creation
-    """
-
-    def reinstateMapTool(self):
-
-        TOMsMessageLog.logMessage("In reinstateMapTool ... ", level=Qgis.Info)
-        self.iface.activeLayer().editingStopped.disconnect(self.reinstateMapTool)
-
-        if self.currMapTool:
-
-            TOMsMessageLog.logMessage(
-                "In reinstateMapTool. layer to be reinstated {} using tool {}".format(self.currentlySelectedLayer.name(), self.currMapTool.toolName()),
-                level=Qgis.Warning)
-            # now reinstate
-            if self.currentlySelectedLayer:
-                self.iface.setActiveLayer(self.currentlySelectedLayer)
-
-            self.iface.mapCanvas().setMapTool(self.currMapTool)
-
-    #@pyqtSlot(QgsGpsConnection)
-    def gpsStarted(self, connection):
-        TOMsMessageLog.logMessage("In enableTools - GPS connection found ",
-                                     level=Qgis.Info)
-
-        self.gpsConnection = connection
-
-        # marker
-        self.marker = QgsVertexMarker(self.canvas)
-        self.marker.setColor(QColor(255, 0, 0))  # (R,G,B)
-        self.marker.setIconSize(10)
-        self.marker.setIconType(QgsVertexMarker.ICON_CIRCLE)
-        self.marker.setPenWidth(3)
-
-        self.enableGnssToolbarItem()
-        reply = QMessageBox.information(None, "Information",
-                                            "Connection found",
-                                            QMessageBox.Ok)
-
-    #@pyqtSlot()
-    def gpsStopped(self):
-        TOMsMessageLog.logMessage("In enableTools - GPS connection stopped ",
-                                     level=Qgis.Warning)
-
-        self.gps_thread.deleteLater()
-        self.thread.quit()
-        self.thread.wait()
-        self.thread.deleteLater()
-
-        if self.gpsConnection:
-            if self.canvas is not None:
-                self.marker.hide()
-                self.canvas.scene().removeItem(self.marker)
-
-        self.gpsConnection = None
-        self.disableGnssToolbarItem()
-
-    #@pyqtSlot()
-    def gpsPositionProvided(self, mapPointXY, gpsInfo):
-        """reply = QMessageBox.information(None, "Information",
-                                            "Position provided",
-                                            QMessageBox.Ok)"""
-        TOMsMessageLog.logMessage("In enableTools - ******** initial GPS location provided " + mapPointXY.asWkt(),
-                                     level=Qgis.Info)
-
-        self.curr_gps_location = mapPointXY
-        self.curr_gps_info = gpsInfo
-
-        wgs84_pointXY = QgsPointXY(gpsInfo.longitude, gpsInfo.latitude)
-        wgs84_point = QgsPoint(wgs84_pointXY)
-        wgs84_point.transform(self.transformation)
-        x = wgs84_point.x()
-        y = wgs84_point.y()
-        new_mapPointXY = QgsPointXY(x, y)
-
-        TOMsMessageLog.logMessage("In enableTools - ******** transformed GPS location provided " + str(gpsInfo.longitude) + ":" + str(gpsInfo.latitude) + "; " + new_mapPointXY.asWkt(),
-                                     level=Qgis.Info)
-
-        if gpsInfo.pdop >= 1:  # gps ok
-            self.marker.setColor(QColor(0, 200, 0))
-        else:
-            self.marker.setColor(QColor(255, 0, 0))
-        self.marker.setCenter(mapPointXY)
-        self.marker.show()
-        #self.canvas.setCenter(mapPointXY)
-
-        """TOMsMessageLog.logMessage("In enableTools: distance from last fix: {}".format(self.lastCentre.distance(mapPointXY)),
-                                     level=Qgis.Info)"""
-        if self.lastCentre.distance(mapPointXY) > self.roamDistance:
-            self.lastCentre = mapPointXY
-            self.canvas.setCenter(mapPointXY)
-            TOMsMessageLog.logMessage(
-                "In enableTools: distance from last fix: {}".format(self.lastCentre.distance(mapPointXY)),
-                level=Qgis.Warning)
-            self.canvas.refresh()
-
-        # TODO: populate message bar with details about satellites, etc
-
-    #@pyqtSlot(Exception, str)
-    def gpsErrorEncountered(self, e):
-        TOMsMessageLog.logMessage("In enableTools - GPS connection has error {}".format(e),
-                                     level=Qgis.Warning)
-        """self.actionCreateVRM.setEnabled(False)
-        self.actionAddGPSLocation.setEnabled(False)"""
-        self.disableGnssToolbarItem()
 

@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget
+    QWidget, QVBoxLayout, QTableView
 )
 
 from qgis.PyQt.QtGui import (
@@ -41,7 +41,7 @@ from qgis.PyQt.QtCore import (
 )
 
 from qgis.PyQt.QtSql import (
-    QSqlDatabase
+    QSqlDatabase, QSqlQuery, QSqlQueryModel, QSqlRelation, QSqlRelationalTableModel, QSqlRelationalDelegate
 )
 
 from qgis.core import (
@@ -110,7 +110,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         #self.TOMsUtils = RestrictionTypeUtilsMixin(self.iface)
 
     def setDefaultFieldRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
-        TOMsMessageLog.logMessage("In setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In VRM:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Warning)
 
         # TODO: Need to check whether or not these fields exist. Also need to retain the last values and reuse
         # gis.stackexchange.com/questions/138563/replacing-action-triggered-script-by-one-supplied-through-qgis-plugin
@@ -122,6 +122,9 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                                       level=Qgis.Info)
 
     def setupFieldRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction):
+
+        TOMsMessageLog.logMessage("In VRM:setupVRMDialog: {}".format(currRestrictionLayer.name()),
+                                  level=Qgis.Warning)
 
         self.params.getParams()
 
@@ -158,7 +161,9 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
 
-        #self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
+        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Warning)
+
+        self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
 
         #self.addScrollBars(restrictionDialog)
 
@@ -227,31 +232,140 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def createConnection(self):
         con = QSqlDatabase.addDatabase("QSQLITE")
-
-        photoPath = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('DemandGpkg')
-        projectFolder = QgsExpressionContextUtils.projectScope(QgsProject.instance()).variable('project_folder')
-
-        path_absolute = os.path.join(projectFolder, photoPath)
-
-        if path_absolute == None:
-            reply = QMessageBox.information(None, "Information", "Please set value for Demand Gpkg.", QMessageBox.Ok)
-            return
-
-        # con.setDatabaseName("C:\\Users\\marie_000\\Documents\\MHTC\\VRM_Test.gpkg")
-        # con.setDatabaseName("Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand_VRMs.gpkg")
-        con.setDatabaseName(path_absolute)
-        # "Z:\\Tim\\SYS20-12 Zone K, Watford\\Test\\Mapping\\Geopackages\\SYS2012_Demand.gpkg"
-        if not con.open():
-            QMessageBox.critical(None, "Cannot open memory database",
-                                 "Unable to establish a database connection.\n\n"
-                                 "Click Cancel to exit.", QMessageBox.Cancel)
-            return False
-
-        TOMsMessageLog.logMessage("In createConnection: db name: {} ".format(con.databaseName()),
-                                  level=Qgis.Warning)
-        # query = QtSql.QSqlQuery()
-        return True
+        # TODO ...
 
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
-        self.VRMtab = restrictionDialog.findChild(QWidget, "VRMs")
-        theseVRMs = VRM_DemandForm(self.iface, self.VRMtab)
+
+        TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Warning)
+        vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
+        vrmsLayout = vrmsTab.layout()
+        vrmForm = vrmWidget(vrmsTab)
+        vrmForm.populateVrmWidget(self.surveyID, currRestriction.attribute("GeometryID"))
+
+        vrmsLayout.addWidget(vrmForm)
+
+        buttonLayout = QVBoxLayout()
+        addButton = QPushButton("+")
+        removeButton = QPushButton("-")
+        buttonLayout.addWidget(addButton)
+        buttonLayout.addWidget(removeButton)
+        vrmsLayout.addLayout(buttonLayout, 0, 1)
+
+        addButton.clicked.connect(vrmForm.insertRow)
+        removeButton.clicked.connect(vrmForm.deleteRow)
+
+
+
+class vrmWidget(QWidget):
+    def __init__(self, parent=None):
+        super(vrmWidget, self).__init__(parent)
+        TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Warning)
+        # this layout_box can be used if you need more widgets
+        # I used just one named WebsitesWidget
+        #layout_box = QVBoxLayout(self)
+        #
+        #vrmView = QTableView()
+        # put view in layout_box area
+        #layout_box.addWidget(vrmView)
+        # create a table model
+        """
+        my_model = SqlQueryModel()
+        q = QSqlQuery(query)
+        my_model.setQuery(q)
+        my_model.setFilter("SurveyID = 1 AND SectionID = 5")
+        my_model.select()
+        my_view.setModel(my_model)
+        """
+
+        #q = QSqlQuery()
+        #result = q.prepare("SELECT PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes FROM VRMs")
+        #if result == False:
+        #    print ('Prepare: {}'.format(q.lastError().text()))
+        #my_model.setQuery(q)
+
+        """
+        result = my_model.select()
+        if result == False:
+            TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(my_model.lastError().text()),
+                                      level=Qgis.Warning)
+            #print ('Select: {}'.format(my_model.lastError().text()))
+        #show the view with model
+        my_view.setModel(my_model)
+        my_view.setColumnHidden(my_model.fieldIndex('fid'), True)
+        my_view.setColumnHidden(my_model.fieldIndex('ID'), True)
+        my_view.setColumnHidden(my_model.fieldIndex('SurveyID'), True)
+        my_view.setColumnHidden(my_model.fieldIndex('SectionID'), True)
+        my_view.setColumnHidden(my_model.fieldIndex('GeometryID'), True)
+        my_view.setItemDelegate(QSqlRelationalDelegate(my_view))
+        """
+
+    def populateVrmWidget(self, surveyID, GeometryID):
+
+        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... ", level=Qgis.Warning)
+        # keep pks
+        #self.surveyID = surveyID
+        #self.GeometryID = GeometryID
+        surveyID = 1
+        GeometryID = 5
+        layout_box = QVBoxLayout(self)
+        #
+        vrmView = QTableView()
+
+        vrmModel = QSqlRelationalTableModel(self)
+        vrmModel.setTable("VRMs")
+
+        filterString = "SurveyID = {} AND SectionID = {}".format(surveyID, GeometryID)
+        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... filterString: {}".format(filterString), level=Qgis.Warning)
+
+        vrmModel.setFilter(filterString)
+        #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
+        vrmModel.setSort(int(vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
+        vrmModel.setRelation(int(vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
+        rel = vrmModel.relation(int(vrmModel.fieldIndex("VehicleTypeID")))
+        if not rel.isValid():
+            print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In testWidget: Relation not valid ... {} ".format(vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+
+        result = vrmModel.select()
+        if result == False:
+            TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+            #print ('Select: {}'.format(my_model.lastError().text()))
+        #show the view with model
+        vrmView.setModel(vrmModel)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('fid'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('ID'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('SurveyID'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('SectionID'), True)
+        vrmView.setColumnHidden(vrmModel.fieldIndex('GeometryID'), True)
+        vrmView.setItemDelegate(QSqlRelationalDelegate(vrmModel))
+
+        self.vrmView = vrmView
+        self.vrmModel = vrmModel
+
+        # put view in layout_box area
+        layout_box.addWidget(vrmView)
+
+        #return layout_box
+
+    def insertRow(self):
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... ", level=Qgis.Warning)
+        print ("Inserting row ...")
+
+        row = self.vrmModel.rowCount()
+        record = self.vrmModel.record()
+        #record.setGenerated('id', False)
+        record.setValue('SurveyID', self.surveyID)
+        record.setValue('GeometryID', self.GeometryID)
+        #record.setValue('department', self.ui.department.currentText())
+
+        #record.setValue('starttime', QDateTime.currentDateTime())
+        #record.setValue('endtime', QDateTime.currentDateTime())
+
+        self.vrmModel.insertRecord(row, record)
+        #self.vrmModel.edit(QModelIndex(self.vrmModel.index(row, self.hours_model.fieldIndex('department'))))
+
+    def deleteRow(self):
+        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Warning)
+        pass
