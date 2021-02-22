@@ -241,13 +241,91 @@ class MainWindow(QMainWindow):
 to run in console
 
 import demandVRMsForm.demand_form as t
-createConnection()
+t.createConnection()
 t.VRM_DemandForm(iface)
 
-
 from demandVRMsForm.ui.VRM_Demand_dialog import VRM_DemandDialog
+
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
+from demandVRMsForm.vrmTableWidget import vrmWidget
+import functools
+
+supplyLayer = QgsProject.instance().mapLayersByName('Supply')[0]
+# get first feature
+for feature in supplyLayer.getFeatures():
+    currRestriction = feature
+    break
+
+restrictionDialog = iface.getFeatureForm(supplyLayer, currRestriction)
+vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
+vrmsLayout = vrmsTab.layout()
+
+vrmForm = vrmWidget(vrmsTab)
+currGeometryID = currRestriction.attribute("gid")
+currGeometryID = 28
+
+vrmForm.populateVrmWidget(surveyID, currGeometryID)
+vrmsLayout.addWidget(vrmForm)
+
+buttonLayout = QVBoxLayout()
+addButton = QPushButton("+")
+removeButton = QPushButton("-")
+buttonLayout.addWidget(addButton)
+buttonLayout.addWidget(removeButton)
+vrmsLayout.addLayout(buttonLayout, 0, 1, 1, 1, alignment=QtCore.Qt.AlignHCenter)
+
+addButton.clicked.connect(functools.partial(vrmForm.insertVrm, surveyID, currGeometryID))
+removeButton.clicked.connect(vrmForm.deleteVrm)
+
+restrictionDialog.show()
 ...
 t = VRM_DemandForm(iface)
+
+
+
+from qgis.PyQt.QtSql import (
+    QSqlDatabase, QSqlQuery, QSqlQueryModel, QSqlRelation, QSqlRelationalTableModel, QSqlRelationalDelegate
+)
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
+import demandVRMsForm.demand_form as t
+t.createConnection()
+vrmView = QTableView()
+vrmModel = QSqlRelationalTableModel()
+vrmModel.setTable("VRMs")
+
+vrmModel.setFilter("SurveyID = 1 AND SectionID = 28")
+vrmModel.setSort(int(vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
+vrmModel.setRelation(int(vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
+rel = vrmModel.relation(int(vrmModel.fieldIndex("VehicleTypeID")))
+if not rel.isValid():
+    print ('Relation not valid ...')
+    TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(vrmModel.lastError().text()),
+                              level=Qgis.Warning)
+
+result = vrmModel.select()
+if result == False:
+    TOMsMessageLog.logMessage("In populateVrmWidget: No result from select: {} ".format(vrmModel.lastError().text()),
+                              level=Qgis.Warning)
+    #print ('Select: {}'.format(my_model.lastError().text()))
+
+TOMsMessageLog.logMessage(
+    "In populateVrmWidget: nr Rows: {} ".format(vrmModel.rowCount()),
+    level=Qgis.Warning)
+
+#show the view with model
+vrmView.setModel(vrmModel)
+vrmView.setColumnHidden(vrmModel.fieldIndex('fid'), True)
+vrmView.setColumnHidden(vrmModel.fieldIndex('ID'), True)
+vrmView.setColumnHidden(vrmModel.fieldIndex('SurveyID'), True)
+vrmView.setColumnHidden(vrmModel.fieldIndex('SectionID'), True)
+vrmView.setColumnHidden(vrmModel.fieldIndex('GeometryID'), True)
+vrmView.setItemDelegate(QSqlRelationalDelegate(vrmModel))
+#vrmView.resizeColumnsToContents()
+vrmView.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn);
+
+
+for i in range(record.count()):
+    print ("item {}, type: {}; value:{}".format(i, record.field(i).typeID(), record.field(i).value()))
 
 ***
 """
