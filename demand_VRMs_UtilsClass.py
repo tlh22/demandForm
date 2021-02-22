@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QTableView
+    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem
 )
 
 from qgis.PyQt.QtGui import (
@@ -37,11 +37,11 @@ from qgis.PyQt.QtCore import (
     QTimer,
     QThread,
     pyqtSignal,
-    pyqtSlot, Qt
+    pyqtSlot, Qt,QModelIndex
 )
 
 from qgis.PyQt.QtSql import (
-    QSqlDatabase, QSqlQuery, QSqlQueryModel, QSqlRelation, QSqlRelationalTableModel, QSqlRelationalDelegate
+    QSqlDatabase, QSqlQuery, QSqlQueryModel, QSqlRelation, QSqlRelationalTableModel, QSqlRelationalDelegate,QSqlTableModel
 )
 
 from qgis.core import (
@@ -73,6 +73,7 @@ from restrictionsWithGNSS.fieldRestrictionTypeUtilsClass import (FieldRestrictio
 
 from TOMs.ui.TOMsCamera import (formCamera)
 from restrictionsWithGNSS.ui.imageLabel import (imageLabel)
+from .vrmTableWidget import vrmWidget
 
 cv2_available = True
 try:
@@ -240,7 +241,14 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
         vrmsLayout = vrmsTab.layout()
         vrmForm = vrmWidget(vrmsTab)
-        vrmForm.populateVrmWidget(self.surveyID, currRestriction.attribute("GeometryID"))
+
+        currGeometryID = currRestriction.attribute("gid")
+
+        vrmForm.populateVrmWidget(self.surveyID, currGeometryID)
+
+        """vrmsTableLayout = QVBoxLayout(vrmsTab)
+        vrmsTableLayout.addWidget(vrmForm)
+        vrmsLayout.addLayout(vrmsTableLayout, 0, 1, 1, 1, alignment=QtCore.Qt.AlignHCenter)"""
 
         vrmsLayout.addWidget(vrmForm)
 
@@ -249,123 +257,8 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         removeButton = QPushButton("-")
         buttonLayout.addWidget(addButton)
         buttonLayout.addWidget(removeButton)
-        vrmsLayout.addLayout(buttonLayout, 0, 1)
+        vrmsLayout.addLayout(buttonLayout, 0, 1, 1, 1, alignment=QtCore.Qt.AlignHCenter)
 
-        addButton.clicked.connect(vrmForm.insertRow)
-        removeButton.clicked.connect(vrmForm.deleteRow)
+        addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
+        removeButton.clicked.connect(vrmForm.deleteVrm)
 
-
-
-class vrmWidget(QWidget):
-    def __init__(self, parent=None):
-        super(vrmWidget, self).__init__(parent)
-        TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Warning)
-        # this layout_box can be used if you need more widgets
-        # I used just one named WebsitesWidget
-        #layout_box = QVBoxLayout(self)
-        #
-        #vrmView = QTableView()
-        # put view in layout_box area
-        #layout_box.addWidget(vrmView)
-        # create a table model
-        """
-        my_model = SqlQueryModel()
-        q = QSqlQuery(query)
-        my_model.setQuery(q)
-        my_model.setFilter("SurveyID = 1 AND SectionID = 5")
-        my_model.select()
-        my_view.setModel(my_model)
-        """
-
-        #q = QSqlQuery()
-        #result = q.prepare("SELECT PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes FROM VRMs")
-        #if result == False:
-        #    print ('Prepare: {}'.format(q.lastError().text()))
-        #my_model.setQuery(q)
-
-        """
-        result = my_model.select()
-        if result == False:
-            TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(my_model.lastError().text()),
-                                      level=Qgis.Warning)
-            #print ('Select: {}'.format(my_model.lastError().text()))
-        #show the view with model
-        my_view.setModel(my_model)
-        my_view.setColumnHidden(my_model.fieldIndex('fid'), True)
-        my_view.setColumnHidden(my_model.fieldIndex('ID'), True)
-        my_view.setColumnHidden(my_model.fieldIndex('SurveyID'), True)
-        my_view.setColumnHidden(my_model.fieldIndex('SectionID'), True)
-        my_view.setColumnHidden(my_model.fieldIndex('GeometryID'), True)
-        my_view.setItemDelegate(QSqlRelationalDelegate(my_view))
-        """
-
-    def populateVrmWidget(self, surveyID, GeometryID):
-
-        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... ", level=Qgis.Warning)
-        # keep pks
-        #self.surveyID = surveyID
-        #self.GeometryID = GeometryID
-        surveyID = 1
-        GeometryID = 5
-        layout_box = QVBoxLayout(self)
-        #
-        vrmView = QTableView()
-
-        vrmModel = QSqlRelationalTableModel(self)
-        vrmModel.setTable("VRMs")
-
-        filterString = "SurveyID = {} AND SectionID = {}".format(surveyID, GeometryID)
-        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... filterString: {}".format(filterString), level=Qgis.Warning)
-
-        vrmModel.setFilter(filterString)
-        #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
-        vrmModel.setSort(int(vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
-        vrmModel.setRelation(int(vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
-        rel = vrmModel.relation(int(vrmModel.fieldIndex("VehicleTypeID")))
-        if not rel.isValid():
-            print ('Relation not valid ...')
-            TOMsMessageLog.logMessage("In testWidget: Relation not valid ... {} ".format(vrmModel.lastError().text()),
-                                      level=Qgis.Warning)
-
-        result = vrmModel.select()
-        if result == False:
-            TOMsMessageLog.logMessage("In testWidget: No result: {} ".format(vrmModel.lastError().text()),
-                                      level=Qgis.Warning)
-            #print ('Select: {}'.format(my_model.lastError().text()))
-        #show the view with model
-        vrmView.setModel(vrmModel)
-        vrmView.setColumnHidden(vrmModel.fieldIndex('fid'), True)
-        vrmView.setColumnHidden(vrmModel.fieldIndex('ID'), True)
-        vrmView.setColumnHidden(vrmModel.fieldIndex('SurveyID'), True)
-        vrmView.setColumnHidden(vrmModel.fieldIndex('SectionID'), True)
-        vrmView.setColumnHidden(vrmModel.fieldIndex('GeometryID'), True)
-        vrmView.setItemDelegate(QSqlRelationalDelegate(vrmModel))
-
-        self.vrmView = vrmView
-        self.vrmModel = vrmModel
-
-        # put view in layout_box area
-        layout_box.addWidget(vrmView)
-
-        #return layout_box
-
-    def insertRow(self):
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... ", level=Qgis.Warning)
-        print ("Inserting row ...")
-
-        row = self.vrmModel.rowCount()
-        record = self.vrmModel.record()
-        #record.setGenerated('id', False)
-        record.setValue('SurveyID', self.surveyID)
-        record.setValue('GeometryID', self.GeometryID)
-        #record.setValue('department', self.ui.department.currentText())
-
-        #record.setValue('starttime', QDateTime.currentDateTime())
-        #record.setValue('endtime', QDateTime.currentDateTime())
-
-        self.vrmModel.insertRecord(row, record)
-        #self.vrmModel.edit(QModelIndex(self.vrmModel.index(row, self.hours_model.fieldIndex('department'))))
-
-    def deleteRow(self):
-        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Warning)
-        pass
