@@ -64,7 +64,7 @@ import os, time
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.search_bar import searchBar
 
-from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams, surveysWidget
+from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
 from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
 from .SelectTool import demandVRMInfoMapTool
@@ -357,9 +357,9 @@ class demandVRMsForm(VRMsUtilsMixin):
         # display list
 
         currSurveyID = str(self.params.setParam("CurrentSurvey"))
-        if len(self.surveyID) == 0:
-            self.surveyID = 1
-        self.surveyID = currSurveyID
+        if len(currSurveyID) == 0:
+            currSurveyID = 1
+        newSurveyID = currSurveyID
         currSurveyName = ''
 
         surveyList = list()
@@ -372,9 +372,10 @@ class demandVRMsForm(VRMsUtilsMixin):
         while query.next():
             TOMsMessageLog.logMessage("In surveysWidget: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
             surveyList.append(query.value(BeatTitle))
-            if int(self.surveyID) == int(query.value(SurveyID)):
+            if int(currSurveyID) == int(query.value(SurveyID)):
                 currSurveyName = query.value(BeatTitle)
 
+        newSurveyName = currSurveyName
         TOMsMessageLog.logMessage("In surveysWidget: surveyList: {}".format(surveyList), level=Qgis.Warning)
         surveyDialog = QInputDialog()
         surveyDialog.setLabelText("Please confirm the current survey")
@@ -388,15 +389,15 @@ class demandVRMsForm(VRMsUtilsMixin):
             if currSurveyName != newSurveyName:
                 for i in range (0, len(surveyList)-1):
                     if surveyList[i] == newSurveyName:
-                        self.surveyID = i+1
-                        TOMsMessageLog.logMessage("In surveyName: setting surveyID to {} ...".format(self.surveyID), level=Qgis.Warning)
-                        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentSurvey', self.surveyID)
+                        newSurveyID = i+1
+                        TOMsMessageLog.logMessage("In surveyName: setting surveyID to {} ...".format(newSurveyID), level=Qgis.Warning)
+                        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentSurvey', newSurveyID)
 
                         # check for any details from earlier survey
                         #self.checkPreviousSurveys()
                         break
 
-            else:
-                reply = QMessageBox.information(None, "Information", "Please choose a survey",
+            reply = QMessageBox.information(None, "Information", "Setting survey to {}".format(newSurveyName),
                                                 QMessageBox.Ok)
-                # TODO - deal with action
+
+        return newSurveyID

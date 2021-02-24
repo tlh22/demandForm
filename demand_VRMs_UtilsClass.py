@@ -37,7 +37,7 @@ from qgis.PyQt.QtCore import (
     QTimer,
     QThread,
     pyqtSignal,
-    pyqtSlot, Qt,QModelIndex
+    pyqtSlot, Qt,QModelIndex, QDateTime
 )
 
 from qgis.PyQt.QtSql import (
@@ -130,6 +130,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                                   level=Qgis.Warning)
 
         self.params.getParams()
+        currSurveyName = self.getCurrSurveyName(self.surveyID)
 
         # Create a copy of the feature
         self.origFeature = originalFeature()
@@ -153,6 +154,17 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 level=Qgis.Warning)
             return
 
+        button_box.accepted.connect(functools.partial(self.onSaveFieldRestrictionDetails, currRestriction,
+                                      currRestrictionLayer, restrictionDialog))
+
+        button_box.rejected.connect(functools.partial(self.onRejectFieldRestrictionDetailsFromForm, restrictionDialog, currRestrictionLayer))
+
+        restrictionDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2_local, currRestriction, currRestrictionLayer))
+
+        # setup widget mapping
+        #currRestrictionModel = self.setupRestrictionInSurveyModel(self.surveyID, currRestriction)
+        #self.setupRestrictionMapping(currRestrictionModel)
+
         self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
 
         TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Warning)
@@ -163,26 +175,14 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def onAttributeChangedClass2_local(self, currFeature, layer, fieldName, value):
 
-        #self.TOMsUtils.onAttributeChangedClass2(currFeature, layer, fieldName, value)
-
         TOMsMessageLog.logMessage(
             "In field:FormOpen:onAttributeChangedClass 2 - layer: " + str(layer.name()) + " (" + fieldName + "): " + str(value), level=Qgis.Info)
-
-
-        # self.currRestriction.setAttribute(fieldName, value)
         try:
-
             currFeature[layer.fields().indexFromName(fieldName)] = value
-            #currFeature.setAttribute(layer.fields().indexFromName(fieldName), value)
-
         except Exception as e:
-
             reply = QMessageBox.information(None, "Error",
                                                 "onAttributeChangedClass2. Update failed for: " + str(layer.name()) + " (" + fieldName + "): " + str(value),
                                                 QMessageBox.Ok)  # rollback all changes
-
-
-        self.storeLastUsedDetails(layer.name(), fieldName, value)
 
         return
 
@@ -196,9 +196,14 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         except:
             None
 
-        status = currFeatureLayer.updateFeature(currFeature)
+        # set update time !!!
 
-        #status = dialog.attributeForm().close()
+        try:
+            currFeature.setAttribute("DemandSurveyDateTime", QDateTime.currentDateTime())
+        except Exception as e:
+            reply = QMessageBox.information(None, "Information", "Problem setting date/time: {}".format(e), QMessageBox.Ok)
+
+        currFeatureLayer.updateFeature(currFeature)
 
         try:
             currFeatureLayer.commitChanges()
@@ -235,7 +240,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         vrmsLayout = vrmsTab.layout()
         vrmForm = vrmWidget(vrmsTab)
 
-        currGeometryID = currRestriction.attribute("gid")
+        currGeometryID = currRestriction.attribute("GeometryID")
 
         vrmForm.populateVrmWidget(self.surveyID, currGeometryID)
 
@@ -251,3 +256,27 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(vrmForm.deleteVrm)
+
+    def getCurrSurveyName(self, currSurveyID):
+        # display list
+
+        currSurveyName = ''
+
+        surveyList = list()
+
+        query = QSqlQuery("SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC")
+        query.exec()
+
+        SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+
+        while query.next():
+            TOMsMessageLog.logMessage("In surveysWidget: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
+            surveyList.append(query.value(BeatTitle))
+            if int(currSurveyID) == int(query.value(SurveyID)):
+                currSurveyName = query.value(BeatTitle)
+                break
+
+        return currSurveyName
+
+    def setupRestrictionInSurveyModel(self, surveyID, currRestriction):
+        pass
