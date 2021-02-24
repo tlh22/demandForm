@@ -246,10 +246,6 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         vrmForm.populateVrmWidget(self.surveyID, currGeometryID)
 
-        """vrmsTableLayout = QVBoxLayout(vrmsTab)
-        vrmsTableLayout.addWidget(vrmForm)
-        vrmsLayout.addLayout(vrmsTableLayout, 0, 1, 1, 1, alignment=QtCore.Qt.AlignHCenter)"""
-
         vrmsLayout.addWidget(vrmForm)
 
         buttonLayout = QVBoxLayout()
@@ -257,7 +253,8 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         removeButton = QPushButton("-")
         buttonLayout.addWidget(addButton)
         buttonLayout.addWidget(removeButton)
-        vrmsLayout.addLayout(buttonLayout, 0, 1, 1, 1, alignment=QtCore.Qt.AlignHCenter)
+
+        vrmsLayout.addLayout(buttonLayout, 1, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
 
         addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(vrmForm.deleteVrm)
