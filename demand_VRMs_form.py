@@ -32,7 +32,7 @@ from qgis.PyQt.QtWidgets import (
     QAction,
     QDialogButtonBox,
     QLabel,
-    QDockWidget, QComboBox, QActionGroup
+    QDockWidget, QComboBox, QActionGroup, QDialog, QInputDialog
 )
 
 from qgis.PyQt.QtSql import (
@@ -64,7 +64,7 @@ import os, time
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.search_bar import searchBar
 
-from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
+from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams, surveysWidget
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
 from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
 from .SelectTool import demandVRMInfoMapTool
@@ -154,18 +154,15 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         # now get user / survey id details - and check previous pass and whether it is to be included ...
 
-        QMessageBox.information(self.iface.mainWindow(), "Info", ("This is were we get user / survey id details ..."))
+        #QMessageBox.information(self.iface.mainWindow(), "Info", ("This is were we get user / survey id details ..."))
         """
         Obtain user name
         Get list of surveys and set exclusive check list - and get selection
         Check whether there are any records for this survey. If not, if there are records for the previous survey ask whether they are to be brought forward
         if so, copy details from previous survey to current survey
         """
-        self.currUser = self.getCurrUser()
+        self.checkEnumeratorName()
         self.surveyID = self.getCurrSurvey()
-        status = self.checkDetailsFromPreviousSurvey(self.surveyID)
-
-        self.surveyID = 1
 
         self.enableToolbarItems()
 
@@ -173,31 +170,17 @@ class demandVRMsForm(VRMsUtilsMixin):
 
     def enableToolbarItems(self):
         TOMsMessageLog.logMessage("In enableToolbarItems", level=Qgis.Warning)
-        #self.actionCreateVRM.setEnabled(True)
-        self.actionRestrictionDetails.setEnabled(True)
-        #self.actionRemoveVRM.setEnabled(True)
 
-        #self.searchBar.enableSearchBar()
+        self.actionRestrictionDetails.setEnabled(True)
 
         self.currMapTool = None
         self.theCurrentMapTool = None
 
-        #self.createConnection()
-
-        #self.iface.currentLayerChanged.connect(self.changeCurrLayer2)
-        #self.canvas.mapToolSet.connect(self.changeMapTool2)
-        #self.canvas.extentsChanged.connect(self.changeExtents)
-
     def disableToolbarItems(self):
 
-        #self.actionCreateVRM.setEnabled(False)
         self.actionRestrictionDetails.setEnabled(False)
-        #self.actionRemoveVRM.setEnabled(False)
-
         self.searchBar.disableSearchBar()
 
-        """if self.gpsConnection:
-            self.actionAddGPSLocation.setEnabled(False)"""
 
     def setCloseTOMsFlag(self):
         self.closeTOMs = True
@@ -256,17 +239,6 @@ class demandVRMsForm(VRMsUtilsMixin):
         self.currGnssAction = action
         TOMsMessageLog.logMessage("In onGroupTriggered: curr action is {}".format(action.text()), level=Qgis.Info)
 
-    """ 
-        Using signals for ChangeTool and ChangeLayer to manage the tools - with the following functions
-    """
-    """def isGnssTool(self, mapTool):
-
-        if (isinstance(mapTool, CreateRestrictionTool) or
-           isinstance(mapTool, GeometryInfoMapTool) or
-           isinstance(mapTool, RemoveRestrictionTool)):
-            return True
-
-        return False"""
 
     def changeMapTool2(self):
         TOMsMessageLog.logMessage(
@@ -296,18 +268,9 @@ class demandVRMsForm(VRMsUtilsMixin):
         except Exception as e:
             None
 
-        """if self.isGnssTool(currMapTool):
-            TOMsMessageLog.logMessage("In changeLayer2. Action triggered ... ", level=Qgis.Info)
-            self.currGnssAction.trigger()  # assumption is that there is an action associated with the tool
-        else:
-            TOMsMessageLog.logMessage(
-            "In changeLayer2. No action for currentMapTool.", level=Qgis.Info)"""
-
         TOMsMessageLog.logMessage(
             "In changeLayer2. finished.", level=Qgis.Info)
         print('layer changed')
-
-
 
     # -- end of tools for signals
 
@@ -368,16 +331,6 @@ class demandVRMsForm(VRMsUtilsMixin):
             else:
                 TOMsMessageLog.logMessage("In showRestrictionDetails: changes committed", level=Qgis.Info)
 
-        """if self.iface.activeLayer().readOnly() == True:
-            TOMsMessageLog.logMessage("In showSignDetails - Not able to start transaction ...",
-                                     level=Qgis.Info)
-        else:
-            if self.iface.activeLayer().startEditing() == False:
-                reply = QMessageBox.information(None, "Information",
-                                                "Could not start transaction on " + self.currLayer.name(),
-                                                QMessageBox.Ok)
-                return"""
-
         self.dialog = self.iface.getFeatureForm(closestLayer, closestFeature)
         #self.TOMsUtils.setupRestrictionDialog(self.dialog, closestLayer, closestFeature)
 
@@ -385,3 +338,65 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         self.dialog.show()
 
+    def checkEnumeratorName(self):
+        # check user details
+        self.enumerator = str(self.params.setParam("Enumerator"))
+        #if len(self.enumerator) == 0:
+        #    self.enumerator = ''
+
+        enumeratorDialog = QInputDialog()
+        enumeratorDialog.setLabelText("Please confirm your name")
+        enumeratorDialog.setTextValue(self.enumerator)
+
+        if enumeratorDialog.exec_() == QDialog.Accepted:
+            self.enumerator = enumeratorDialog.textValue()
+            TOMsMessageLog.logMessage("In checkEnumeratorName: {}".format(self.enumerator), level=Qgis.Warning)
+            QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'Enumerator', self.enumerator)
+
+    def getCurrSurvey(self):
+        # display list
+
+        currSurveyID = str(self.params.setParam("CurrentSurvey"))
+        if len(self.surveyID) == 0:
+            self.surveyID = 1
+        self.surveyID = currSurveyID
+        currSurveyName = ''
+
+        surveyList = list()
+
+        query = QSqlQuery("SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC")
+        query.exec()
+
+        SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+
+        while query.next():
+            TOMsMessageLog.logMessage("In surveysWidget: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
+            surveyList.append(query.value(BeatTitle))
+            if int(self.surveyID) == int(query.value(SurveyID)):
+                currSurveyName = query.value(BeatTitle)
+
+        TOMsMessageLog.logMessage("In surveysWidget: surveyList: {}".format(surveyList), level=Qgis.Warning)
+        surveyDialog = QInputDialog()
+        surveyDialog.setLabelText("Please confirm the current survey")
+        surveyDialog.setComboBoxItems(surveyList)
+        surveyDialog.setTextValue(currSurveyName)
+
+        if surveyDialog.exec_() == QDialog.Accepted:
+            newSurveyName = surveyDialog.textValue()
+            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Warning)
+
+            if currSurveyName != newSurveyName:
+                for i in range (0, len(surveyList)-1):
+                    if surveyList[i] == newSurveyName:
+                        self.surveyID = i+1
+                        TOMsMessageLog.logMessage("In surveyName: setting surveyID to {} ...".format(self.surveyID), level=Qgis.Warning)
+                        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentSurvey', self.surveyID)
+
+                        # check for any details from earlier survey
+                        #self.checkPreviousSurveys()
+                        break
+
+            else:
+                reply = QMessageBox.information(None, "Information", "Please choose a survey",
+                                                QMessageBox.Ok)
+                # TODO - deal with action
