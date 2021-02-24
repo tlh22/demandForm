@@ -69,7 +69,6 @@ from .gnss_thread import GPS_Thread
 
 from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
-from .formManager import mtrForm
 from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
 from .SelectTool import demandVRMInfoMapTool
 import functools
@@ -186,6 +185,16 @@ class demandVRMsForm(VRMsUtilsMixin):
         # now get user / survey id details - and check previous pass and whether it is to be included ...
 
         QMessageBox.information(self.iface.mainWindow(), "Info", ("This is were we get user / survey id details ..."))
+        """
+        Obtain user name
+        Get list of surveys and set exclusive check list - and get selection
+        Check whether there are any records for this survey. If not, if there are records for the previous survey ask whether they are to be brought forward
+        if so, copy details from previous survey to current survey
+        """
+        self.currUser = self.getCurrUser()
+        self.surveyID = self.getCurrSurvey()
+        status = self.checkDetailsFromPreviousSurvey(self.surveyID)
+
         self.surveyID = 1
 
         self.enableToolbarItems()
