@@ -23,13 +23,13 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem
+    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup
 )
 
 from qgis.PyQt.QtGui import (
     QIcon,
     QPixmap,
-    QImage, QPainter
+    QImage, QPainter, QStandardItem
 )
 
 from qgis.PyQt.QtCore import (
@@ -97,7 +97,9 @@ class vrmParams(TOMsParams):
 
         self.TOMsParamsList.extend([
                           "CameraNr",
-                          "DemandGpkg"
+                          #"DemandGpkg",
+                          "Enumerator",
+                          "CurrentSurvey"
                                ])
 
 class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
@@ -150,15 +152,6 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 "In setupRestrictionDialog. button box not found",
                 level=Qgis.Warning)
             return
-
-        """
-        button_box.accepted.connect(functools.partial(self.onSaveFieldRestrictionDetails, currRestriction,
-                                      currRestrictionLayer, restrictionDialog))
-
-        button_box.rejected.connect(functools.partial(self.onRejectFieldRestrictionDetailsFromForm, restrictionDialog, currRestrictionLayer))
-
-        restrictionDialog.attributeForm().attributeChanged.connect(functools.partial(self.onAttributeChangedClass2_local, currRestriction, currRestrictionLayer))
-        """
 
         self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
 
@@ -258,4 +251,3 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(vrmForm.deleteVrm)
-
