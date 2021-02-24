@@ -63,9 +63,6 @@ import os, time
 # from .CadNodeTool.TOMsNodeTool import TOMsNodeTool
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.search_bar import searchBar
-from .mapTools import CreateRestrictionTool, CreatePointTool
-from .gnss_thread import GPS_Thread
-#from TOMsUtils import *
 
 from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
@@ -93,16 +90,6 @@ class demandVRMsForm(VRMsUtilsMixin):
         # Create actions
 
         self.demandVRMsGroup = QActionGroup(demandVRMsToolbar)
-        """self.actionCreateVRM = QAction(QIcon(":/plugins/featureswithgps/resources/mActionAddTrack.svg"),
-                                       QCoreApplication.translate("MyPlugin", "Add VRM"),
-                                       self.iface.mainWindow())
-        self.actionCreateVRM.setCheckable(True)
-
-        self.actionRemoveVRM = QAction(QIcon(":plugins/featureswithgps/resources/mActionDeleteTrack.svg"),
-                                       QCoreApplication.translate("MyPlugin", "Remove VRM"),
-                                       self.iface.mainWindow())
-        self.actionRemoveVRM.setCheckable(True)
-        """
 
         self.actionRestrictionDetails = QAction(QIcon(":/plugins/featureswithgps/resources/mActionGetInfo.svg"),
                                          QCoreApplication.translate("MyPlugin", "Get Section Details"),
@@ -112,13 +99,8 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         # Add actions to the toolbar
 
-        #self.demandVRMsToolbar.addAction(self.actionCreateVRM)
         self.demandVRMsToolbar.addAction(self.actionRestrictionDetails)
-        #self.demandVRMsToolbar.addAction(self.actionRemoveVRM)
 
-
-        #self.demandVRMsGroup.addAction(self.actionCreateVRM)
-        #self.demandVRMsGroup.addAction(self.actionRemoveVRM)
         self.demandVRMsGroup.addAction(self.actionRestrictionDetails)
 
         self.demandVRMsGroup.setExclusive(True)
@@ -126,33 +108,25 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         # Connect action signals to slots
 
-        #self.actionCreateVRM.triggered.connect(self.doCreateRestriction)
         self.actionRestrictionDetails.triggered.connect(self.doRestrictionDetails)
-        #self.actionRemoveVRM.triggered.connect(self.doRemoveRestriction)
 
-        #self.actionCreateVRM.setEnabled(False)
         self.actionRestrictionDetails.setEnabled(False)
-        #self.actionRemoveVRM.setEnabled(False)
 
         self.searchBar = searchBar(self.iface, self.demandVRMsToolbar)
         self.searchBar.disableSearchBar()
 
         self.mapTool = None
-        #self.currGnssAction = None
-        #self.gpsConnection = None
         self.createMapToolDict = {}
 
     def enableVRMToolbarItems(self):
 
         TOMsMessageLog.logMessage("In enableVRMToolbarItems", level=Qgis.Warning)
-        #self.gpsAvailable = False
         self.closeTOMs = False
 
         self.tableNames = TOMsLayers(self.iface)
         self.params = vrmParams()
 
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
-        #self.tableNames.gpsLayersNotFound.connect(self.setCloseCaptureGPSFeaturesFlag)
         self.params.TOMsParamsNotFound.connect(self.setCloseDemandFlag)
 
         self.TOMsConfigFileObject = TOMsConfigFile(self.iface)
@@ -164,21 +138,17 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         if self.closeTOMs:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start editing tool ..."))
-            #self.actionProposalsPanel.setChecked(False)
             return   # TODO: allow function to continue without GPS enabled ...
 
         # new get the connection details for "VRMs"
         vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
-        #uri = QgsDataSourceUri(vrmsLayer.dataProvider().dataSourceUri())
-        #vrmsProvider = vrmsLayer.dataProvider()
-        #vrmsUri = vrmsProvider.uri()
         vrmsUriName = vrmsLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
         dbName = vrmsUriName[:vrmsUriName.find('|')]
 
         self.dbConn = QSqlDatabase.addDatabase("QSQLITE")
         self.dbConn.setDatabaseName(dbName)
         if not self.dbConn.open():
-            QMessageBox.critical(None, "Cannot open memory database",
+            QMessageBox.critical(None, "Cannot open database",
                                  "Unable to establish a database connection.\n\n"
                                  "Click Cancel to exit.", QMessageBox.Cancel)
 
