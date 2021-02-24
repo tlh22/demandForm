@@ -60,7 +60,7 @@ from qgis.core import (
     QgsMessageLog,
     QgsExpressionContextUtils,
     QgsWkbTypes,
-    QgsMapLayer, Qgis, QgsRectangle, QgsFeatureRequest, QgsVectorLayer, QgsFeature
+    QgsMapLayer, Qgis, QgsRectangle, QgsFeatureRequest, QgsVectorLayer, QgsFeature, QgsProject
 )
 from qgis.gui import (
     QgsMapToolIdentify
@@ -85,3 +85,41 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         self.surveyID = surveyID
         TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: " + str(self.surveyID), level=Qgis.Warning)
+
+    def showRestrictionDetails(self, closestLayer, closestFeature):
+
+        TOMsMessageLog.logMessage(
+            "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: " + str(closestLayer.name()),
+            level=Qgis.Warning)
+
+        GeometryID = closestFeature[closestLayer.fields().indexFromName("gid")]
+
+        # Now want to swap to use "RestrictionsInSurveys"
+        # get relevant feature ...
+        restrictionsInSurveysLayer = QgsProject.instance().mapLayersByName("RestrictionsInSurveys")[0]
+
+        filterString = '"SurveyID" = {} AND "GeometryID" = {}'.format(self.surveyID, GeometryID)
+
+        request = QgsFeatureRequest().setFilterExpression(filterString)
+        for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
+            TOMsMessageLog.logMessage(
+                "In demandVRMInfoMapTool.showRestrictionDetails ... restriction found: ",
+                level=Qgis.Warning)
+            break  # take the first one (assuming only one!)
+
+        # TODO: could improve ... basically check to see if transaction in progress ...
+        if restrictionsInSurveysLayer.isEditable() == True:
+            if restrictionsInSurveysLayer.commitChanges() == False:
+                reply = QMessageBox.information(None, "Information",
+                                                "Problem committing changes" + str(restrictionsInSurveysLayer.commitErrors()),
+                                                QMessageBox.Ok)
+            else:
+                TOMsMessageLog.logMessage("In showRestrictionDetails: changes committed", level=Qgis.Info)
+
+        status = restrictionsInSurveysLayer.startEditing()
+
+        dialog = self.iface.getFeatureForm(restrictionsInSurveysLayer, currRestriction)
+
+        self.setupFieldRestrictionDialog(dialog, restrictionsInSurveysLayer, currRestriction)
+
+        dialog.show()
