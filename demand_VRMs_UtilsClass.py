@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup
+    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper
 )
 
 from qgis.PyQt.QtGui import (
@@ -130,7 +130,8 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                                   level=Qgis.Warning)
 
         self.params.getParams()
-        currSurveyName = self.getCurrSurveyName(self.surveyID)
+
+        status = self.mapOtherFields(restrictionDialog, currRestrictionLayer, currRestriction)
 
         # Create a copy of the feature
         self.origFeature = originalFeature()
@@ -173,6 +174,33 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         #self.addScrollBars(restrictionDialog)
 
+    def mapOtherFields(self, restrictionDialog, currRestrictionLayer, currRestriction):
+
+        # is there a better way ???
+        currSurveyName = self.getCurrSurveyName(self.surveyID)
+        SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
+        SurveyBeatTitleWidget.setText(currSurveyName)
+
+        queryString = "SELECT RoadName, SectionLength FROM Supply WHERE gid = {}".format(currRestriction.attribute("GeometryID"))
+        TOMsMessageLog.logMessage(
+            "In mapOtherFields: queryString: {}".format(queryString),
+            level=Qgis.Warning)
+        query = QSqlQuery(queryString)
+        query.exec()
+
+        RoadName, SectionLength = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+
+        query.next()
+        TOMsMessageLog.logMessage(
+                "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
+                level=Qgis.Warning)
+
+        RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
+        RoadNameWidget.setText(query.value(RoadName))
+        SectionLengthWidget = restrictionDialog.findChild(QWidget, "SectionLength")
+        SectionLengthWidget.setText(str(query.value(SectionLength)))
+
+
     def onAttributeChangedClass2_local(self, currFeature, layer, fieldName, value):
 
         TOMsMessageLog.logMessage(
@@ -200,6 +228,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         try:
             currFeature.setAttribute("DemandSurveyDateTime", QDateTime.currentDateTime())
+            currFeature.setAttribute("Enumerator", self.enumerator)
         except Exception as e:
             reply = QMessageBox.information(None, "Information", "Problem setting date/time: {}".format(e), QMessageBox.Ok)
 

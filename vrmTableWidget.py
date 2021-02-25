@@ -93,6 +93,7 @@ class vrmWidget(QTableView):
             print ('Relation not valid ...')
             TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("VehicleTypeID"), Qt.Horizontal, 'VehicleType')
 
         result = self.vrmModel.select()
         if result == False:
@@ -109,8 +110,10 @@ class vrmWidget(QTableView):
         self.setColumnHidden(self.vrmModel.fieldIndex('SurveyID'), True)
         self.setColumnHidden(self.vrmModel.fieldIndex('SectionID'), True)
         self.setColumnHidden(self.vrmModel.fieldIndex('GeometryID'), True)
+        self.verticalHeader().hide()
         self.setItemDelegate(QSqlRelationalDelegate(self.vrmModel))
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn);
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.resizeColumnsToContents()
 
     def insertVrm(self, surveyID, GeometryID):
         TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Warning)

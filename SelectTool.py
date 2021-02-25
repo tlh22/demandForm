@@ -78,13 +78,14 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
     notifyFeatureFound = pyqtSignal(QgsVectorLayer, QgsFeature)
 
-    def __init__(self, iface, surveyID):
+    def __init__(self, iface, surveyID, enumerator):
         GeometryInfoMapTool.__init__(self, iface)
         self.iface = iface
         VRMsUtilsMixin.__init__(self, iface)
 
         self.surveyID = surveyID
-        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: " + str(self.surveyID), level=Qgis.Warning)
+        self.enumerator = enumerator
+        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Warning)
 
     def showRestrictionDetails(self, closestLayer, closestFeature):
 

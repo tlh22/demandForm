@@ -9,6 +9,7 @@ CREATE TABLE demand."RestrictionsInSurveys"
     "SurveyID" integer,
     "GeometryID" character varying(12) COLLATE pg_catalog."default",
     "DemandSurveyDateTime" timestamp without time zone,
+    "Enumerator" character varying (100) COLLATE pg_catalog."default",
     "Done" boolean,
     "SuspensionReference" character varying (100) COLLATE pg_catalog."default",
     "SuspensionReason" character varying (255) COLLATE pg_catalog."default",
