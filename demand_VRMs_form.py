@@ -432,7 +432,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
                     reply = QMessageBox.question(None, 'Add details from previous survey',
                                                  # How do you access the main window to make the popup ???
-                                                 'Do you want to add the VRMs from the previous survey?.',
+                                                 'Do you want to add the VRMs from the previous time period?.',
                                                  QMessageBox.Yes, QMessageBox.No)
                     if reply == QMessageBox.Yes:
 

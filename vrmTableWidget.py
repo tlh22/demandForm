@@ -13,7 +13,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QTableView, QTableWidgetItem, QLayout
+    QWidget, QVBoxLayout, QTableView, QTableWidgetItem, QLayout, QItemDelegate, QStyledItemDelegate, QLineEdit
 )
 
 from qgis.PyQt.QtGui import (
@@ -87,6 +87,8 @@ class vrmWidget(QTableView):
         self.vrmModel.setFilter(filterString)
         #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
         self.vrmModel.setSort(int(self.vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PositionID"), Qt.Horizontal, 'Position')
+
         self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex("VehicleTypeID")))
         if not rel.isValid():
@@ -94,6 +96,14 @@ class vrmWidget(QTableView):
             TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
         self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("VehicleTypeID"), Qt.Horizontal, 'VehicleType')
+
+        self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("PermitTypeID")), QSqlRelation('PermitTypes', 'Code', 'Description'))
+        rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex("PermitTypeID")))
+        if not rel.isValid():
+            print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PermitTypeID"), Qt.Horizontal, 'PermitType')
 
         result = self.vrmModel.select()
         if result == False:
@@ -112,6 +122,8 @@ class vrmWidget(QTableView):
         self.setColumnHidden(self.vrmModel.fieldIndex('GeometryID'), True)
         self.verticalHeader().hide()
         self.setItemDelegate(QSqlRelationalDelegate(self.vrmModel))
+        self.setItemDelegateForColumn(self.vrmModel.fieldIndex("PositionID"), readOnlyDelegate(self));
+        self.setItemDelegateForColumn(self.vrmModel.fieldIndex("VRM"), vrmDelegate(self));
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.resizeColumnsToContents()
 
@@ -168,3 +180,16 @@ class vrmWidget(QTableView):
 
         self.vrmModel.submitAll()
         self.vrmModel.select()
+
+# https://stackoverflow.com/questions/24024815/set-a-whole-column-in-qtablewidget-read-only-in-python
+class readOnlyDelegate(QItemDelegate):
+
+    def createEditor(self, *args):
+        return None
+
+class vrmDelegate(QStyledItemDelegate):
+    def createEditor(self, parent, option, index):
+        editor = super().createEditor(parent, option, index)
+        if isinstance(editor, QLineEdit):
+            editor.setInputMask('>nnnn-nnnn')
+        return editor
