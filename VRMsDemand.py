@@ -125,8 +125,8 @@ class VRMsDemand:
         self.demandVRMsToolbar = self.iface.addToolBar("VRMsDemand Toolbar")
         self.demandVRMsToolbar.setObjectName("demandVRMsToolbar Toolbar")
 
-        self.actionVRMToolbar = QAction(QIcon(":/plugins/featureswithgps/resources/GPS.png"),
-                                        QCoreApplication.translate("MyPlugin", "Start Demand Tools"), self.iface.mainWindow())
+        self.actionVRMToolbar = QAction(QIcon(""),
+                                        QCoreApplication.translate("MyPlugin", "Start Demand"), self.iface.mainWindow())
         self.actionVRMToolbar.setCheckable(True)
 
         self.demandVRMsToolbar.addAction(self.actionVRMToolbar)
