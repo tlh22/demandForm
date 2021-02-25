@@ -19,6 +19,7 @@ CREATE TABLE demand."RestrictionsInSurveys"
     "Photos_01" character varying (255) COLLATE pg_catalog."default",
     "Photos_02" character varying (255) COLLATE pg_catalog."default",
     "Photos_03" character varying (255) COLLATE pg_catalog."default",
+    geom geometry(LineString,27700) NOT NULL,
 	CONSTRAINT "RestrictionsInSurveys_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
 )
 
@@ -27,6 +28,6 @@ TABLESPACE pg_default;
 ALTER TABLE demand."RestrictionsInSurveys"
     OWNER to postgres;
 
-INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID")
-SELECT "SurveyID", gid::text AS "GeometryID"
-FROM mhtc_operations."RC_Sections_merged", demand."Surveys";
+INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
+SELECT "SurveyID", gid::text AS "GeometryID", r.geom As geom
+FROM mhtc_operations."RC_Sections_merged" r, demand."Surveys";

@@ -70,19 +70,19 @@ from .demand_form import VRM_DemandForm
 class vrmWidget(QTableView):
     def __init__(self, parent=None):
         super(vrmWidget, self).__init__(parent)
-        TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Info)
         self.vrmModel = QSqlRelationalTableModel(self)
 
     def populateVrmWidget(self, surveyID, GeometryID):
 
-        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
         self.vrmModel.setTable("VRMs")
         self.vrmModel.setJoinMode(QSqlRelationalTableModel.LeftJoin)
         self.vrmModel.setEditStrategy(QSqlTableModel.OnFieldChange)
 
         filterString = "SurveyID = {} AND SectionID = {}".format(surveyID, GeometryID)
-        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... filterString: {}".format(filterString), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... filterString: {}".format(filterString), level=Qgis.Info)
 
         self.vrmModel.setFilter(filterString)
         #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
@@ -112,7 +112,7 @@ class vrmWidget(QTableView):
 
         TOMsMessageLog.logMessage(
             "In populateVrmWidget: nr Rows: {} ".format(self.vrmModel.rowCount()),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         self.setModel(self.vrmModel)
         self.setColumnHidden(self.vrmModel.fieldIndex('fid'), True)
@@ -120,6 +120,7 @@ class vrmWidget(QTableView):
         self.setColumnHidden(self.vrmModel.fieldIndex('SurveyID'), True)
         self.setColumnHidden(self.vrmModel.fieldIndex('SectionID'), True)
         self.setColumnHidden(self.vrmModel.fieldIndex('GeometryID'), True)
+        self.setColumnHidden(self.vrmModel.fieldIndex('RestrictionTypeID'), True)
         self.verticalHeader().hide()
         self.setItemDelegate(QSqlRelationalDelegate(self.vrmModel))
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("PositionID"), readOnlyDelegate(self));
@@ -128,14 +129,14 @@ class vrmWidget(QTableView):
         self.resizeColumnsToContents()
 
     def insertVrm(self, surveyID, GeometryID):
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
         row = self.vrmModel.rowCount()
         index = self.currentIndex()   # 0-based
         if not index.isValid():
             return
 
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... row: {}; index:{}".format(row, index.row()), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... row: {}; index:{}".format(row, index.row()), level=Qgis.Info)
 
         # add new record at position
         record = self.vrmModel.record()
@@ -146,11 +147,11 @@ class vrmWidget(QTableView):
         record.setValue('PositionID', index.row()+2)
 
         TOMsMessageLog.logMessage("Record - surveyID: {}".format(record.value(record.indexOf("SurveyID"))),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
 
         res = self.vrmModel.insertRecord(index.row()+1, record)
         TOMsMessageLog.logMessage("Record - insert: {}".format(res),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
         if not res:
             TOMsMessageLog.logMessage("In insertVrm: issue with insert ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
@@ -158,14 +159,14 @@ class vrmWidget(QTableView):
         # re-order positions
         for i in range (index.row()+2, self.vrmModel.rowCount()+2):
             TOMsMessageLog.logMessage("In insertVrm: changing positions ... {} ".format(i),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
             self.vrmModel.setData(QModelIndex(self.vrmModel.index(i, self.vrmModel.fieldIndex('PositionID'))), i+1)
 
         self.vrmModel.select()
 
 
     def deleteVrm(self):
-        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Info)
 
         index = self.currentIndex()
         if not index.isValid():
@@ -175,7 +176,7 @@ class vrmWidget(QTableView):
         # re-order positions
         for i in range (index.row()+1, self.vrmModel.rowCount()+2):
             TOMsMessageLog.logMessage("In insertVrm: changing positions ... {} ".format(i),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
             self.vrmModel.setData(QModelIndex(self.vrmModel.index(i, self.vrmModel.fieldIndex('PositionID'))), i)
 
         self.vrmModel.submitAll()

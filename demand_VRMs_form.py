@@ -120,7 +120,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
     def enableVRMToolbarItems(self):
 
-        TOMsMessageLog.logMessage("In enableVRMToolbarItems", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In enableVRMToolbarItems", level=Qgis.Info)
         self.closeTOMs = False
 
         self.tableNames = TOMsLayers(self.iface)
@@ -170,7 +170,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         self.createMapToolDict = {}
 
     def enableToolbarItems(self):
-        TOMsMessageLog.logMessage("In enableToolbarItems", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In enableToolbarItems", level=Qgis.Info)
 
         self.actionRestrictionDetails.setEnabled(True)
 
@@ -189,7 +189,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
     def disableVRMToolbarItems(self):
 
-        TOMsMessageLog.logMessage("In disableVRMToolbarItems", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In disableVRMToolbarItems", level=Qgis.Info)
 
         self.disableToolbarItems()
 
@@ -290,7 +290,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         if self.actionRestrictionDetails.isChecked():
 
-            TOMsMessageLog.logMessage("In doRestrictionDetails - tool activated", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In doRestrictionDetails - tool activated", level=Qgis.Info)
 
             self.showRestrictionMapTool = demandVRMInfoMapTool(self.iface, self.surveyID, self.enumerator)
             self.iface.mapCanvas().setMapTool(self.showRestrictionMapTool)
@@ -298,7 +298,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         else:
 
-            TOMsMessageLog.logMessage("In doRestrictionDetails - tool deactivated", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In doRestrictionDetails - tool deactivated", level=Qgis.Info)
 
             if self.showRestrictionMapTool:
                 self.iface.mapCanvas().unsetMapTool(self.showRestrictionMapTool)
@@ -347,7 +347,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         if enumeratorDialog.exec_() == QDialog.Accepted:
             self.enumerator = enumeratorDialog.textValue()
-            TOMsMessageLog.logMessage("In checkEnumeratorName: {}".format(self.enumerator), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In checkEnumeratorName: {}".format(self.enumerator), level=Qgis.Info)
             QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'Enumerator', self.enumerator)
 
     def getCurrSurvey(self):
@@ -368,12 +368,12 @@ class demandVRMsForm(VRMsUtilsMixin):
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         while query.next():
-            TOMsMessageLog.logMessage("In getCurrSurvey: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In getCurrSurvey: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Info)
             surveyList.append(query.value(BeatTitle))
             if int(currSurveyID) == int(query.value(SurveyID)):
                 currSurveyName = query.value(BeatTitle)
 
-        TOMsMessageLog.logMessage("In getCurrSurvey: surveyList: {}".format(surveyList), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In getCurrSurvey: surveyList: {}".format(surveyList), level=Qgis.Info)
         surveyDialog = QInputDialog()
         surveyDialog.setLabelText("Please confirm the current survey")
         surveyDialog.setComboBoxItems(surveyList)
@@ -381,7 +381,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         if surveyDialog.exec_() == QDialog.Accepted:
             newSurveyName = surveyDialog.textValue()
-            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Info)
 
             if currSurveyName != newSurveyName:
                 for i in range (0, len(surveyList)):
@@ -404,7 +404,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         currSurveyID = int(currSurveyID)
 
         queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID)
-        TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 1: {}".format(queryString), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 1: {}".format(queryString), level=Qgis.Info)
         query = QSqlQuery(queryString)
         #query.exec()
         query.next()
@@ -414,7 +414,7 @@ class demandVRMsForm(VRMsUtilsMixin):
             # no details added to curren survey - check previous survey
             queryString = "SELECT s1.SurveyDay, s2.SurveyDay FROM Surveys s1, Surveys s2 WHERE s1.SurveyID = {} AND s2.SurveyID = {}".format(currSurveyID, currSurveyID-1)
             TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 2: {}".format(queryString),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
             query = QSqlQuery(queryString)
             #query.exec()
             query.next()
@@ -422,12 +422,12 @@ class demandVRMsForm(VRMsUtilsMixin):
                 # same day - check for VRMs
                 queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID - 1)
                 TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 3: {}".format(queryString),
-                                          level=Qgis.Warning)
+                                          level=Qgis.Info)
                 query = QSqlQuery(queryString)
                 query.next()
                 nrVrmsInPrevSurvey = query.value(0)
                 TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInPrevSurvey: {}".format(nrVrmsInPrevSurvey),
-                                          level=Qgis.Warning)
+                                          level=Qgis.Info)
                 if nrVrmsInPrevSurvey > 0:
 
                     reply = QMessageBox.question(None, 'Add details from previous survey',
@@ -439,6 +439,6 @@ class demandVRMsForm(VRMsUtilsMixin):
                         queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes) " \
                                       "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, currSurveyID-1)
                         TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
-                                                  level=Qgis.Warning)
+                                                  level=Qgis.Info)
                         query = QSqlQuery(queryString)
 

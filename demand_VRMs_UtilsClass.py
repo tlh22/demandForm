@@ -113,7 +113,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         #self.TOMsUtils = RestrictionTypeUtilsMixin(self.iface)
 
     def setDefaultFieldRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
-        TOMsMessageLog.logMessage("In VRM:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In VRM:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Info)
 
         # TODO: Need to check whether or not these fields exist. Also need to retain the last values and reuse
         # gis.stackexchange.com/questions/138563/replacing-action-triggered-script-by-one-supplied-through-qgis-plugin
@@ -127,7 +127,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def setupFieldRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
         TOMsMessageLog.logMessage("In VRM:setupVRMDialog: {}".format(currRestrictionLayer.name()),
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         self.params.getParams()
 
@@ -143,7 +143,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                                             QMessageBox.Ok)
             TOMsMessageLog.logMessage(
                 "In setupRestrictionDialog. dialog not found",
-                level=Qgis.Warning)
+                level=Qgis.Info)
             return
 
         restrictionDialog.attributeForm().disconnectButtonBox()
@@ -168,7 +168,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
 
-        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Info)
 
         self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
 
@@ -184,7 +184,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         queryString = "SELECT RoadName, SectionLength FROM Supply WHERE gid = {}".format(currRestriction.attribute("GeometryID"))
         TOMsMessageLog.logMessage(
             "In mapOtherFields: queryString: {}".format(queryString),
-            level=Qgis.Warning)
+            level=Qgis.Info)
         query = QSqlQuery(queryString)
         query.exec()
 
@@ -193,7 +193,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         query.next()
         TOMsMessageLog.logMessage(
                 "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
-                level=Qgis.Warning)
+                level=Qgis.Info)
 
         RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
         RoadNameWidget.setText(query.value(RoadName))
@@ -264,7 +264,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
         vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
         vrmsLayout = vrmsTab.layout()
         vrmForm = vrmWidget(vrmsTab)
@@ -299,7 +299,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         while query.next():
-            TOMsMessageLog.logMessage("In surveysWidget: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In getCurrSurveyName: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Info)
             surveyList.append(query.value(BeatTitle))
             if int(currSurveyID) == int(query.value(SurveyID)):
                 currSurveyName = query.value(BeatTitle)

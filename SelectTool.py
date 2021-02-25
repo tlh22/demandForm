@@ -85,13 +85,13 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         self.surveyID = surveyID
         self.enumerator = enumerator
-        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Info)
 
     def showRestrictionDetails(self, closestLayer, closestFeature):
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: " + str(closestLayer.name()),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         GeometryID = closestFeature[closestLayer.fields().indexFromName("gid")]
 
@@ -105,7 +105,7 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
             TOMsMessageLog.logMessage(
                 "In demandVRMInfoMapTool.showRestrictionDetails ... restriction found: ",
-                level=Qgis.Warning)
+                level=Qgis.Info)
             break  # take the first one (assuming only one!)
 
         # TODO: could improve ... basically check to see if transaction in progress ...
