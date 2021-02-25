@@ -65,7 +65,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Survey:</string>
+         <string>Time Period:</string>
         </property>
        </widget>
       </item>
