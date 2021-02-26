@@ -127,16 +127,21 @@ class vrmWidget(QTableView):
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("VRM"), vrmDelegate(self));
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.resizeColumnsToContents()
+        self.setColumnWidth(self.vrmModel.fieldIndex("VRM"), 80)
+
 
     def insertVrm(self, surveyID, GeometryID):
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Warning)
 
-        row = self.vrmModel.rowCount()
+        rowCount = self.vrmModel.rowCount()
         index = self.currentIndex()   # 0-based
-        if not index.isValid():
-            return
 
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... row: {}; index:{}".format(row, index.row()), level=Qgis.Info)
+        if not index.isValid():  # typically this is for no rows being present ...
+            currRow = 0
+        else:
+            currRow = index.row()
+
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... row: {}; index:{}".format(rowCount, currRow), level=Qgis.Warning)
 
         # add new record at position
         record = self.vrmModel.record()
@@ -144,20 +149,26 @@ class vrmWidget(QTableView):
         record.setValue('SurveyID', surveyID)
         record.setValue('SectionID', GeometryID)
         record.setValue('GeometryID', GeometryID)
-        record.setValue('PositionID', index.row()+2)
+
 
         TOMsMessageLog.logMessage("Record - surveyID: {}".format(record.value(record.indexOf("SurveyID"))),
                                       level=Qgis.Info)
 
-        res = self.vrmModel.insertRecord(index.row()+1, record)
+        if currRow == 0 and rowCount == 0:
+            record.setValue('PositionID', currRow + 1)
+            res = self.vrmModel.insertRecord(currRow, record)
+        else:
+            record.setValue('PositionID', currRow + 2)
+            res = self.vrmModel.insertRecord(currRow+1, record)
+
         TOMsMessageLog.logMessage("Record - insert: {}".format(res),
-                                      level=Qgis.Info)
+                                      level=Qgis.Warning)
         if not res:
             TOMsMessageLog.logMessage("In insertVrm: issue with insert ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
 
         # re-order positions
-        for i in range (index.row()+2, self.vrmModel.rowCount()+2):
+        for i in range (currRow+2, self.vrmModel.rowCount()+2):
             TOMsMessageLog.logMessage("In insertVrm: changing positions ... {} ".format(i),
                                       level=Qgis.Info)
             self.vrmModel.setData(QModelIndex(self.vrmModel.index(i, self.vrmModel.fieldIndex('PositionID'))), i+1)
@@ -166,17 +177,21 @@ class vrmWidget(QTableView):
 
 
     def deleteVrm(self):
-        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Warning)
 
         index = self.currentIndex()
-        if not index.isValid():
-            return
-        self.vrmModel.removeRow(index.row())
+
+        if not index.isValid():  # typically this is for no rows being present ...
+            currRow = 0
+        else:
+            currRow = index.row()
+
+        self.vrmModel.removeRow(currRow)
 
         # re-order positions
-        for i in range (index.row()+1, self.vrmModel.rowCount()+2):
+        for i in range (currRow+1, self.vrmModel.rowCount()+2):
             TOMsMessageLog.logMessage("In insertVrm: changing positions ... {} ".format(i),
-                                      level=Qgis.Info)
+                                      level=Qgis.Warning)
             self.vrmModel.setData(QModelIndex(self.vrmModel.index(i, self.vrmModel.fieldIndex('PositionID'))), i)
 
         self.vrmModel.submitAll()
