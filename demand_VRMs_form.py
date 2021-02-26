@@ -409,8 +409,10 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID)
         TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 1: {}".format(queryString), level=Qgis.Info)
-        query = QSqlQuery(queryString)
-        #query.exec()
+        query = QSqlQuery()
+        if not query.exec(queryString):
+            TOMsMessageLog.logMessage("In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
+                                      level=Qgis.Warning)
         query.next()
         nrVrmsInCurrSurvey = query.value(0)
         TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInCurrSurvey: {}".format(nrVrmsInCurrSurvey), level=Qgis.Info)
@@ -420,8 +422,11 @@ class demandVRMsForm(VRMsUtilsMixin):
             queryString = "SELECT s1.SurveyDay, s2.SurveyDay FROM Surveys s1, Surveys s2 WHERE s1.SurveyID = {} AND s2.SurveyID = {}".format(currSurveyID, currSurveyID-1)
             TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 2: {}".format(queryString),
                                       level=Qgis.Info)
-            query = QSqlQuery(queryString)
-            #query.exec()
+            query = QSqlQuery()
+            if not query.exec(queryString):
+                TOMsMessageLog.logMessage(
+                    "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
+                    level=Qgis.Warning)
             query.next()
             TOMsMessageLog.logMessage("In checkPreviousSurvey: survey1Day: {}, suvey2day: {}".format(query.value(0), query.value(1)), level=Qgis.Info)
 
@@ -443,9 +448,13 @@ class demandVRMsForm(VRMsUtilsMixin):
                                                  QMessageBox.Yes, QMessageBox.No)
                     if reply == QMessageBox.Yes:
 
-                        queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes) " \
-                                      "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitType, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, currSurveyID-1)
+                        queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes) " \
+                                      "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, currSurveyID-1)
                         TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
                                                   level=Qgis.Info)
-                        query = QSqlQuery(queryString)
+                        query = QSqlQuery()
+                        if not query.exec(queryString):
+                            TOMsMessageLog.logMessage(
+                                "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
+                                level=Qgis.Warning)
 
