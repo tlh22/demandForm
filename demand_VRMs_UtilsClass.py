@@ -288,7 +288,8 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def getCurrSurveyName(self, currSurveyID):
         # display list
-
+        TOMsMessageLog.logMessage(
+            "In getCurrSurveyName: currSurveyID: {}".format(currSurveyID), level=Qgis.Info)
         currSurveyName = ''
 
         surveyList = list()

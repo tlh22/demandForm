@@ -162,7 +162,10 @@ class demandVRMsForm(VRMsUtilsMixin):
         if so, copy details from previous survey to current survey
         """
         self.checkEnumeratorName()  # sets self.enumerator
-        self.surveyID = self.getCurrSurvey()
+        self.surveyID = self.confirmSurveyNr()
+
+        TOMsMessageLog.logMessage("In enableVRMToolbarItems. surveyID: {}".format(self.surveyID), level=Qgis.Info)
+
         self.checkPreviousSurvey(self.surveyID)
 
         self.enableToolbarItems()
@@ -294,7 +297,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
             self.showRestrictionMapTool = demandVRMInfoMapTool(self.iface, self.surveyID, self.enumerator)
             self.iface.mapCanvas().setMapTool(self.showRestrictionMapTool)
-            self.showRestrictionMapTool.notifyFeatureFound.connect(self.showRestrictionDetails)
+            #self.showRestrictionMapTool.notifyFeatureFound.connect(self.showRestrictionDetails)
 
         else:
 
@@ -350,7 +353,7 @@ class demandVRMsForm(VRMsUtilsMixin):
             TOMsMessageLog.logMessage("In checkEnumeratorName: {}".format(self.enumerator), level=Qgis.Info)
             QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'Enumerator', self.enumerator)
 
-    def getCurrSurvey(self):
+    def confirmSurveyNr(self):
         # display list
 
         currSurveyID = str(self.params.setParam("CurrentSurvey"))
@@ -381,7 +384,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         if surveyDialog.exec_() == QDialog.Accepted:
             newSurveyName = surveyDialog.textValue()
-            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Warning)
 
             if currSurveyName != newSurveyName:
                 for i in range (0, len(surveyList)):
@@ -401,6 +404,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
     def checkPreviousSurvey(self, currSurveyID):
 
+        TOMsMessageLog.logMessage("In checkPreviousSurvey: currSurveyID: {}".format(currSurveyID), level=Qgis.Info)
         currSurveyID = int(currSurveyID)
 
         queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID)
@@ -409,15 +413,18 @@ class demandVRMsForm(VRMsUtilsMixin):
         #query.exec()
         query.next()
         nrVrmsInCurrSurvey = query.value(0)
+        TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInCurrSurvey: {}".format(nrVrmsInCurrSurvey), level=Qgis.Info)
 
         if nrVrmsInCurrSurvey == 0:
-            # no details added to curren survey - check previous survey
+            # no details added to current survey - check previous survey
             queryString = "SELECT s1.SurveyDay, s2.SurveyDay FROM Surveys s1, Surveys s2 WHERE s1.SurveyID = {} AND s2.SurveyID = {}".format(currSurveyID, currSurveyID-1)
             TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 2: {}".format(queryString),
                                       level=Qgis.Info)
             query = QSqlQuery(queryString)
             #query.exec()
             query.next()
+            TOMsMessageLog.logMessage("In checkPreviousSurvey: survey1Day: {}, suvey2day: {}".format(query.value(0), query.value(1)), level=Qgis.Info)
+
             if query.value(0) == query.value(1):
                 # same day - check for VRMs
                 queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID - 1)

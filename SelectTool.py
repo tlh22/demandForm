@@ -85,12 +85,21 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         self.surveyID = surveyID
         self.enumerator = enumerator
+        self.params = vrmParams()
         TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Info)
 
     def showRestrictionDetails(self, closestLayer, closestFeature):
 
+        self.params.getParams()
+        self.surveyID = str(self.params.setParam("CurrentSurvey"))
+        self.enumerator = str(self.params.setParam("Enumerator"))
+
         TOMsMessageLog.logMessage(
-            "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: " + str(closestLayer.name()),
+            "In demandVRMInfoMapTool.showRestrictionDetails ... surveyID: {}, enumerator: {}".format(self.surveyID, self.enumerator),
+            level=Qgis.Info)
+
+        TOMsMessageLog.logMessage(
+            "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: {}".format(closestLayer.name()),
             level=Qgis.Info)
 
         GeometryID = closestFeature[closestLayer.fields().indexFromName("gid")]

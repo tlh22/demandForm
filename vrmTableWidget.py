@@ -87,7 +87,7 @@ class vrmWidget(QTableView):
         self.vrmModel.setFilter(filterString)
         #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
         self.vrmModel.setSort(int(self.vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
-        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PositionID"), Qt.Horizontal, 'Position')
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PositionID"), Qt.Horizontal, 'Pos')
 
         self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('VehicleTypes', 'Code', 'Description'))
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex("VehicleTypeID")))
@@ -127,7 +127,7 @@ class vrmWidget(QTableView):
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("VRM"), vrmDelegate(self));
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.resizeColumnsToContents()
-        self.setColumnWidth(self.vrmModel.fieldIndex("VRM"), 80)
+        self.setColumnWidth(self.vrmModel.fieldIndex("VRM"), 120)
 
 
     def insertVrm(self, surveyID, GeometryID):
