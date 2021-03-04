@@ -86,7 +86,7 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         self.surveyID = surveyID
         self.enumerator = enumerator
         self.params = vrmParams()
-        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Warning)
 
     def showRestrictionDetails(self, closestLayer, closestFeature):
 
@@ -96,19 +96,23 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... surveyID: {}, enumerator: {}".format(self.surveyID, self.enumerator),
-            level=Qgis.Info)
+            level=Qgis.Warning)
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: {}".format(closestLayer.name()),
-            level=Qgis.Info)
+            level=Qgis.Warning)
 
-        GeometryID = closestFeature[closestLayer.fields().indexFromName("gid")]
+        GeometryID = closestFeature[closestLayer.fields().indexFromName("GeometryID")]
 
         # Now want to swap to use "RestrictionsInSurveys"
         # get relevant feature ...
         restrictionsInSurveysLayer = QgsProject.instance().mapLayersByName("RestrictionsInSurveys")[0]
 
-        filterString = '"SurveyID" = {} AND "GeometryID" = {}'.format(self.surveyID, GeometryID)
+        filterString = '"SurveyID" = {} AND "GeometryID" = \'{}\''.format(self.surveyID, GeometryID)
+
+        TOMsMessageLog.logMessage(
+            "In demandVRMInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
+            level=Qgis.Warning)
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):

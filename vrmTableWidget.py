@@ -81,7 +81,7 @@ class vrmWidget(QTableView):
         self.vrmModel.setJoinMode(QSqlRelationalTableModel.LeftJoin)
         self.vrmModel.setEditStrategy(QSqlTableModel.OnFieldChange)
 
-        filterString = "SurveyID = {} AND SectionID = {}".format(surveyID, GeometryID)
+        filterString = "SurveyID = {} AND GeometryID = \'{}\'".format(surveyID, GeometryID)
         TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... filterString: {}".format(filterString), level=Qgis.Info)
 
         self.vrmModel.setFilter(filterString)

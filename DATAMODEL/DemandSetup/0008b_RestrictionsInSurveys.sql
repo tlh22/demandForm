@@ -31,3 +31,39 @@ ALTER TABLE demand."RestrictionsInSurveys"
 INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", gid::text AS "GeometryID", r.geom As geom
 FROM mhtc_operations."RC_Sections_merged" r, demand."Surveys";
+
+
+---
+DROP TABLE IF EXISTS demand."RestrictionsInSurveys_FPC" CASCADE;
+
+CREATE TABLE demand."RestrictionsInSurveys_FPC"
+(
+    "SurveyID" integer,
+    "GeometryID" character varying(12) COLLATE pg_catalog."default",
+    "DemandSurveyDateTime" timestamp without time zone,
+    "Enumerator" character varying (100) COLLATE pg_catalog."default",
+    "Done" boolean,
+    "SuspensionReference" character varying (100) COLLATE pg_catalog."default",
+    "SuspensionReason" character varying (255) COLLATE pg_catalog."default",
+    "SuspensionLength" double precision,
+    "NrBaysSuspended" integer,
+    "SuspensionNotes" character varying (255) COLLATE pg_catalog."default",
+    "Photos_01" character varying (255) COLLATE pg_catalog."default",
+    "Photos_02" character varying (255) COLLATE pg_catalog."default",
+    "Photos_03" character varying (255) COLLATE pg_catalog."default",
+    geom geometry(LineString,27700) NOT NULL,
+	CONSTRAINT "RestrictionsInSurveys_FPC_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE demand."RestrictionsInSurveys_FPC"
+    OWNER to postgres;
+
+INSERT INTO demand."RestrictionsInSurveys_FPC" ("SurveyID", "GeometryID", geom)
+SELECT "SurveyID", s."GeometryID", s.geom As geom
+FROM mhtc_operations."Supply" s, demand."Surveys" su
+WHERE s."CPZ" = 'FPC';
+
+
+

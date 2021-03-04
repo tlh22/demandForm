@@ -378,7 +378,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         TOMsMessageLog.logMessage("In getCurrSurvey: surveyList: {}".format(surveyList), level=Qgis.Info)
         surveyDialog = QInputDialog()
-        surveyDialog.setLabelText("Please confirm the current survey")
+        surveyDialog.setLabelText("Please confirm the time period to be surveyed ")
         surveyDialog.setComboBoxItems(surveyList)
         surveyDialog.setTextValue(currSurveyName)
 
@@ -397,7 +397,7 @@ class demandVRMsForm(VRMsUtilsMixin):
                         #self.checkPreviousSurveys()
                         break
 
-            reply = QMessageBox.information(None, "Information", "Setting survey to {}".format(newSurveyName),
+            reply = QMessageBox.information(None, "Information", "Setting time period to {}".format(newSurveyName),
                                                 QMessageBox.Ok)
 
         return newSurveyID

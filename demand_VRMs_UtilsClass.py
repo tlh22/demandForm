@@ -181,10 +181,10 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
         SurveyBeatTitleWidget.setText(currSurveyName)
 
-        queryString = "SELECT RoadName, SectionLength FROM Supply WHERE gid = {}".format(currRestriction.attribute("GeometryID"))
+        queryString = "SELECT RoadName, RestrictionLength FROM Supply WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
         TOMsMessageLog.logMessage(
             "In mapOtherFields: queryString: {}".format(queryString),
-            level=Qgis.Info)
+            level=Qgis.Warning)
         query = QSqlQuery(queryString)
         query.exec()
 
@@ -193,7 +193,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         query.next()
         TOMsMessageLog.logMessage(
                 "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
-                level=Qgis.Info)
+                level=Qgis.Warning)
 
         RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
         RoadNameWidget.setText(query.value(RoadName))
