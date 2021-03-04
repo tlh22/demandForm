@@ -1,6 +1,6 @@
 
-DROP TABLE IF EXISTS demand."VRMs_Sunday_Zone_J" CASCADE;
-CREATE TABLE demand."VRMs_Sunday_Zone_J"
+DROP TABLE IF EXISTS demand."VRMs" CASCADE;
+CREATE TABLE demand."VRMs"
 (
   "ID" SERIAL,
   "SurveyID" integer,
@@ -12,12 +12,12 @@ CREATE TABLE demand."VRMs_Sunday_Zone_J"
   "RestrictionTypeID" integer,
   "PermitType" integer,
   "Notes" character varying(255),
-  CONSTRAINT "VRMs_Sunday_Zone_J_pkey" PRIMARY KEY ("ID")
+  CONSTRAINT "VRMs_pkey" PRIMARY KEY ("ID")
 )
 WITH (
   OIDS=FALSE
 );
-ALTER TABLE demand."VRMs_Sunday_Zone_J"
+ALTER TABLE demand."VRMs"
   OWNER TO postgres;
 
 

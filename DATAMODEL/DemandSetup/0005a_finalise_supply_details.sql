@@ -15,6 +15,13 @@ SET "RoadName" = s."RoadName",
 "EndStreet" = s."EndStreet",
 "SideOfStreet" = s."SideOfStreet"
 FROM mhtc_operations."RC_Sections_merged" s
-WHERE su."SectionID" = s.gid
+WHERE su."SectionID" = s.gid;
+
+
+-- CPZs
+UPDATE mhtc_operations."Supply" su
+SET "CPZ" = c."CPZ"
+FROM mhtc_operations."CPZs_ToBeSurveyed" c
+WHERE ST_Intersects(su.geom, c.geom);
 
 
