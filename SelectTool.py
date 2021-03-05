@@ -88,6 +88,8 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         self.params = vrmParams()
         TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Warning)
 
+        self.RESTRICTION_TYPES = QgsProject.instance().mapLayersByName("SupplyRestrictionTypesInUse_View")[0]
+
     def showRestrictionDetails(self, closestLayer, closestFeature):
 
         self.params.getParams()
@@ -96,11 +98,11 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... surveyID: {}, enumerator: {}".format(self.surveyID, self.enumerator),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: {}".format(closestLayer.name()),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         GeometryID = closestFeature[closestLayer.fields().indexFromName("GeometryID")]
 
@@ -112,7 +114,7 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
@@ -132,8 +134,70 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         status = restrictionsInSurveysLayer.startEditing()
 
-        dialog = self.iface.getFeatureForm(restrictionsInSurveysLayer, currRestriction)
+        try:
+            dialog = self.iface.getFeatureForm(restrictionsInSurveysLayer, currRestriction)
+        except Exception as e:
+            reply = QMessageBox.information(None, "Information",
+                                            "Unexcepted error for this restriction {}.".format(GeometryID),
+                                            QMessageBox.Ok)
+            return
 
         self.setupFieldRestrictionDialog(dialog, restrictionsInSurveysLayer, currRestriction)
 
         dialog.show()
+
+    def getFeatureDetails(self, featureList, layerList):
+        TOMsMessageLog.logMessage("In demandVRMInfoMapTool.getFeatureDetails", level=Qgis.Info)
+
+        self.featureList = featureList
+        self.layerList = layerList
+
+        # Creates the context menu and returns the selected feature and layer
+        TOMsMessageLog.logMessage("In demandVRMInfoMapTool.getFeatureDetails: nrFeatures: " + str(len(featureList)), level=Qgis.Info)
+
+        self.actions = []
+        self.menu = QMenu(self.iface.mapCanvas())
+
+        for feature in featureList:
+
+            try:
+                GeometryID = feature.attribute('GeometryID')
+                RestrictionDescription = self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))
+
+                title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
+                                                                         GeometryID=GeometryID)
+
+                TOMsMessageLog.logMessage("In demandVRMInfoMapTool.featureContextMenu: adding: " + str(title), level=Qgis.Info)
+
+            except Exception as e:
+                reply = QMessageBox.information(None, "Information", "Problem selecting features ...{}".format(e), QMessageBox.Ok)
+                return
+
+            action = QAction(title, self.menu)
+            self.actions.append(action)
+
+            self.menu.addAction(action)
+
+        TOMsMessageLog.logMessage("In getFeatureDetails: showing menu?", level=Qgis.Info)
+
+        clicked_action = self.menu.exec_(self.iface.mapCanvas().mapToGlobal(self.event.pos()))
+        TOMsMessageLog.logMessage(("In getFeatureDetails:clicked_action: " + str(clicked_action)), level=Qgis.Info)
+
+        if clicked_action is not None:
+
+            TOMsMessageLog.logMessage(("In getFeatureDetails:clicked_action: " + str(clicked_action.text())),
+                                     level=Qgis.Info)
+            idxList = self.getIdxFromGeometryID(clicked_action.text(), featureList)
+
+            TOMsMessageLog.logMessage("In getFeatureDetails: idx = " + str(idxList), level=Qgis.Info)
+
+            if idxList >= 0:
+                # TODO: need to be careful here so that we use primary key
+                """TOMsMessageLog.logMessage("In getFeatureDetails: feat = " + str(featureList[idxList].attribute('id')),
+                                         level=Qgis.Info)"""
+                return featureList[idxList], layerList[idxList]
+
+        TOMsMessageLog.logMessage(("In getFeatureDetails. No action found."), level=Qgis.Info)
+
+        return None, None
+

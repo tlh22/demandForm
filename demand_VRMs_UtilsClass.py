@@ -97,7 +97,6 @@ class vrmParams(TOMsParams):
 
         self.TOMsParamsList.extend([
                           "CameraNr",
-                          #"DemandGpkg",
                           "Enumerator",
                           "CurrentSurvey"
                                ])
@@ -108,7 +107,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         self.iface = iface
         self.settings = QgsSettings()
 
-        #self.params = gpsParams()
+        self.params = vrmParams()
 
         #self.TOMsUtils = RestrictionTypeUtilsMixin(self.iface)
 
@@ -181,14 +180,14 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
         SurveyBeatTitleWidget.setText(currSurveyName)
 
-        queryString = "SELECT RoadName, RestrictionLength FROM Supply WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
+        queryString = "SELECT RoadName, RestrictionLength, RestrictionTypeID FROM Supply WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
         TOMsMessageLog.logMessage(
             "In mapOtherFields: queryString: {}".format(queryString),
             level=Qgis.Warning)
         query = QSqlQuery(queryString)
         query.exec()
 
-        RoadName, SectionLength = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+        RoadName, SectionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         query.next()
         TOMsMessageLog.logMessage(
@@ -199,6 +198,17 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         RoadNameWidget.setText(query.value(RoadName))
         SectionLengthWidget = restrictionDialog.findChild(QWidget, "SectionLength")
         SectionLengthWidget.setText(str(query.value(SectionLength)))
+
+        # get restriction details
+
+        GeometryID = currRestriction.attribute('GeometryID')
+        RestrictionDescription = self.getLookupDescription(self.RESTRICTION_TYPES, query.value(RestrictionTypeID))
+
+        title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
+                                                             GeometryID=GeometryID)
+
+        RestrictionDetailsWidget = restrictionDialog.findChild(QWidget, "RestrictionDetails")
+        RestrictionDetailsWidget.setText(title)
 
 
     def onAttributeChangedClass2_local(self, currFeature, layer, fieldName, value):
