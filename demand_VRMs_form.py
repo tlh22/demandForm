@@ -364,6 +364,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         newSurveyName = ''
 
         surveyList = list()
+        surveyDictionary = {}
 
         query = QSqlQuery("SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC")
         query.exec()
@@ -373,10 +374,12 @@ class demandVRMsForm(VRMsUtilsMixin):
         while query.next():
             TOMsMessageLog.logMessage("In getCurrSurvey: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Info)
             surveyList.append(query.value(BeatTitle))
+            surveyDictionary[query.value(BeatTitle)] = query.value(SurveyID)
             if int(currSurveyID) == int(query.value(SurveyID)):
                 currSurveyName = query.value(BeatTitle)
 
         TOMsMessageLog.logMessage("In getCurrSurvey: surveyList: {}".format(surveyList), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In getCurrSurvey: surveyDictionary: {}".format(surveyDictionary), level=Qgis.Info)
         surveyDialog = QInputDialog()
         surveyDialog.setLabelText("Please confirm the time period to be surveyed ")
         surveyDialog.setComboBoxItems(surveyList)
@@ -384,18 +387,13 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         if surveyDialog.exec_() == QDialog.Accepted:
             newSurveyName = surveyDialog.textValue()
-            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In surveyName: {}".format(newSurveyName), level=Qgis.Info)
 
             if currSurveyName != newSurveyName:
-                for i in range (0, len(surveyList)):
-                    if surveyList[i] == newSurveyName:
-                        newSurveyID = i+1
-                        TOMsMessageLog.logMessage("In surveyName: setting surveyID to {} ...".format(newSurveyID), level=Qgis.Warning)
-                        QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentSurvey', newSurveyID)
-
-                        # check for any details from earlier survey
-                        #self.checkPreviousSurveys()
-                        break
+                newSurveyID = surveyDictionary[newSurveyName]
+                TOMsMessageLog.logMessage("In surveyName: setting surveyID to {} ...".format(newSurveyID),
+                                          level=Qgis.Warning)
+                QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'CurrentSurvey', newSurveyID)
 
             reply = QMessageBox.information(None, "Information", "Setting time period to {}".format(newSurveyName),
                                                 QMessageBox.Ok)
