@@ -180,7 +180,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
         SurveyBeatTitleWidget.setText(currSurveyName)
 
-        queryString = "SELECT RoadName, RestrictionLength, RestrictionTypeID FROM Supply WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
+        queryString = "SELECT COALESCE(RoadName, '[No Road Name]'), COALESCE(RestrictionLength, '[Not known]'), RestrictionTypeID FROM Supply WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
         TOMsMessageLog.logMessage(
             "In mapOtherFields: queryString: {}".format(queryString),
             level=Qgis.Warning)
