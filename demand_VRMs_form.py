@@ -24,7 +24,7 @@ from qgis.PyQt.QtCore import (
 
 from qgis.PyQt.QtGui import (
     QIcon,
-    QPixmap, QColor
+    QPixmap, QColor, QFont
 )
 
 from qgis.PyQt.QtWidgets import (
@@ -344,7 +344,12 @@ class demandVRMsForm(VRMsUtilsMixin):
         #if len(self.enumerator) == 0:
         #    self.enumerator = ''
 
+        font = QFont()
+        #font.setFamily("Arial")
+        font.setPointSize(11)
+
         enumeratorDialog = QInputDialog()
+        enumeratorDialog.setFont(font)
         enumeratorDialog.setLabelText("Please confirm your name")
         enumeratorDialog.setTextValue(self.enumerator)
 
@@ -362,6 +367,10 @@ class demandVRMsForm(VRMsUtilsMixin):
         newSurveyID = currSurveyID
         currSurveyName = ''
         newSurveyName = ''
+
+        font = QFont()
+        #font.setFamily("Arial")
+        font.setPointSize(11)
 
         surveyList = list()
         surveyDictionary = {}
@@ -382,6 +391,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         TOMsMessageLog.logMessage("In getCurrSurvey: surveyDictionary: {}".format(surveyDictionary), level=Qgis.Info)
         surveyDialog = QInputDialog()
         surveyDialog.setLabelText("Please confirm the time period to be surveyed ")
+        surveyDialog.setFont(font)
         surveyDialog.setComboBoxItems(surveyList)
         surveyDialog.setTextValue(currSurveyName)
 
