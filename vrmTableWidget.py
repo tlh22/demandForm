@@ -68,6 +68,11 @@ from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from .demand_form import VRM_DemandForm
 
 class vrmWidget(QTableView):
+
+    progressUpdated = pyqtSignal(int)
+    startOperation = pyqtSignal()
+    endOperation = pyqtSignal()
+
     def __init__(self, parent=None):
         super(vrmWidget, self).__init__(parent)
         TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Info)
@@ -131,7 +136,7 @@ class vrmWidget(QTableView):
 
 
     def insertVrm(self, surveyID, GeometryID):
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
         rowCount = self.vrmModel.rowCount()
         index = self.currentIndex()   # 0-based
@@ -141,7 +146,7 @@ class vrmWidget(QTableView):
         else:
             currRow = index.row()
 
-        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... row: {}; index:{}".format(rowCount, currRow), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:insertRow ... row: {}; index:{}".format(rowCount, currRow), level=Qgis.Info)
 
         # add new record at position
         record = self.vrmModel.record()
@@ -162,22 +167,30 @@ class vrmWidget(QTableView):
             res = self.vrmModel.insertRecord(currRow+1, record)
 
         TOMsMessageLog.logMessage("Record - insert: {}".format(res),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
         if not res:
             TOMsMessageLog.logMessage("In insertVrm: issue with insert ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
 
         # re-order positions
+        extent = (self.vrmModel.rowCount()+2) - (currRow+2)
+        self.startOperation.emit()
         for i in range (currRow+2, self.vrmModel.rowCount()+2):
             TOMsMessageLog.logMessage("In insertVrm: changing positions ... {} ".format(i),
                                       level=Qgis.Info)
             self.vrmModel.setData(QModelIndex(self.vrmModel.index(i, self.vrmModel.fieldIndex('PositionID'))), i+1)
+            percentComplete = int((i-currRow+2) / float(extent) * 100)
+            self.progressUpdated.emit(percentComplete)
+            #self.iface.statusBarIface().showMessage("Processed {} %".format(int(percentComplete)))
+
+        #self.iface.statusBarIface().clearMessage()
+        self.endOperation.emit()
 
         self.vrmModel.select()
 
 
     def deleteVrm(self):
-        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In vrmWidget:deleteRow ... ", level=Qgis.Info)
 
         index = self.currentIndex()
 
@@ -189,10 +202,18 @@ class vrmWidget(QTableView):
         self.vrmModel.removeRow(currRow)
 
         # re-order positions
+        extent = (self.vrmModel.rowCount() + 2) - (currRow + 1)
+        self.startOperation.emit()
         for i in range (currRow+1, self.vrmModel.rowCount()+2):
             TOMsMessageLog.logMessage("In insertVrm: changing positions ... {} ".format(i),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
             self.vrmModel.setData(QModelIndex(self.vrmModel.index(i, self.vrmModel.fieldIndex('PositionID'))), i)
+            percentComplete = (i-currRow+1) / float(extent) * 100
+            self.progressUpdated.emit(percentComplete)
+            #self.iface.statusBarIface().showMessage("Processed {} %".format(int(percentComplete)))
+
+        #self.iface.statusBarIface().clearMessage()
+        self.endOperation.emit()
 
         self.vrmModel.submitAll()
         self.vrmModel.select()
