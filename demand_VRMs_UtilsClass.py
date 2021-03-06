@@ -23,7 +23,8 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper
+    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper,
+    QProgressDialog, QProgressBar
 )
 
 from qgis.PyQt.QtGui import (
@@ -278,6 +279,9 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
         vrmsLayout = vrmsTab.layout()
         vrmForm = vrmWidget(vrmsTab)
+        vrmForm.startOperation.connect(self.startProgressDialog)
+        vrmForm.progressUpdated.connect(self.showProgress)
+        vrmForm.endOperation.connect(self.endProgressDialog)
 
         currGeometryID = currRestriction.attribute("GeometryID")
 
@@ -295,6 +299,24 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(vrmForm.deleteVrm)
+
+    @pyqtSlot()
+    def startProgressDialog(self):
+        TOMsMessageLog.logMessage("In utils::startProgressDialog ... ", level=Qgis.Warning)
+        self.progressDialog = QProgressDialog("Operation in progress.", "", 0, 100)
+        self.progressDialog.setWindowModality(Qt.WindowModal)
+        self.progressDialog.setWindowTitle("Resetting position ...")
+        self.progressDialog.show()
+
+    @pyqtSlot(int)
+    def showProgress(self, percentComplete):
+        TOMsMessageLog.logMessage("In utils::showProgress ... {}".format(percentComplete), level=Qgis.Info)
+        self.progressDialog.setValue(percentComplete)
+
+    @pyqtSlot()
+    def endProgressDialog(self):
+        TOMsMessageLog.logMessage("In utils::endProgressDialog ... ", level=Qgis.Warning)
+        self.progressDialog.close()
 
     def getCurrSurveyName(self, currSurveyID):
         # display list
