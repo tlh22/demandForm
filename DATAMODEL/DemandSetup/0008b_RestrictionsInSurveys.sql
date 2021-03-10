@@ -63,7 +63,7 @@ ALTER TABLE demand."RestrictionsInSurveys_FPC"
 INSERT INTO demand."RestrictionsInSurveys_FPC" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", s."GeometryID", s.geom As geom
 FROM mhtc_operations."Supply" s, demand."Surveys" su
-WHERE s."CPZ" = 'FPC';
-
+WHERE s."CPZ" = 'FPC'
+AND substring(su."SurveyDay" from '\((.+)\)') = 'FPC';
 
 

@@ -114,7 +114,7 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
-            level=Qgis.Info)
+            level=Qgis.Warning)
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
@@ -138,7 +138,7 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
             dialog = self.iface.getFeatureForm(restrictionsInSurveysLayer, currRestriction)
         except Exception as e:
             reply = QMessageBox.information(None, "Information",
-                                            "Unexcepted error for this restriction {}.".format(GeometryID),
+                                            "Unexcepted error for this restriction {}.{}".format(GeometryID, e),
                                             QMessageBox.Ok)
             return
 

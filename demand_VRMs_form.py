@@ -24,7 +24,7 @@ from qgis.PyQt.QtCore import (
 
 from qgis.PyQt.QtGui import (
     QIcon,
-    QPixmap, QColor
+    QPixmap, QColor, QFont
 )
 
 from qgis.PyQt.QtWidgets import (
@@ -144,6 +144,8 @@ class demandVRMsForm(VRMsUtilsMixin):
         vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
         vrmsUriName = vrmsLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
         dbName = vrmsUriName[:vrmsUriName.find('|')]
+
+        TOMsMessageLog.logMessage("In enableVRMToolbarItems. dbName: {}".format(dbName), level=Qgis.Warning)
 
         self.dbConn = QSqlDatabase.addDatabase("QSQLITE")
         self.dbConn.setDatabaseName(dbName)
@@ -344,7 +346,12 @@ class demandVRMsForm(VRMsUtilsMixin):
         #if len(self.enumerator) == 0:
         #    self.enumerator = ''
 
+        font = QFont()
+        #font.setFamily("Arial")
+        font.setPointSize(11)
+
         enumeratorDialog = QInputDialog()
+        enumeratorDialog.setFont(font)
         enumeratorDialog.setLabelText("Please confirm your name")
         enumeratorDialog.setTextValue(self.enumerator)
 
@@ -356,12 +363,19 @@ class demandVRMsForm(VRMsUtilsMixin):
     def confirmSurveyNr(self):
         # display list
 
-        currSurveyID = str(self.params.setParam("CurrentSurvey"))
-        if len(currSurveyID) == 0:
+        currSurveyParam = str(self.params.setParam("CurrentSurvey"))
+        try:
+            currSurveyID = int(currSurveyParam)
+        except:
             currSurveyID = 1
+            
         newSurveyID = currSurveyID
         currSurveyName = ''
         newSurveyName = ''
+
+        font = QFont()
+        #font.setFamily("Arial")
+        font.setPointSize(11)
 
         surveyList = list()
         surveyDictionary = {}
@@ -372,7 +386,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         while query.next():
-            TOMsMessageLog.logMessage("In getCurrSurvey: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; surveyID: {}, BeatTitle: {}".format(currSurveyID, query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
             surveyList.append(query.value(BeatTitle))
             surveyDictionary[query.value(BeatTitle)] = query.value(SurveyID)
             if int(currSurveyID) == int(query.value(SurveyID)):
@@ -382,6 +396,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         TOMsMessageLog.logMessage("In getCurrSurvey: surveyDictionary: {}".format(surveyDictionary), level=Qgis.Info)
         surveyDialog = QInputDialog()
         surveyDialog.setLabelText("Please confirm the time period to be surveyed ")
+        surveyDialog.setFont(font)
         surveyDialog.setComboBoxItems(surveyList)
         surveyDialog.setTextValue(currSurveyName)
 

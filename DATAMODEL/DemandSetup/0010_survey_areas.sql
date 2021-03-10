@@ -21,6 +21,13 @@ SET "SurveyArea" = a.id
 FROM mhtc_operations."SurveyAreas" a
 WHERE ST_WITHIN (s.geom, a.geom);
 
+-- OR
+
+UPDATE "mhtc_operations"."Supply" AS s
+SET "SurveyArea" = a.id
+FROM mhtc_operations."SurveyAreas" a
+WHERE ST_WITHIN (s.geom, a.geom);
+
 --
 -- Calculate length of section within area
 
