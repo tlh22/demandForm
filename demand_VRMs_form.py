@@ -145,6 +145,8 @@ class demandVRMsForm(VRMsUtilsMixin):
         vrmsUriName = vrmsLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
         dbName = vrmsUriName[:vrmsUriName.find('|')]
 
+        TOMsMessageLog.logMessage("In enableVRMToolbarItems. dbName: {}".format(dbName), level=Qgis.Warning)
+
         self.dbConn = QSqlDatabase.addDatabase("QSQLITE")
         self.dbConn.setDatabaseName(dbName)
         if not self.dbConn.open():
@@ -361,9 +363,12 @@ class demandVRMsForm(VRMsUtilsMixin):
     def confirmSurveyNr(self):
         # display list
 
-        currSurveyID = str(self.params.setParam("CurrentSurvey"))
-        if len(currSurveyID) == 0:
+        currSurveyParam = str(self.params.setParam("CurrentSurvey"))
+        try:
+            currSurveyID = int(currSurveyParam)
+        except:
             currSurveyID = 1
+            
         newSurveyID = currSurveyID
         currSurveyName = ''
         newSurveyName = ''
@@ -381,7 +386,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         while query.next():
-            TOMsMessageLog.logMessage("In getCurrSurvey: surveyID: {}, BeatTitle: {}".format(query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; surveyID: {}, BeatTitle: {}".format(currSurveyID, query.value(SurveyID), query.value(BeatTitle)), level=Qgis.Warning)
             surveyList.append(query.value(BeatTitle))
             surveyDictionary[query.value(BeatTitle)] = query.value(SurveyID)
             if int(currSurveyID) == int(query.value(SurveyID)):
