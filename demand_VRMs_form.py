@@ -48,7 +48,7 @@ from qgis.core import (
     QgsGeometry,
     QgsApplication, QgsCoordinateTransform, QgsCoordinateReferenceSystem,
     QgsGpsDetector, QgsGpsConnection, QgsGpsInformation, QgsPoint, QgsPointXY,
-    QgsDataSourceUri
+    QgsDataSourceUri, QgsCredentials
 )
 
 from qgis.gui import (
@@ -142,17 +142,43 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         # new get the connection details for "VRMs"
         vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
+        self.provider = vrmsLayer.dataProvider()
+        TOMsMessageLog.logMessage("In db type: {}".format(self.provider.name()), level=Qgis.Warning)
+
         vrmsUriName = vrmsLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
-        dbName = vrmsUriName[:vrmsUriName.find('|')]
 
-        TOMsMessageLog.logMessage("In enableVRMToolbarItems. dbName: {}".format(dbName), level=Qgis.Warning)
+        if self.provider.name() == 'postgres':
+            # get the URI containing the connection parameters
+            # create a PostgreSQL connection using QSqlDatabase
+            self.dbConn = QSqlDatabase.addDatabase('QPSQL')
+            TOMsMessageLog.logMessage("In enableVRMToolbarItems. uri: {}".format(vrmsUriName), level=Qgis.Warning)
+            # check to see if it is valid
+            if self.dbConn.isValid():
+                # set the parameters needed for the connection
+                if len(self.provider.uri().service()) > 0:
+                    self.dbConn.setConnectOptions("service={}".format(self.provider.uri().service()))
+                else:
+                    # need to get the details of the connection ...
+                    self.dbConn.setHostName(self.provider.uri().host())
+                    self.dbConn.setDatabaseName(self.provider.uri().database())
+                    self.dbConn.setPort(int(self.provider.uri().port()))
+                    self.dbConn.setUserName(self.provider.uri().username)
+                    self.dbConn.setPassword(self.provider.uri().password)
 
-        self.dbConn = QSqlDatabase.addDatabase("QSQLITE")
-        self.dbConn.setDatabaseName(dbName)
+        else:
+            dbName = vrmsUriName[:vrmsUriName.find('|')]
+            TOMsMessageLog.logMessage("In enableVRMToolbarItems. dbName: {}".format(dbName), level=Qgis.Warning)
+
+            self.dbConn = QSqlDatabase.addDatabase("QSQLITE")
+            self.dbConn.setDatabaseName(dbName)
+
         if not self.dbConn.open():
-            QMessageBox.critical(None, "Cannot open database",
-                                 "Unable to establish a database connection.\n\n"
-                                 "Click Cancel to exit.", QMessageBox.Cancel)
+            """QMessageBox.critical(None, "Cannot open database",
+                                 "Unable to establish a database connection - {}\n\n".format(self.dbConn.lastError())
+                                 , QMessageBox.Cancel)"""
+            reply = QMessageBox.information(None, "Error",
+                                            "Unable to establish a database connection - {} {}\n\n".format(self.dbConn.lastError().type(), self.dbConn.lastError().databaseText()), QMessageBox.Ok)
+            return False
 
         # now get user / survey id details - and check previous pass and whether it is to be included ...
 
@@ -297,7 +323,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
             TOMsMessageLog.logMessage("In doRestrictionDetails - tool activated", level=Qgis.Info)
 
-            self.showRestrictionMapTool = demandVRMInfoMapTool(self.iface, self.surveyID, self.enumerator)
+            self.showRestrictionMapTool = demandVRMInfoMapTool(self.iface, self.surveyID, self.enumerator, self.dbConn)
             self.iface.mapCanvas().setMapTool(self.showRestrictionMapTool)
             #self.showRestrictionMapTool.notifyFeatureFound.connect(self.showRestrictionDetails)
 
@@ -380,8 +406,18 @@ class demandVRMsForm(VRMsUtilsMixin):
         surveyList = list()
         surveyDictionary = {}
 
-        query = QSqlQuery("SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC")
-        query.exec()
+        query = QSqlQuery(self.dbConn)
+        if self.provider.name() == 'postgres':
+            queryStr = 'SELECT "SurveyID", "BeatTitle" FROM demand."Surveys" ORDER BY "SurveyID" ASC;'
+        else:
+            queryStr = "SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC"
+
+        if not query.exec(queryStr):
+            reply = QMessageBox.information(None, "Error",
+                                            "Problem with Surveys - {} {} {}\n".format(query.lastQuery(), query.lastError().type(),
+                                                                                      query.lastError().databaseText()
+                                            ), QMessageBox.Ok)
+
 
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
@@ -420,9 +456,16 @@ class demandVRMsForm(VRMsUtilsMixin):
         TOMsMessageLog.logMessage("In checkPreviousSurvey: currSurveyID: {}".format(currSurveyID), level=Qgis.Info)
         currSurveyID = int(currSurveyID)
 
-        queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID)
+        query = QSqlQuery(self.dbConn)
+        if self.provider.name() == 'postgres':
+            return
+            #queryString = "SELECT COUNT(*) FROM demand.VRMs WHERE SurveyID = {}".format(currSurveyID)
+        else:
+            queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID)
+
+        #queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID)
         TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 1: {}".format(queryString), level=Qgis.Info)
-        query = QSqlQuery()
+
         if not query.exec(queryString):
             TOMsMessageLog.logMessage("In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
                                       level=Qgis.Warning)

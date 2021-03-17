@@ -34,9 +34,9 @@ FROM mhtc_operations."RC_Sections_merged" r, demand."Surveys";
 
 
 ---
-DROP TABLE IF EXISTS demand."RestrictionsInSurveys_TN" CASCADE;
+DROP TABLE IF EXISTS demand."RestrictionsInSurveys_WHL" CASCADE;
 
-CREATE TABLE demand."RestrictionsInSurveys_TN"
+CREATE TABLE demand."RestrictionsInSurveys_WHL"
 (
     "SurveyID" integer,
     "GeometryID" character varying(12) COLLATE pg_catalog."default",
@@ -52,18 +52,18 @@ CREATE TABLE demand."RestrictionsInSurveys_TN"
     "Photos_02" character varying (255) COLLATE pg_catalog."default",
     "Photos_03" character varying (255) COLLATE pg_catalog."default",
     geom geometry(LineString,27700) NOT NULL,
-	CONSTRAINT "RestrictionsInSurveys_TN_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
+	CONSTRAINT "RestrictionsInSurveys_WHL_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE demand."RestrictionsInSurveys_TN"
+ALTER TABLE demand."RestrictionsInSurveys_WHL"
     OWNER to postgres;
 
-INSERT INTO demand."RestrictionsInSurveys_TN" ("SurveyID", "GeometryID", geom)
+INSERT INTO demand."RestrictionsInSurveys_WHL" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", s."GeometryID", s.geom As geom
-FROM mhtc_operations."Supply" s, demand."Surveys" su
-WHERE s."CPZ" = 'TN'
-AND substring(su."SurveyDay" from '\((.+)\)') = 'TN';
+FROM mhtc_operations."Supply_210312_FP_HS" s, demand."Surveys" su
+WHERE s."CPZ" = 'WHL'
+AND substring(su."SurveyDay" from '\((.+)\)') = 'WHL';
 
 

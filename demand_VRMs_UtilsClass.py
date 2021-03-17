@@ -278,7 +278,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
         vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
         vrmsLayout = vrmsTab.layout()
-        vrmForm = vrmWidget(vrmsTab)
+        vrmForm = vrmWidget(vrmsTab, self.dbConn)
         vrmForm.startOperation.connect(self.startProgressDialog)
         vrmForm.progressUpdated.connect(self.showProgress)
         vrmForm.endOperation.connect(self.endProgressDialog)
@@ -326,8 +326,16 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         surveyList = list()
 
-        query = QSqlQuery("SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC")
-        query.exec()
+        query = QSqlQuery()
+        queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM demand.\"Surveys\" ORDER BY \"SurveyID\" ASC"
+
+        if not query.exec(queryStr):
+            reply = QMessageBox.information(None, "Error",
+                                            "Problem getting current survey name - {} {} {}\n".format(query.lastQuery(),
+                                                                                       query.lastError().type(),
+                                                                                       query.lastError().databaseText()
+                                                                                       ), QMessageBox.Ok)
+            return None
 
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 

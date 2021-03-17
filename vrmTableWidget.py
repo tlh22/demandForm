@@ -73,16 +73,22 @@ class vrmWidget(QTableView):
     startOperation = pyqtSignal()
     endOperation = pyqtSignal()
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, db=None):
         super(vrmWidget, self).__init__(parent)
         TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Info)
-        self.vrmModel = QSqlRelationalTableModel(self)
+        self.dbConn = db
+        self.vrmModel = QSqlRelationalTableModel(self, db=self.dbConn)
+        vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
+        self.provider = vrmsLayer.dataProvider()
 
     def populateVrmWidget(self, surveyID, GeometryID):
 
         TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
-        self.vrmModel.setTable("VRMs")
+        if self.provider.name() == 'postgres':
+            self.vrmModel.setTable('demand."VRMs"')
+        else:
+            self.vrmModel.setTable("VRMs")
         self.vrmModel.setJoinMode(QSqlRelationalTableModel.LeftJoin)
         self.vrmModel.setEditStrategy(QSqlTableModel.OnFieldChange)
 
@@ -120,7 +126,10 @@ class vrmWidget(QTableView):
             level=Qgis.Info)
 
         self.setModel(self.vrmModel)
-        self.setColumnHidden(self.vrmModel.fieldIndex('fid'), True)
+        try:
+            self.setColumnHidden(self.vrmModel.fieldIndex('fid'), True)  # Not present within postgres
+        except:
+            None
         self.setColumnHidden(self.vrmModel.fieldIndex('ID'), True)
         self.setColumnHidden(self.vrmModel.fieldIndex('SurveyID'), True)
         self.setColumnHidden(self.vrmModel.fieldIndex('SectionID'), True)
