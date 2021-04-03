@@ -111,18 +111,26 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         # get relevant feature ...
         restrictionsInSurveysLayer = QgsProject.instance().mapLayersByName("RestrictionsInSurveys")[0]
 
-        filterString = '"SurveyID" = {} AND "GeometryID" = \'{}\''.format(self.surveyID, GeometryID)
+        filterString = '\"SurveyID\" = {} AND \"GeometryID\" = \'{}\''.format(self.surveyID, GeometryID)
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
+        restrictionFound = False
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
             TOMsMessageLog.logMessage(
                 "In demandVRMInfoMapTool.showRestrictionDetails ... restriction found: ",
                 level=Qgis.Info)
+            restrictionFound = True
             break  # take the first one (assuming only one!)
+
+        if restrictionFound == False:
+            reply = QMessageBox.information(None, "Information",
+                                            "Restriction not found {} in survey {}".format(GeometryID, self.surveyID),
+                                            QMessageBox.Ok)
+            return
 
         # TODO: could improve ... basically check to see if transaction in progress ...
         if restrictionsInSurveysLayer.isEditable() == True:
@@ -167,12 +175,9 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
                 title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
                                                                          GeometryID=GeometryID)
-
-                TOMsMessageLog.logMessage("In demandVRMInfoMapTool.featureContextMenu: adding: " + str(title), level=Qgis.Info)
-
             except Exception as e:
                 reply = QMessageBox.information(None, "Information", "Problem selecting features ...{}".format(e), QMessageBox.Ok)
-                return
+                return None, None
 
             action = QAction(title, self.menu)
             self.actions.append(action)
