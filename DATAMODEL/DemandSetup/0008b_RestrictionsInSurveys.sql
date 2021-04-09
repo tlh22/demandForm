@@ -34,9 +34,9 @@ FROM mhtc_operations."RC_Sections_merged" r, demand."Surveys";
 
 
 ---
-DROP TABLE IF EXISTS demand."RestrictionsInSurveys_WHL" CASCADE;
+DROP TABLE IF EXISTS demand."RestrictionsInSurveys_ALL" CASCADE;
 
-CREATE TABLE demand."RestrictionsInSurveys_WHL"
+CREATE TABLE demand."RestrictionsInSurveys_ALL"
 (
     "SurveyID" integer,
     "GeometryID" character varying(12) COLLATE pg_catalog."default",
@@ -52,18 +52,76 @@ CREATE TABLE demand."RestrictionsInSurveys_WHL"
     "Photos_02" character varying (255) COLLATE pg_catalog."default",
     "Photos_03" character varying (255) COLLATE pg_catalog."default",
     geom geometry(LineString,27700) NOT NULL,
-	CONSTRAINT "RestrictionsInSurveys_WHL_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
+	CONSTRAINT "RestrictionsInSurveys_ALL_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE demand."RestrictionsInSurveys_WHL"
+ALTER TABLE demand."RestrictionsInSurveys_ALL"
     OWNER to postgres;
 
-INSERT INTO demand."RestrictionsInSurveys_WHL" ("SurveyID", "GeometryID", geom)
-SELECT "SurveyID", s."GeometryID", s.geom As geom
-FROM mhtc_operations."Supply_210312_FP_HS" s, demand."Surveys" su
-WHERE s."CPZ" = 'WHL'
-AND substring(su."SurveyDay" from '\((.+)\)') = 'WHL';
+INSERT INTO demand."RestrictionsInSurveys_ALL"(
+	   "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+	   "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+	   "Photos_01", "Photos_02", "Photos_03", geom)
 
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_FP"
 
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_FPB"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_FPC"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_HS"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_TN"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_THNED"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_7S"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_7SistersSouth"
+
+UNION
+
+SELECT "SurveyID", "GeometryID", "DemandSurveyDateTime", "Enumerator", "Done",
+       "SuspensionReference", "SuspensionReason", "SuspensionLength", "NrBaysSuspended", "SuspensionNotes",
+       "Photos_01", "Photos_02", "Photos_03", geom
+	FROM demand."RestrictionsInSurveys_WHL"

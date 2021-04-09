@@ -101,6 +101,11 @@ class vrmWidget(QTableView):
         self.vrmModel.setSort(int(self.vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
         self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PositionID"), Qt.Horizontal, 'Pos')
 
+        """
+        It was a challenge to work out the required structure/format for accessing postgres records. The clue came from here - https://osgeo-fr.github.io/presentations_foss4gfr/2016/J2/SylvainPierre.pdf
+        (slide 9) with the setTable instruction.
+        """
+
         if self.dbConn.driverName() == 'QPSQL':
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('demand_lookups'+'.\"VehicleTypes\"', '\"Code\"', '\"Description\"'))
         else:
