@@ -78,13 +78,14 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
 
     notifyFeatureFound = pyqtSignal(QgsVectorLayer, QgsFeature)
 
-    def __init__(self, iface, surveyID, enumerator):
+    def __init__(self, iface, surveyID, enumerator, dbConn):
         GeometryInfoMapTool.__init__(self, iface)
         self.iface = iface
         VRMsUtilsMixin.__init__(self, iface)
 
         self.surveyID = surveyID
         self.enumerator = enumerator
+        self.dbConn = dbConn
         self.params = vrmParams()
         TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Warning)
 
@@ -110,18 +111,26 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         # get relevant feature ...
         restrictionsInSurveysLayer = QgsProject.instance().mapLayersByName("RestrictionsInSurveys")[0]
 
-        filterString = '"SurveyID" = {} AND "GeometryID" = \'{}\''.format(self.surveyID, GeometryID)
+        filterString = '\"SurveyID\" = {} AND \"GeometryID\" = \'{}\''.format(self.surveyID, GeometryID)
 
         TOMsMessageLog.logMessage(
             "In demandVRMInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
+        restrictionFound = False
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
             TOMsMessageLog.logMessage(
                 "In demandVRMInfoMapTool.showRestrictionDetails ... restriction found: ",
                 level=Qgis.Info)
+            restrictionFound = True
             break  # take the first one (assuming only one!)
+
+        if restrictionFound == False:
+            reply = QMessageBox.information(None, "Information",
+                                            "Restriction not found {} in survey {}".format(GeometryID, self.surveyID),
+                                            QMessageBox.Ok)
+            return
 
         # TODO: could improve ... basically check to see if transaction in progress ...
         if restrictionsInSurveysLayer.isEditable() == True:
@@ -161,17 +170,14 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         for feature in featureList:
 
             try:
-                GeometryID = feature.attribute('GeometryID')
+                GeometryID = feature.attribute("GeometryID")
                 RestrictionDescription = self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))
 
                 title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
                                                                          GeometryID=GeometryID)
-
-                TOMsMessageLog.logMessage("In demandVRMInfoMapTool.featureContextMenu: adding: " + str(title), level=Qgis.Info)
-
             except Exception as e:
-                reply = QMessageBox.information(None, "Information", "Problem selecting features ...{}".format(e), QMessageBox.Ok)
-                return
+                reply = QMessageBox.information(None, "Information", "Problem getting description for restriction ...{}".format(e), QMessageBox.Ok)
+                return None, None
 
             action = QAction(title, self.menu)
             self.actions.append(action)

@@ -77,27 +77,28 @@ INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndT
 INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (70, 'Sunday (TN)', '1730', '1830');
 
 
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (61, 'Sunday (TN)', '0800', '0900');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (62, 'Sunday (TN)', '0900', '1000');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (63, 'Sunday (TN)', '1000', '1100');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (64, 'Sunday (TN)', '1100', '1200');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (65, 'Sunday (TN)', '1200', '1300');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (66, 'Sunday (TN)', '1300', '1400');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (67, 'Sunday (TN)', '1400', '1500');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (68, 'Sunday (TN)', '1500', '1600');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (69, 'Sunday (TN)', '1600', '1700');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (70, 'Sunday (TN)', '1700', '1800');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (141, 'Wednesday (WHL)', '0830', '0930');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (142, 'Wednesday (WHL)', '0930', '1030');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (143, 'Wednesday (WHL)', '1030', '1130');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (144, 'Wednesday (WHL)', '1130', '1230');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (145, 'Wednesday (WHL)', '1230', '1330');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (146, 'Wednesday (WHL)', '1330', '1430');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (147, 'Wednesday (WHL)', '1430', '1530');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (148, 'Wednesday (WHL)', '1530', '1630');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (149, 'Wednesday (WHL)', '1630', '1730');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (150, 'Wednesday (WHL)', '1730', '1830');
 
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (71, 'Wednesday (TN)', '0800', '0900');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (72, 'Wednesday (TN)', '0900', '1000');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (73, 'Wednesday (TN)', '1000', '1100');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (74, 'Wednesday (TN)', '1100', '1200');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (75, 'Wednesday (TN)', '1200', '1300');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (76, 'Wednesday (TN)', '1300', '1400');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (77, 'Wednesday (TN)', '1400', '1500');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (78, 'Wednesday (TN)', '1500', '1600');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (79, 'Wednesday (TN)', '1600', '1700');
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (80, 'Wednesday (TN)', '1700', '1800');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (151, 'Sunday (WHL)', '0830', '0930');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (152, 'Sunday (WHL)', '0930', '1030');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (153, 'Sunday (WHL)', '1030', '1130');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (154, 'Sunday (WHL)', '1130', '1230');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (155, 'Sunday (WHL)', '1230', '1330');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (156, 'Sunday (WHL)', '1330', '1430');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (157, 'Sunday (WHL)', '1430', '1530');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (158, 'Sunday (WHL)', '1530', '1630');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (159, 'Sunday (WHL)', '1630', '1730');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime") VALUES (160, 'Sunday (WHL)', '1730', '1830');
 
 UPDATE demand."Surveys"
-SET "BeatTitle" = LPAD("SurveyID"::text, 3, '0') || '_' || "SurveyDay" || '_' || "BeatStartTime" || '_' || "BeatEndTime";
+SET "BeatTitle" = LPAD("SurveyID"::text, 3, '0') || '_' || "SurveyDay" || '_' || "BeatStartTime" || '_' || "BeatEndTime"
+WHERE "BeatTitle" IS NULL;

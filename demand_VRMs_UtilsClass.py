@@ -181,16 +181,21 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
         SurveyBeatTitleWidget.setText(currSurveyName)
 
-        queryString = "SELECT COALESCE(RoadName, '[No Road Name]'), COALESCE(RestrictionLength, '[Not known]'), RestrictionTypeID FROM Supply WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
-        TOMsMessageLog.logMessage(
-            "In mapOtherFields: queryString: {}".format(queryString),
-            level=Qgis.Warning)
+        if self.dbConn.driverName() == 'QPSQL':
+            queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
+        else:
+            queryString = "SELECT COALESCE(\"RoadName\", '[No Road Name]'), COALESCE(\"RestrictionLength\", '[Not known]'), \"RestrictionTypeID\" FROM \"Supply\" WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
+
+        TOMsMessageLog.logMessage("In mapOtherFields: queryString: {}".format(queryString), level=Qgis.Info)
         query = QSqlQuery(queryString)
-        query.exec()
 
         RoadName, SectionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
-        query.next()
+        if not query.next():
+            TOMsMessageLog.logMessage(
+                "In mapOtherFields: error with query ... {} ".format(query.lastError().text()),
+                level=Qgis.Warning)
+
         TOMsMessageLog.logMessage(
                 "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
                 level=Qgis.Warning)
@@ -203,7 +208,8 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         # get restriction details
 
         GeometryID = currRestriction.attribute('GeometryID')
-        RestrictionDescription = self.getLookupDescription(self.RESTRICTION_TYPES, query.value(RestrictionTypeID))
+
+        RestrictionDescription = generateGeometryUtils.getLookupDescription(self.RESTRICTION_TYPES, query.value(RestrictionTypeID))
 
         title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
                                                              GeometryID=GeometryID)
@@ -269,16 +275,53 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         #del self.mapTool
 
-    def createConnection(self):
-        con = QSqlDatabase.addDatabase("QSQLITE")
-        # TODO ...
+    def getDbConn(self, testLayerName):
+
+        # new get the connection details for testLayer
+        try:
+            testLayer = QgsProject.instance().mapLayersByName(testLayerName)[0]
+            provider = testLayer.dataProvider()
+            TOMsMessageLog.logMessage("In getDbConn: db type is {}".format(provider.name()), level=Qgis.Warning)
+        except Exception as e:
+            #QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Error opening test layer {}".format(e)))
+            TOMsMessageLog.logMessage("In getDbConn: error opening test layer {}".format(e), level=Qgis.Warning)
+            return None
+
+        testUriName = testLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
+
+        if provider.name() == 'postgres':
+            # get the URI containing the connection parameters
+            # create a PostgreSQL connection using QSqlDatabase
+            dbConn = QSqlDatabase.addDatabase('QPSQL')
+            TOMsMessageLog.logMessage("In getDbConn. uri: {}".format(testUriName), level=Qgis.Warning)
+            # check to see if it is valid
+            if dbConn.isValid():
+                # set the parameters needed for the connection
+                if len(provider.uri().service()) > 0:
+                    dbConn.setConnectOptions("service={}".format(provider.uri().service()))
+                else:
+                    # need to get the details of the connection ...
+                    dbConn.setHostName(provider.uri().host())
+                    dbConn.setDatabaseName(provider.uri().database())
+                    dbConn.setPort(int(provider.uri().port()))
+                    dbConn.setUserName(provider.uri().username)
+                    dbConn.setPassword(provider.uri().password)
+
+        else:
+            dbName = testUriName[:testUriName.find('|')]
+            TOMsMessageLog.logMessage("In getDbConn. dbName: {}".format(dbName), level=Qgis.Warning)
+
+            dbConn = QSqlDatabase.addDatabase("QSQLITE")
+            dbConn.setDatabaseName(dbName)
+
+        return dbConn
 
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
         vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
         vrmsLayout = vrmsTab.layout()
-        vrmForm = vrmWidget(vrmsTab)
+        vrmForm = vrmWidget(vrmsTab, self.dbConn)
         vrmForm.startOperation.connect(self.startProgressDialog)
         vrmForm.progressUpdated.connect(self.showProgress)
         vrmForm.endOperation.connect(self.endProgressDialog)
@@ -326,8 +369,19 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         surveyList = list()
 
-        query = QSqlQuery("SELECT SurveyID, BeatTitle FROM Surveys ORDER BY SurveyID ASC")
-        query.exec()
+        query = QSqlQuery()
+        if self.dbConn.driverName() == 'QPSQL':
+            queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM demand.\"Surveys\" ORDER BY \"SurveyID\" ASC"
+        else:
+            queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM \"Surveys\" ORDER BY \"SurveyID\" ASC"
+
+        if not query.exec(queryStr):
+            reply = QMessageBox.information(None, "Error",
+                                            "Problem getting current survey name - {} {} {}\n".format(query.lastQuery(),
+                                                                                       query.lastError().type(),
+                                                                                       query.lastError().databaseText()
+                                                                                       ), QMessageBox.Ok)
+            return None
 
         SurveyID, BeatTitle = range(2)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
