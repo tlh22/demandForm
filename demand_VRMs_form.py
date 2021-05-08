@@ -129,7 +129,7 @@ class demandVRMsForm(VRMsUtilsMixin):
         self.tableNames.TOMsLayersNotFound.connect(self.setCloseTOMsFlag)
         self.params.TOMsParamsNotFound.connect(self.setCloseDemandFlag)
 
-        self.TOMsConfigFileObject = TOMsConfigFile(self.iface)
+        self.TOMsConfigFileObject = TOMsConfigFile()
         self.TOMsConfigFileObject.TOMsConfigFileNotFound.connect(self.setCloseTOMsFlag)
         self.TOMsConfigFileObject.initialiseTOMsConfigFile()
 
