@@ -175,9 +175,15 @@ class vrmWidget(QTableView):
 
         # add new record at position
         record = self.vrmModel.record()
-        record.setGenerated('fid', False)
+        if self.dbConn.driverName() == 'QPSQL':
+            record.setGenerated('ID', False)
+        else:
+            record.setGenerated('fid', False)
+
+        #record.setGenerated('fid', False)
+
         record.setValue('SurveyID', surveyID)
-        record.setValue('SectionID', GeometryID)
+        record.setValue('SectionID', None)
         record.setValue('GeometryID', GeometryID)
 
 

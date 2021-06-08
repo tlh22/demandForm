@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper,
+    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem,
     QProgressDialog, QProgressBar
 )
 
@@ -355,6 +355,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         vrmsLayout.addWidget(vrmForm)
 
         buttonLayout = QVBoxLayout()
+        buttonLayout.setSpacing(50)
         addButton = QPushButton("+")
         removeButton = QPushButton("-")
         buttonLayout.addWidget(addButton)
