@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper,
+    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem,
     QProgressDialog, QProgressBar
 )
 
@@ -174,6 +174,15 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         #self.addScrollBars(restrictionDialog)
 
+        """
+            set form location (based on last position)
+        """
+        dw = restrictionDialog.width()
+        dh = restrictionDialog.height()
+        restrictionDialog.setGeometry(int(self.readLastUsedDetails(currRestrictionLayer.name(), 'geometry_x', 200)),
+                                      int(self.readLastUsedDetails(currRestrictionLayer.name(), 'geometry_y', 200)),
+                                      dw, dh)
+
     def mapOtherFields(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
         # is there a better way ???
@@ -258,6 +267,12 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In onSaveDemandDetails: changes committed", level=Qgis.Info)
 
+        """
+            save form location for reuse
+        """
+        self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_x', dialog.geometry().x())
+        self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_y', dialog.geometry().y())
+
         status = dialog.close()
 
     def onRejectFieldRestrictionDetailsFromForm(self, restrictionDialog, currFeatureLayer):
@@ -271,6 +286,13 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
             None
 
         currFeatureLayer.rollBack()
+
+        """
+            save form location for reuse
+        """
+        self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_x', restrictionDialog.geometry().x())
+        self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_y', restrictionDialog.geometry().y())
+
         restrictionDialog.reject()
 
         #del self.mapTool
@@ -333,6 +355,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         vrmsLayout.addWidget(vrmForm)
 
         buttonLayout = QVBoxLayout()
+        buttonLayout.setSpacing(50)
         addButton = QPushButton("+")
         removeButton = QPushButton("-")
         buttonLayout.addWidget(addButton)

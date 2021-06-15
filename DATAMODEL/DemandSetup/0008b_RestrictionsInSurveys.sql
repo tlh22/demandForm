@@ -32,6 +32,11 @@ INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", gid::text AS "GeometryID", r.geom As geom
 FROM mhtc_operations."RC_Sections_merged" r, demand."Surveys";
 
+-- OR
+
+INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
+SELECT "SurveyID", "GeometryID", r.geom As geom
+FROM mhtc_operations."Supply" r, demand."Surveys";
 
 ---
 DROP TABLE IF EXISTS demand."RestrictionsInSurveys_ALL" CASCADE;

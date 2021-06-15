@@ -10,7 +10,7 @@ CREATE TABLE demand."VRMs"
   "VRM" character varying(12),
   "VehicleTypeID" integer,
   "RestrictionTypeID" integer,
-  "PermitType" integer,
+  "PermitTypeID" integer,
   "Notes" character varying(255),
   CONSTRAINT "VRMs_pkey" PRIMARY KEY ("ID")
 )

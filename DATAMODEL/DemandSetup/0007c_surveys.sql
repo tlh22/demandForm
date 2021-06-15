@@ -4,7 +4,7 @@ CREATE SCHEMA IF NOT EXISTS "demand";
 ALTER SCHEMA "demand" OWNER TO "postgres";
 
 -- surveys
---DROP TABLE IF EXISTS "demand"."Surveys";
+DROP TABLE IF EXISTS "demand"."Surveys";
 CREATE TABLE "demand"."Surveys" (
     "SurveyID" integer NOT NULL,
     "SurveyDay" character varying (50) COLLATE pg_catalog."default",
