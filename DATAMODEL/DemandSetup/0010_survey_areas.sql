@@ -39,7 +39,7 @@ FROM mhtc_operations."RC_Sections_merged" s, mhtc_operations."SurveyAreas" a
 WHERE ST_WITHIN (s.geom, a.geom)
 GROUP BY a.name;
 
-SELECT a.name, SUM(s."SectionLength")
-FROM mhtc_operations."RC_Sections_merged" s, mhtc_operations."SurveyAreas" a
+SELECT a.name, SUM(s."RestrictionLength")
+FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas" a
 WHERE a.id = s."SurveyArea"
 GROUP BY a.name;
