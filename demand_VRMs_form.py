@@ -158,7 +158,13 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         TOMsMessageLog.logMessage("In enableVRMToolbarItems. surveyID: {}".format(self.surveyID), level=Qgis.Info)
 
-        self.checkPreviousSurvey(self.surveyID)
+        """
+        Check type of survey here ...
+        """
+        vrmSurvey = True
+
+        if vrmSurvey:
+            self.checkPreviousSurvey(self.surveyID)
 
         self.enableToolbarItems()
 

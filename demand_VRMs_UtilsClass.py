@@ -23,8 +23,9 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem,
-    QProgressDialog, QProgressBar
+    QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QTableView, QTableWidgetItem, QListView, QGroupBox,
+    QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem, QLineEdit, QSpacerItem, QIntValidator,
+    QProgressDialog, QProgressBar, QTextEdit
 )
 
 from qgis.PyQt.QtGui import (
@@ -170,6 +171,9 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Info)
 
+        """
+        Check survey type ... If not vrm, then create widgets and populate fields
+        """
         self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
 
         #self.addScrollBars(restrictionDialog)
@@ -341,7 +345,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
-        vrmsTab = restrictionDialog.findChild(QWidget, "VRMs")
+        vrmsTab = restrictionDialog.findChild(QWidget, "Demand")
         vrmsLayout = vrmsTab.layout()
         vrmForm = vrmWidget(vrmsTab, self.dbConn)
         vrmForm.startOperation.connect(self.startProgressDialog)
@@ -365,6 +369,62 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(vrmForm.deleteVrm)
+
+    def addCountWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
+
+        TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
+        demandTab = restrictionDialog.findChild(QWidget, "Demand")
+        demandLayout = demandTab.layout()
+
+        #demandForm = vrmWidget(demandTab, self.dbConn)
+        #demandForm.startOperation.connect(self.startProgressDialog)
+        #demandForm.progressUpdated.connect(self.showProgress)
+        #demandForm.endOperation.connect(self.endProgressDialog)
+
+        currGeometryID = currRestriction.attribute("GeometryID")
+
+        #demandForm.populateVrmWidget(self.surveyID, currGeometryID)
+
+        #demandLayout.addWidget(demandForm)
+
+        countLayout = QHBoxLayout()
+        col1_layout = QFormLayout()
+        col2_layout = QFormLayout()
+
+        col1_layout.addRow("Cars:", QLineEdit(objectName='NrCars'))
+        col1_layout.addRow("LGVs:", QLineEdit(objectName='NrLGVs'))
+        col1_layout.addRow("MCLs:", QLineEdit(objectName='NrMCLs'))
+        col1_layout.addRow("Taxis:", QLineEdit(objectName='NrTaxis'))
+
+        col2_layout.addRow("PCLs:", QLineEdit(objectName='NrPCLs'))
+        col2_layout.addRow("OGVs:", QLineEdit(objectName='NrOGVs'))
+        col2_layout.addRow("Buses:", QLineEdit(objectName='NrBuses'))
+        col2_layout.addRow("Spaces:", QLineEdit(objectName='NrSpaces'))
+
+        countLayout.addLayout(col1_layout)
+        countLayout.addItem(QSpacerItem())
+        countLayout.addLayout(col2_layout)
+
+        # add validators
+        # use of validator - https://stackoverflow.com/questions/54741145/i-use-qdoublevalidator-in-my-pyqt5-program-but-it-doesnt-seem-to-work
+
+        for widget in self.countLayout.parentWidget().findChildren(QLineEdit):
+            widget.setValidator(QIntValidator(
+                    0,  # bottom
+                    200  # top
+                )
+
+        # Now add "Notes" widget
+        notes_layout = QFormLayout()
+        notes_layout.addRow("Notes:", QTextEdit(objectName='SurveyNotes'))
+
+        demandLayout.addLayout(countLayout)
+        demandLayout.addItem(QSpacerItem())
+        demandLayout.addLayout(notes_layout)
+
+        #addButton.clicked.connect(functools.partial(demandForm.insertVrm, self.surveyID, currGeometryID))
+        #removeButton.clicked.connect(demandForm.deleteVrm)
+
 
     @pyqtSlot()
     def startProgressDialog(self):
