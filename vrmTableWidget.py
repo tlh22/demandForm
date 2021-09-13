@@ -73,6 +73,8 @@ class vrmWidget(QTableView):
     startOperation = pyqtSignal()
     endOperation = pyqtSignal()
 
+    #data_changed = pyqtSignal(QModelIndex, QModelIndex)
+
     def __init__(self, parent=None, db=None):
         super(vrmWidget, self).__init__(parent)
         TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Info)
@@ -159,6 +161,33 @@ class vrmWidget(QTableView):
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.resizeColumnsToContents()
         self.setColumnWidth(self.vrmModel.fieldIndex("VRM"), 120)
+
+        self.vrmModel.dataChanged.connect(self.cascadeChangeToRecord)
+
+    def cascadeChangeToRecord(self, idx1, idx2, roles):
+        TOMsMessageLog.logMessage("In vrmWidget:cascadeChangeToVRM ... {}; {}; {}".format(idx1, idx2, roles),
+                                  level=Qgis.Warning)
+
+        index = self.currentIndex()   # 0-based
+        currRow = index.row()
+
+        TOMsMessageLog.logMessage("In vrmWidget:cascadeChangeToVRM ... record 1: {}".format(currRow),
+                                  level=Qgis.Warning)
+
+        record = self.vrmModel.record(currRow)
+        surveyID = record.value('SurveyID')
+        GeometryID = record.value('GeometryID')
+        PositionID = record.value('PositionID')
+
+        TOMsMessageLog.logMessage("In vrmWidget:cascadeChangeToVRM ... record 2: {}; {}; {}; {}".format(index, surveyID, GeometryID, PositionID),
+                                  level=Qgis.Warning)
+
+        """
+        Need to check previous time periods (within the same day) and find those that are "almost" the same??. Not quite sure how to get details from previous period
+        Might be able to use "import difflib" to help ...
+        
+        Issue is to find the VRM in the previous period. It may not be at the same position (but it will be in the same GeometryID). Need to be able to obtain the "pre-change" value.
+        """
 
     def insertVrm(self, surveyID, GeometryID):
         TOMsMessageLog.logMessage("In vrmWidget:insertRow ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
@@ -256,8 +285,11 @@ class readOnlyDelegate(QItemDelegate):
         return None
 
 class vrmDelegate(QStyledItemDelegate):
+
     def createEditor(self, parent, option, index):
+
         editor = super().createEditor(parent, option, index)
         if isinstance(editor, QLineEdit):
             editor.setInputMask('>nnnn-nnnn')
+
         return editor
