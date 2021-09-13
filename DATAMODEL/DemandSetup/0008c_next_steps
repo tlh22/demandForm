@@ -1,0 +1,51 @@
+VRMs
+
+Using the - load project, create the required gpkgs using QGIS "package layers"
+
+Background
+ - topo polys
+ - topo text
+ - site area
+ - road centre line
+ - survey areas ?
+
+
+Demand
+  - VRMs
+  - RestrictionsInSurveys
+  - Supply
+  - VehicleTypes
+  - PermitTypes (even if empty)
+  - Surveys
+  - SupplyRestrictionTypesInUse_View
+
+
+---
+
+Count
+
+Using the load project, create gpks
+
+Background
+ - topo polys
+ - topo text
+ - site area
+ - road centre line
+ - survey areas ?
+ - Surveys
+ - SupplyRestrictionTypesInUse_View
+ - PolygonRestrictionTypesInUse_View
+ - Supply
+ - CPZs, PTAs, MatchDay zones
+ - Unacceptable types ??
+
+
+
+Demand
+  - VRMs
+  - RestrictionsInSurveys
+  - Supply
+  - VehicleTypes
+  - PermitTypes (even if empty)
+  - Surveys
+  - SupplyRestrictionTypesInUse_View

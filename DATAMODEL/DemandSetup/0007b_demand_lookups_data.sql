@@ -15,10 +15,23 @@ INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description") VALUES (9, N
 
 -- permit types
 
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (1, 'Resident (Zone F)');
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (2, 'Business (Zone F or All zone)');
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (3, 'Car club');
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (4, 'Visitor/trader ');
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (5, 'Visitor P&D ticket');
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (6, 'Disabled (Blue badge)');
-INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (7, NULL);
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (0, NULL);
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (1, 'Resident (Zone)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (2, 'Resident (Other)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (3, 'Visitor voucher');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (4, 'Disabled (Blue badge)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (5, 'Essential Service Permit (ESP)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (6, 'Business permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (7, 'Companion');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (8, 'Carer''s permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (9, 'No visible permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (10, 'Boroughwide and Utility Permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (11, 'Car Club permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (12, 'Doctor''s Permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (13, 'Monthly Resident');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (14, 'Visitor Voucher concessionary');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (15, 'Trader''s permit');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (16, 'Other (inc. Coronavirus Permit)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (17, 'No permit required (MCL)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (18, 'No permit required (Non Resident MCL)');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (19, 'Homes for Haringey');
