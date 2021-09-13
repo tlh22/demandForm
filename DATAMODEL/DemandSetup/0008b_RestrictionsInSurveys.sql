@@ -38,7 +38,8 @@ INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", "GeometryID", r.geom As geom
 FROM mhtc_operations."Supply" r, demand."Surveys";
 
----
+--- For Haringey
+
 DROP TABLE IF EXISTS demand."RestrictionsInSurveys_ALL" CASCADE;
 
 CREATE TABLE demand."RestrictionsInSurveys_ALL"
