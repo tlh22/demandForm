@@ -12,6 +12,7 @@ CREATE MATERIALIZED VIEW "demand_lookups"."SupplyRestrictionTypesInUse_View" AS
    FROM "toms_lookups"."BayLineTypes",
     "mhtc_operations"."Supply"
   WHERE ("BayLineTypes"."Code" = "Supply"."RestrictionTypeID")
+  ORDER BY "BayLineTypes"."Code"
   WITH DATA;
 
 ALTER TABLE "demand_lookups"."SupplyRestrictionTypesInUse_View" OWNER TO "postgres";
