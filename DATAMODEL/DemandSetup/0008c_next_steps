@@ -24,9 +24,9 @@ Demand
 
 Count
 
-Using the load project, create gpks
+Using the load (count) project,
 
-Background
+a. create the background gpkg using QGIS "package layers"
  - topo polys
  - topo text
  - site area
@@ -39,13 +39,7 @@ Background
  - CPZs, PTAs, MatchDay zones
  - Unacceptable types ??
 
+b. use the prepareDemandLayers to create relevant layers
+  - Demand_<SurveybeatTitle>
+  - ...
 
-
-Demand
-  - VRMs
-  - RestrictionsInSurveys
-  - Supply
-  - VehicleTypes
-  - PermitTypes (even if empty)
-  - Surveys
-  - SupplyRestrictionTypesInUse_View
