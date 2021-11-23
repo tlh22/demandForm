@@ -36,13 +36,15 @@ SET nspaces = NULL
 WHERE nspaces = '';
 
 -- Check
-SELECT
-    COALESCE("ncars"::float, 0.0) +
+SELECT "SurveyID",
+    SUM(COALESCE("ncars"::float, 0.0) +
 	COALESCE("nlgvs"::float, 0.0) +
     COALESCE("nmcls"::float, 0.0)*0.33 +
     (COALESCE("nogvs"::float, 0) + COALESCE("nogvs2"::float, 0) + COALESCE("nminib"::float, 0) + COALESCE("nbuses"::float, 0))*1.5 +
-    COALESCE("ntaxis"::float, 0)
-FROM demand."Demand_Merged";
+    COALESCE("ntaxis"::float, 0))
+FROM demand."Demand_Merged"
+GROUP BY "SurveyID"
+ORDER BY "SurveyID";
 
 -- Step 1: Add new fields
 
