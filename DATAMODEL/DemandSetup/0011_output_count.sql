@@ -35,14 +35,20 @@ UPDATE demand."Demand_Merged"
 SET nspaces = NULL
 WHERE nspaces = '';
 
+UPDATE demand."Demand_Merged"
+SET sbays = NULL
+WHERE sbays = '';
+
 -- Check
-SELECT
-    COALESCE("ncars"::float, 0.0) +
+SELECT "SurveyID",
+    SUM(COALESCE("ncars"::float, 0.0) +
 	COALESCE("nlgvs"::float, 0.0) +
     COALESCE("nmcls"::float, 0.0)*0.33 +
     (COALESCE("nogvs"::float, 0) + COALESCE("nogvs2"::float, 0) + COALESCE("nminib"::float, 0) + COALESCE("nbuses"::float, 0))*1.5 +
-    COALESCE("ntaxis"::float, 0)
-FROM demand."Demand_Merged";
+    COALESCE("ntaxis"::float, 0))
+FROM demand."Demand_Merged"
+GROUP BY "SurveyID"
+ORDER BY "SurveyID";
 
 -- Step 1: Add new fields
 
@@ -116,7 +122,7 @@ d."SurveyID", s."SurveyDay" As "Survey Day", s."BeatStartTime" || '-' || s."Beat
        COALESCE("nmcls"::float, 0) AS "Nr MCLs", COALESCE("nogvs"::float, 0) AS "Nr OGVs", COALESCE("nbuses"::float, 0) AS "Nr Buses",
        COALESCE("nspaces"::float, 0) AS "Nr Spaces",
        COALESCE(d."sbays"::integer, 0) AS "Bays Suspended", d."snotes" AS "Suspension Notes", "Demand" As "Demand",
-             d."nnotes" AS "Surveyor Notes"
+             d."nnotes" AS "Surveyor Notes",
         su."RestrictionTypeID", su."Capacity"
 
 FROM --"SYL_AllowableTimePeriods" syls,
