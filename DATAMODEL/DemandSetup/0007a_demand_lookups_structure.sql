@@ -21,7 +21,8 @@ ALTER TABLE "demand_lookups"."SupplyRestrictionTypesInUse_View" OWNER TO "postgr
 
 CREATE TABLE "demand_lookups"."VehicleTypes" (
     "Code" SERIAL,
-    "Description" character varying
+    "Description" character varying,
+    "PCU" double precision
 );
 
 ALTER TABLE "demand_lookups"."VehicleTypes" OWNER TO "postgres";
