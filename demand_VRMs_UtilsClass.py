@@ -22,7 +22,7 @@ from qgis.PyQt.QtWidgets import (
     QLabel,
     QPushButton,
     QApplication,
-    QComboBox, QSizePolicy, QGridLayout,
+    QComboBox, QSizePolicy, QGridLayout, QLineEdit,
     QWidget, QVBoxLayout, QHBoxLayout, QTableView, QTableWidgetItem, QListView, QGroupBox, QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem,
     QProgressDialog, QProgressBar
 )
@@ -131,12 +131,6 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         self.params.getParams()
 
-        status = self.mapOtherFields(restrictionDialog, currRestrictionLayer, currRestriction)
-
-        # Create a copy of the feature
-        self.origFeature = originalFeature()
-        self.origFeature.setFeature(currRestriction)
-
         if restrictionDialog is None:
             reply = QMessageBox.information(None, "Error",
                                             "setupFieldRestrictionDialog. Correct form not found",
@@ -145,6 +139,12 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 "In setupRestrictionDialog. dialog not found",
                 level=Qgis.Info)
             return
+
+        status = self.mapOtherFields(restrictionDialog, currRestrictionLayer, currRestriction)
+
+        # Create a copy of the feature
+        self.origFeature = originalFeature()
+        self.origFeature.setFeature(currRestriction)
 
         restrictionDialog.attributeForm().disconnectButtonBox()
         button_box = restrictionDialog.findChild(QDialogButtonBox, "button_box")
@@ -185,11 +185,6 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def mapOtherFields(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        # is there a better way ???
-        currSurveyName = self.getCurrSurveyName(self.surveyID)
-        SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
-        SurveyBeatTitleWidget.setText(currSurveyName)
-
         if self.dbConn.driverName() == 'QPSQL':
             queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
         else:
@@ -209,10 +204,22 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
                 level=Qgis.Warning)
 
-        RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
-        RoadNameWidget.setText(query.value(RoadName))
-        SectionLengthWidget = restrictionDialog.findChild(QWidget, "SectionLength")
-        SectionLengthWidget.setText(str(query.value(SectionLength)))
+        # is there a better way ???
+        try:
+            currSurveyName = self.getCurrSurveyName(self.surveyID)
+            SurveyBeatTitleWidget = restrictionDialog.findChild(QLineEdit, "SurveyBeatTitle")
+            SurveyBeatTitleWidget.setText(currSurveyName)
+
+            RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
+            RoadNameWidget.setText(query.value(RoadName))
+
+            SectionLengthWidget = restrictionDialog.findChild(QWidget, "SectionLength")
+            SectionLengthWidget.setText(str(query.value(SectionLength)))
+        except:
+            TOMsMessageLog.logMessage(
+                "In mapOtherFields: error finding widgets ... ",
+                level=Qgis.Warning)
+            return
 
         # get restriction details
 
