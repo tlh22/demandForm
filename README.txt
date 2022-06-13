@@ -1,6 +1,6 @@
 Plugin Builder Results
 
-Your plugin VRMsDemand was created in:
+Your plugin Demand was created in:
     C:/Users/Tim/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins\featureswithgps
 
 Your QGIS plugin directory is located at:

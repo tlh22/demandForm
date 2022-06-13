@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 /***************************************************************************
- VRMsDemand
+ Demand
                                  A QGIS plugin
  Start of TOMs
                               -------------------
@@ -55,7 +55,7 @@ from qgis.core import (
 )
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
-from .demand_VRMs_form import demandVRMsForm
+from .demand_VRMs_form import demandForm
 
 
 import os.path
@@ -63,12 +63,12 @@ import time
 import datetime
 
 
-class VRMsDemand:
+class Demand:
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
 
-        QgsMessageLog.logMessage("Starting VRMsDemand ... ", tag="TOMs panel")
+        QgsMessageLog.logMessage("Starting Demand ... ", tag="TOMs panel")
 
         """Constructor.
         
@@ -90,7 +90,7 @@ class VRMsDemand:
         loggingUtils = TOMsMessageLog()
         loggingUtils.setLogFile()
 
-        QgsMessageLog.logMessage("VRMsDemand. Finished init", tag="TOMs panel")
+        QgsMessageLog.logMessage("Demand. Finished init", tag="TOMs panel")
 
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
@@ -103,27 +103,27 @@ class VRMsDemand:
         QgsMessageLog.logMessage("Adding toolbar", tag="TOMs panel")
 
         # Add toolbar 
-        self.demandVRMsToolbar = self.iface.addToolBar("VRMsDemand Toolbar")
-        self.demandVRMsToolbar.setObjectName("demandVRMsToolbar Toolbar")
+        self.demandToolbar = self.iface.addToolBar("Demand Toolbar")
+        self.demandToolbar.setObjectName("demandToolbar")
 
-        self.actionVRMToolbar = QAction(QIcon(""),
+        self.actionDemandToolbar = QAction(QIcon(""),
                                         QCoreApplication.translate("MyPlugin", "Start Demand"), self.iface.mainWindow())
-        self.actionVRMToolbar.setCheckable(True)
+        self.actionDemandToolbar.setCheckable(True)
 
-        self.demandVRMsToolbar.addAction(self.actionVRMToolbar)
+        self.demandToolbar.addAction(self.actionDemandToolbar)
 
-        self.actionVRMToolbar.triggered.connect(self.onInitVRMTools)
+        self.actionDemandToolbar.triggered.connect(self.onInitVRMTools)
         
         # Now set up the toolbar
 
-        self.demandTools = demandVRMsForm(self.iface, self.demandVRMsToolbar)
+        self.demandTools = demandForm(self.iface, self.demandToolbar)
         #self.demandTools.disableFeaturesWithGPSToolbarItems()
 
     def onInitVRMTools(self):
 
         QgsMessageLog.logMessage("In onInitVRMTools", tag="TOMs panel")
 
-        if self.actionVRMToolbar.isChecked():
+        if self.actionDemandToolbar.isChecked():
 
             QgsMessageLog.logMessage("In onInitVRMTools. Activating ...", tag="TOMs panel")
             self.openVRMTools()
@@ -140,10 +140,10 @@ class VRMsDemand:
 
         if self.closeGPSToolsFlag:
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start GPSTools ..."))
-            self.actionVRMToolbar.setChecked(False)
+            self.actionDemandToolbar.setChecked(False)
             return
 
-        self.demandTools.enableVRMToolbarItems()
+        self.demandTools.enableDemandToolbarItems()
         # TODO: connect close project signal to closeGPSTools
 
     def closeVRMTools(self):
@@ -158,16 +158,16 @@ class VRMsDemand:
 
         # Now disable the items from the Toolbar
 
-        self.demandTools.disableVRMToolbarItems()
+        self.demandTools.disableDemandToolbarItems()
 
     def unload(self):
         """Removes the plugin menu item and icon from QGIS GUI."""
 
         # remove the toolbar
         QgsMessageLog.logMessage("Clearing toolbar ... ", tag="TOMs panel")
-        self.demandVRMsToolbar.clear()
+        self.demandToolbar.clear()
         QgsMessageLog.logMessage("Deleting toolbar ... ", tag="TOMs panel")
-        del self.demandVRMsToolbar
+        del self.demandToolbar
         #self.restoreMenusToolbars()
 
         QgsMessageLog.logMessage("Unload comnpleted ... ", tag="TOMs panel")

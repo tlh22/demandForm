@@ -32,7 +32,7 @@ def getDbConn(testLayerName):
         # get the URI containing the connection parameters
         # create a PostgreSQL connection using QSqlDatabase
         dbConn = QSqlDatabase.addDatabase('QPSQL')
-        TOMsMessageLog.logMessage("In enableVRMToolbarItems. uri: {}".format(testUriName), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In enableDemandToolbarItems. uri: {}".format(testUriName), level=Qgis.Warning)
         # check to see if it is valid
         if dbConn.isValid():
             # set the parameters needed for the connection
@@ -47,7 +47,7 @@ def getDbConn(testLayerName):
                 dbConn.setPassword(provider.uri().password)
     else:
         dbName = testUriName[:testUriName.find('|')]
-        TOMsMessageLog.logMessage("In enableVRMToolbarItems. dbName: {}".format(dbName), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In enableDemandToolbarItems. dbName: {}".format(dbName), level=Qgis.Warning)
         dbConn = QSqlDatabase.addDatabase("QSQLITE")
         dbConn.setDatabaseName(dbName)
     return dbConn

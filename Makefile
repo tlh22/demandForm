@@ -1,5 +1,5 @@
 #/***************************************************************************
-# VRMsDemand
+# Demand
 #
 # Features with GPS
 #							 -------------------
@@ -40,7 +40,7 @@ SOURCES = \
 	__init__.py \
 	VRMsDemand.py featuresWithGPS_dialog.py
 
-PLUGINNAME = VRMsDemand
+PLUGINNAME = Demand
 
 PY_FILES = \
 	__init__.py \

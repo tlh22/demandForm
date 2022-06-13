@@ -68,26 +68,26 @@ from qgis.gui import (
 #from qgis.core import *
 #from qgis.gui import *
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
-from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
+from .demand_VRMs_UtilsClass import DemandUtilsMixin, vrmParams
 from restrictionsWithGNSS.SelectTool import (GeometryInfoMapTool, RemoveRestrictionTool)
 #from .formUtils import demandFormUtils
 
 #############################################################################
 
-class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
+class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
 
     notifyFeatureFound = pyqtSignal(QgsVectorLayer, QgsFeature)
 
     def __init__(self, iface, surveyID, enumerator, dbConn):
         GeometryInfoMapTool.__init__(self, iface)
         self.iface = iface
-        VRMsUtilsMixin.__init__(self, iface)
+        DemandUtilsMixin.__init__(self, iface)
 
         self.surveyID = surveyID
         self.enumerator = enumerator
         self.dbConn = dbConn
         self.params = vrmParams()
-        TOMsMessageLog.logMessage("In demandVRMInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In demandInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Info)
 
         self.RESTRICTION_TYPES = QgsProject.instance().mapLayersByName("SupplyRestrictionTypesInUse_View")[0]
 
@@ -98,11 +98,11 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         self.enumerator = str(self.params.setParam("Enumerator"))
 
         TOMsMessageLog.logMessage(
-            "In demandVRMInfoMapTool.showRestrictionDetails ... surveyID: {}, enumerator: {}".format(self.surveyID, self.enumerator),
+            "In demandInfoMapTool.showRestrictionDetails ... surveyID: {}, enumerator: {}".format(self.surveyID, self.enumerator),
             level=Qgis.Info)
 
         TOMsMessageLog.logMessage(
-            "In demandVRMInfoMapTool.showRestrictionDetails ... Layer: {}".format(closestLayer.name()),
+            "In demandInfoMapTool.showRestrictionDetails ... Layer: {}".format(closestLayer.name()),
             level=Qgis.Info)
 
         GeometryID = closestFeature[closestLayer.fields().indexFromName("GeometryID")]
@@ -114,14 +114,14 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         filterString = '\"SurveyID\" = {} AND \"GeometryID\" = \'{}\''.format(self.surveyID, GeometryID)
 
         TOMsMessageLog.logMessage(
-            "In demandVRMInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
+            "In demandInfoMapTool.showRestrictionDetails ... filterString: {}".format(filterString),
             level=Qgis.Info)
 
         request = QgsFeatureRequest().setFilterExpression(filterString)
         restrictionFound = False
         for currRestriction in restrictionsInSurveysLayer.getFeatures(request):
             TOMsMessageLog.logMessage(
-                "In demandVRMInfoMapTool.showRestrictionDetails ... restriction found: ",
+                "In demandInfoMapTool.showRestrictionDetails ... restriction found: ",
                 level=Qgis.Info)
             restrictionFound = True
             break  # take the first one (assuming only one!)
@@ -156,13 +156,13 @@ class demandVRMInfoMapTool(VRMsUtilsMixin, GeometryInfoMapTool):
         dialog.show()
 
     def getFeatureDetails(self, featureList, layerList):
-        TOMsMessageLog.logMessage("In demandVRMInfoMapTool.getFeatureDetails", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In demandInfoMapTool.getFeatureDetails", level=Qgis.Info)
 
         self.featureList = featureList
         self.layerList = layerList
 
         # Creates the context menu and returns the selected feature and layer
-        TOMsMessageLog.logMessage("In demandVRMInfoMapTool.getFeatureDetails: nrFeatures: " + str(len(featureList)), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In demandInfoMapTool.getFeatureDetails: nrFeatures: " + str(len(featureList)), level=Qgis.Info)
 
         self.actions = []
         self.menu = QMenu(self.iface.mapCanvas())

@@ -35,18 +35,7 @@ from qgis.PyQt.QtSql import (
 )
 
 from qgis.core import (
-    Qgis,
-    QgsExpressionContextScope,
-    QgsExpressionContextUtils,
-    QgsExpression,
-    QgsFeatureRequest,
-    QgsMessageLog,
-    QgsFeature,
-    QgsGeometry,
-    QgsTransaction,
-    QgsTransactionGroup,
-    QgsProject,
-    QgsSettings
+    Qgis
 )
 
 from qgis.gui import *

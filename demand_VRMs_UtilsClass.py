@@ -24,14 +24,14 @@ from qgis.PyQt.QtWidgets import (
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QTableView, QTableWidgetItem, QListView, QGroupBox,
-    QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem, QLineEdit, QSpacerItem, QIntValidator,
+    QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem, QLineEdit, QSpacerItem,
     QProgressDialog, QProgressBar, QTextEdit
 )
 
 from qgis.PyQt.QtGui import (
     QIcon,
     QPixmap,
-    QImage, QPainter, QStandardItem
+    QImage, QPainter, QStandardItem, QIntValidator
 )
 
 from qgis.PyQt.QtCore import (
@@ -70,7 +70,7 @@ import math
 
 from abc import ABCMeta
 from TOMs.generateGeometryUtils import generateGeometryUtils
-from TOMs.restrictionTypeUtilsClass import (TOMsParams, TOMsLayers, originalFeature, RestrictionTypeUtilsMixin)
+from TOMs.restrictionTypeUtilsClass import (TOMsParams, TOMsLayers, originalFeature, RestrictionTypeUtilsMixin, TOMsConfigFile)
 from restrictionsWithGNSS.fieldRestrictionTypeUtilsClass import (FieldRestrictionTypeUtilsMixin)
 
 from TOMs.ui.TOMsCamera import (formCamera)
@@ -103,7 +103,7 @@ class vrmParams(TOMsParams):
                           "CurrentSurvey"
                                ])
 
-class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
+class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def __init__(self, iface):
         #RestrictionTypeUtilsMixin.__init__(self, iface)
         self.iface = iface
@@ -113,8 +113,20 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         #self.TOMsUtils = RestrictionTypeUtilsMixin(self.iface)
 
+    def getDemandSurveyType(self):
+
+        surveyType = None
+        self.TOMsConfigFileObject = TOMsConfigFile()
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
+
+        surveyType = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'DemandSurveyType')
+        TOMsMessageLog.logMessage("In DemandUtils:getDemandSurveyType: {}".format(surveyType),
+                                  level=Qgis.Warning)
+
+        return surveyType
+
     def setDefaultFieldRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
-        TOMsMessageLog.logMessage("In VRM:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In DemandUtils:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Info)
 
         # TODO: Need to check whether or not these fields exist. Also need to retain the last values and reuse
         # gis.stackexchange.com/questions/138563/replacing-action-triggered-script-by-one-supplied-through-qgis-plugin
@@ -127,7 +139,7 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def setupFieldRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        TOMsMessageLog.logMessage("In VRM:setupVRMDialog: {}".format(currRestrictionLayer.name()),
+        TOMsMessageLog.logMessage("In DemandUtilsMixin:setupFieldRestrictionDialog: {}".format(currRestrictionLayer.name()),
                                   level=Qgis.Info)
 
         self.params.getParams()
@@ -169,12 +181,18 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
 
-        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Info)
-
         """
         Check survey type ... If not vrm, then create widgets and populate fields
         """
-        self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
+        surveyType = self.getDemandSurveyType()
+        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. surveyType: {}".format(surveyType), level=Qgis.Warning)
+
+        if surveyType == 'Count':
+            TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addCountWidget ...", level=Qgis.Warning)
+            self.addCountWidget(restrictionDialog, currRestrictionLayer, currRestriction)
+        else:
+            TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Warning)
+            self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
 
         #self.addScrollBars(restrictionDialog)
 
@@ -345,18 +363,18 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
-        vrmsTab = restrictionDialog.findChild(QWidget, "Demand")
-        vrmsLayout = vrmsTab.layout()
-        vrmForm = vrmWidget(vrmsTab, self.dbConn)
-        vrmForm.startOperation.connect(self.startProgressDialog)
-        vrmForm.progressUpdated.connect(self.showProgress)
-        vrmForm.endOperation.connect(self.endProgressDialog)
+        demandTab = restrictionDialog.findChild(QWidget, "Demand")
+        demandLayout = demandTab.layout()
+        demandForm = vrmWidget(demandTab, self.dbConn)
+        demandForm.startOperation.connect(self.startProgressDialog)
+        demandForm.progressUpdated.connect(self.showProgress)
+        demandForm.endOperation.connect(self.endProgressDialog)
 
         currGeometryID = currRestriction.attribute("GeometryID")
 
-        vrmForm.populateVrmWidget(self.surveyID, currGeometryID)
+        demandForm.populateVrmWidget(self.surveyID, currGeometryID)
 
-        vrmsLayout.addWidget(vrmForm)
+        demandLayout.addWidget(demandForm)
 
         buttonLayout = QVBoxLayout()
         buttonLayout.setSpacing(50)
@@ -365,10 +383,10 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         buttonLayout.addWidget(addButton)
         buttonLayout.addWidget(removeButton)
 
-        vrmsLayout.addLayout(buttonLayout, 1, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        demandLayout.addLayout(buttonLayout, 1, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
 
-        addButton.clicked.connect(functools.partial(vrmForm.insertVrm, self.surveyID, currGeometryID))
-        removeButton.clicked.connect(vrmForm.deleteVrm)
+        addButton.clicked.connect(functools.partial(demandForm.insertVrm, self.surveyID, currGeometryID))
+        removeButton.clicked.connect(demandForm.deleteVrm)
 
     def addCountWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
@@ -376,51 +394,11 @@ class VRMsUtilsMixin(FieldRestrictionTypeUtilsMixin):
         demandTab = restrictionDialog.findChild(QWidget, "Demand")
         demandLayout = demandTab.layout()
 
-        #demandForm = vrmWidget(demandTab, self.dbConn)
-        #demandForm.startOperation.connect(self.startProgressDialog)
-        #demandForm.progressUpdated.connect(self.showProgress)
-        #demandForm.endOperation.connect(self.endProgressDialog)
-
         currGeometryID = currRestriction.attribute("GeometryID")
 
-        #demandForm.populateVrmWidget(self.surveyID, currGeometryID)
+        demandForm.populateVrmWidget(self.surveyID, currGeometryID)
 
-        #demandLayout.addWidget(demandForm)
 
-        countLayout = QHBoxLayout()
-        col1_layout = QFormLayout()
-        col2_layout = QFormLayout()
-
-        col1_layout.addRow("Cars:", QLineEdit(objectName='NrCars'))
-        col1_layout.addRow("LGVs:", QLineEdit(objectName='NrLGVs'))
-        col1_layout.addRow("MCLs:", QLineEdit(objectName='NrMCLs'))
-        col1_layout.addRow("Taxis:", QLineEdit(objectName='NrTaxis'))
-
-        col2_layout.addRow("PCLs:", QLineEdit(objectName='NrPCLs'))
-        col2_layout.addRow("OGVs:", QLineEdit(objectName='NrOGVs'))
-        col2_layout.addRow("Buses:", QLineEdit(objectName='NrBuses'))
-        col2_layout.addRow("Spaces:", QLineEdit(objectName='NrSpaces'))
-
-        countLayout.addLayout(col1_layout)
-        countLayout.addItem(QSpacerItem())
-        countLayout.addLayout(col2_layout)
-
-        # add validators
-        # use of validator - https://stackoverflow.com/questions/54741145/i-use-qdoublevalidator-in-my-pyqt5-program-but-it-doesnt-seem-to-work
-
-        for widget in self.countLayout.parentWidget().findChildren(QLineEdit):
-            widget.setValidator(QIntValidator(
-                    0,  # bottom
-                    200  # top
-                )
-
-        # Now add "Notes" widget
-        notes_layout = QFormLayout()
-        notes_layout.addRow("Notes:", QTextEdit(objectName='SurveyNotes'))
-
-        demandLayout.addLayout(countLayout)
-        demandLayout.addItem(QSpacerItem())
-        demandLayout.addLayout(notes_layout)
 
         #addButton.clicked.connect(functools.partial(demandForm.insertVrm, self.surveyID, currGeometryID))
         #removeButton.clicked.connect(demandForm.deleteVrm)
