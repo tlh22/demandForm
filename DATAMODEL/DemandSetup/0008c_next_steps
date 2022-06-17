@@ -1,26 +1,23 @@
-VRMs
 
 Using the - load project, create the required gpkgs using QGIS "package layers"
 
 Background
- - topo polys
- - topo text
- - site area
- - road centre line
- - survey areas ?
-
+ - os_mastermap_topography_polygons
+ - os_mastermap_topography_text
+ - RoadCentreLine
+ - SiteArea
+ - SurveyAreas (if required)
 
 Demand
-  - VRMs
+  - VRMs or Counts
   - RestrictionsInSurveys
-  - Supply
-  - VehicleTypes
   - PermitTypes (even if empty)
-  - Surveys
+  - Supply
   - SupplyRestrictionTypesInUse_View
+  - Surveys
+  - VehicleTypes
 
-
----
+--- previously ...
 
 Count
 

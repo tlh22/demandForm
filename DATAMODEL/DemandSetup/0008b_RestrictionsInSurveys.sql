@@ -6,8 +6,8 @@ DROP TABLE IF EXISTS demand."RestrictionsInSurveys" CASCADE;
 
 CREATE TABLE demand."RestrictionsInSurveys"
 (
-    "SurveyID" integer,
-    "GeometryID" character varying(12) COLLATE pg_catalog."default",
+    "SurveyID" integer NOT NULL,
+    "GeometryID" character varying(12) COLLATE pg_catalog."default" NOT NULL,
     "DemandSurveyDateTime" timestamp without time zone,
     "Enumerator" character varying (100) COLLATE pg_catalog."default",
     "Done" boolean,
@@ -27,6 +27,9 @@ TABLESPACE pg_default;
 
 ALTER TABLE demand."RestrictionsInSurveys"
     OWNER to postgres;
+
+CREATE UNIQUE INDEX "RiS_unique_idx"
+ON demand."RestrictionsInSurveys"("SurveyID", "GeometryID");
 
 INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", gid::text AS "GeometryID", r.geom As geom

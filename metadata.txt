@@ -3,9 +3,9 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=demandToolVRM
+name=demandTool
 qgisMinimumVersion=3.0
-description=Features with GPS
+description=Plugin used to capture parking demand
 version=0.1
 author=TH for MHTC
 email=th@mhtc.co.uk

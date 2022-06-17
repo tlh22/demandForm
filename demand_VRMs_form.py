@@ -64,47 +64,47 @@ import os, time
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 from TOMs.search_bar import searchBar
 
-from .demand_VRMs_UtilsClass import VRMsUtilsMixin, vrmParams
+from .demand_VRMs_UtilsClass import DemandUtilsMixin, vrmParams
 from .SelectTool import GeometryInfoMapTool, RemoveRestrictionTool
 from TOMs.restrictionTypeUtilsClass import TOMsLayers, TOMsConfigFile
-from .SelectTool import demandVRMInfoMapTool
+from .SelectTool import demandInfoMapTool
 import functools
 
-class demandVRMsForm(VRMsUtilsMixin):
+class demandForm(DemandUtilsMixin):
 
-    def __init__(self, iface, demandVRMsToolbar):
+    def __init__(self, iface, demandToolbar):
 
         TOMsMessageLog.logMessage("In captureGPSFeatures::init", level=Qgis.Info)
 
-        VRMsUtilsMixin.__init__(self, iface)
+        DemandUtilsMixin.__init__(self, iface)
 
         # Save reference to the QGIS interface
         self.iface = iface
         self.canvas = self.iface.mapCanvas()
 
-        self.demandVRMsToolbar = demandVRMsToolbar
+        self.demandToolbar = demandToolbar
         #self.gpsMapTool = False
         self.marker = None
 
         # This will set up the items on the toolbar
         # Create actions
 
-        self.demandVRMsGroup = QActionGroup(demandVRMsToolbar)
+        self.demandGroup = QActionGroup(demandToolbar)
 
         self.actionRestrictionDetails = QAction(QIcon(":/plugins/featureswithgps/resources/mActionGetInfo.svg"),
                                          QCoreApplication.translate("MyPlugin", "Get Section Details"),
                                          self.iface.mainWindow())
         self.actionRestrictionDetails.setCheckable(True)
-        self.demandVRMsGroup.addAction(self.actionRestrictionDetails)
+        self.demandGroup.addAction(self.actionRestrictionDetails)
 
         # Add actions to the toolbar
 
-        self.demandVRMsToolbar.addAction(self.actionRestrictionDetails)
+        self.demandToolbar.addAction(self.actionRestrictionDetails)
 
-        self.demandVRMsGroup.addAction(self.actionRestrictionDetails)
+        self.demandGroup.addAction(self.actionRestrictionDetails)
 
-        self.demandVRMsGroup.setExclusive(True)
-        self.demandVRMsGroup.triggered.connect(self.onGroupTriggered)
+        self.demandGroup.setExclusive(True)
+        self.demandGroup.triggered.connect(self.onGroupTriggered)
 
         # Connect action signals to slots
 
@@ -112,15 +112,15 @@ class demandVRMsForm(VRMsUtilsMixin):
 
         self.actionRestrictionDetails.setEnabled(False)
 
-        #self.searchBar = searchBar(self.iface, self.demandVRMsToolbar)
+        #self.searchBar = searchBar(self.iface, self.demandToolbar)
         #self.searchBar.disableSearchBar()
 
         self.mapTool = None
         self.createMapToolDict = {}
 
-    def enableVRMToolbarItems(self):
+    def enableDemandToolbarItems(self):
 
-        TOMsMessageLog.logMessage("In enableVRMToolbarItems", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In enableDemandToolbarItems", level=Qgis.Info)
         self.closeTOMs = False
 
         self.tableNames = TOMsLayers(self.iface)
@@ -140,7 +140,7 @@ class demandVRMsForm(VRMsUtilsMixin):
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start editing tool ..."))
             return   # TODO: allow function to continue without GPS enabled ...
 
-        self.dbConn = self.getDbConn('VRMs')
+        self.dbConn = self.getDbConn('RestrictionsInSurveys')
 
         if not self.dbConn.open():
             reply = QMessageBox.information(None, "Error",
@@ -156,9 +156,15 @@ class demandVRMsForm(VRMsUtilsMixin):
         self.checkEnumeratorName()  # sets self.enumerator
         self.surveyID = self.confirmSurveyNr()
 
-        TOMsMessageLog.logMessage("In enableVRMToolbarItems. surveyID: {}".format(self.surveyID), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In enableDemandToolbarItems. surveyID: {}".format(self.surveyID), level=Qgis.Info)
 
-        self.checkPreviousSurvey(self.surveyID)
+        """
+        Check type of survey here ...
+        """
+        vrmSurvey = True
+
+        if self.getDemandSurveyType() == 'VRM':
+            self.checkPreviousSurvey(self.surveyID)
 
         self.enableToolbarItems()
 
@@ -181,9 +187,9 @@ class demandVRMsForm(VRMsUtilsMixin):
         self.closeTOMs = True
         QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Now closing TOMs ..."))
 
-    def disableVRMToolbarItems(self):
+    def disableDemandToolbarItems(self):
 
-        TOMsMessageLog.logMessage("In disableVRMToolbarItems", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In disableDemandToolbarItems", level=Qgis.Info)
 
         self.disableToolbarItems()
 
@@ -204,7 +210,7 @@ class demandVRMsForm(VRMsUtilsMixin):
             self.iface.currentLayerChanged.disconnect(self.changeCurrLayer2)
         except Exception as e:
             TOMsMessageLog.logMessage(
-                "In disableVRMToolbarItems. Issue with disconnects for currentLayerChanged {}".format(e),
+                "In disableDemandToolbarItems. Issue with disconnects for currentLayerChanged {}".format(e),
                 level=Qgis.Warning)
 
         try:
@@ -286,7 +292,7 @@ class demandVRMsForm(VRMsUtilsMixin):
 
             TOMsMessageLog.logMessage("In doRestrictionDetails - tool activated", level=Qgis.Info)
 
-            self.showRestrictionMapTool = demandVRMInfoMapTool(self.iface, self.surveyID, self.enumerator, self.dbConn)
+            self.showRestrictionMapTool = demandInfoMapTool(self.iface, self.surveyID, self.enumerator, self.dbConn)
             self.iface.mapCanvas().setMapTool(self.showRestrictionMapTool)
 
         else:
