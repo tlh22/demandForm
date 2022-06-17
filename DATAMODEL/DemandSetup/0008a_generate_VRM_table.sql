@@ -3,9 +3,9 @@ DROP TABLE IF EXISTS demand."VRMs" CASCADE;
 CREATE TABLE demand."VRMs"
 (
   "ID" SERIAL,
-  "SurveyID" integer,
+  "SurveyID" integer NOT NULL,
   "SectionID" integer,
-  "GeometryID" character varying(12),
+  "GeometryID" character varying(12) NOT NULL,
   "PositionID" integer,
   "VRM" character varying(12),
   "VehicleTypeID" integer,
@@ -19,3 +19,6 @@ WITH (
 );
 ALTER TABLE demand."VRMs"
   OWNER TO postgres;
+
+CREATE UNIQUE INDEX "VRMs_unique_idx"
+ON demand."VRMs"("SurveyID", "GeometryID");

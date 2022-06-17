@@ -247,7 +247,7 @@ t.VRM_DemandForm(iface)
 from demandVRMsForm.ui.VRM_Demand_dialog import VRM_DemandDialog
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
-from demandVRMsForm.vrmTableWidget import vrmWidget
+from demandVRMsForm.vrmWidget import vrmWidget
 import functools
 
 supplyLayer = QgsProject.instance().mapLayersByName('Supply')[0]
@@ -264,7 +264,7 @@ vrmForm = vrmWidget(vrmsTab)
 currGeometryID = currRestriction.attribute("gid")
 currGeometryID = 28
 
-vrmForm.populateVrmWidget(surveyID, currGeometryID)
+vrmForm.populateDemandWidget(surveyID, currGeometryID)
 vrmsLayout.addWidget(vrmForm)
 
 buttonLayout = QVBoxLayout()
@@ -299,17 +299,17 @@ vrmModel.setRelation(int(vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('Ve
 rel = vrmModel.relation(int(vrmModel.fieldIndex("VehicleTypeID")))
 if not rel.isValid():
     print ('Relation not valid ...')
-    TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(vrmModel.lastError().text()),
+    TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(vrmModel.lastError().text()),
                               level=Qgis.Warning)
 
 result = vrmModel.select()
 if result == False:
-    TOMsMessageLog.logMessage("In populateVrmWidget: No result from select: {} ".format(vrmModel.lastError().text()),
+    TOMsMessageLog.logMessage("In populateDemandWidget: No result from select: {} ".format(vrmModel.lastError().text()),
                               level=Qgis.Warning)
     #print ('Select: {}'.format(my_model.lastError().text()))
 
 TOMsMessageLog.logMessage(
-    "In populateVrmWidget: nr Rows: {} ".format(vrmModel.rowCount()),
+    "In populateDemandWidget: nr Rows: {} ".format(vrmModel.rowCount()),
     level=Qgis.Warning)
 
 #show the view with model

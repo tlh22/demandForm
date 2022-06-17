@@ -70,9 +70,9 @@ class vrmWidget(QTableView):
         #vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
         #self.provider = vrmsLayer.dataProvider()
 
-    def populateVrmWidget(self, surveyID, GeometryID):
+    def populateDemandWidget(self, surveyID, GeometryID):
 
-        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In vrmWidget:populateDemandWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
         if self.dbConn.driverName() == 'QPSQL':
             self.vrmModel.setTable('demand' + '.\"VRMs\"')
@@ -83,7 +83,7 @@ class vrmWidget(QTableView):
         self.vrmModel.setEditStrategy(QSqlTableModel.OnFieldChange)
 
         filterString = "\"SurveyID\" = {} AND \"GeometryID\" = \'{}\'".format(surveyID, GeometryID)
-        TOMsMessageLog.logMessage("In vrmWidget:populateVrmWidget ... filterString: {}".format(filterString), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In vrmWidget:populateDemandWidget ... filterString: {}".format(filterString), level=Qgis.Info)
 
         self.vrmModel.setFilter(filterString)
         #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
@@ -105,7 +105,7 @@ class vrmWidget(QTableView):
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('VehicleTypeID')))
         if not rel.isValid():
             #print ('Relation not valid ...')
-            TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
+            TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
         self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('VehicleTypeID'), Qt.Horizontal, 'VehicleType')
 
@@ -117,17 +117,17 @@ class vrmWidget(QTableView):
 
         if not rel.isValid():
             #print ('Relation not valid ...')
-            TOMsMessageLog.logMessage("In populateVrmWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
+            TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
         self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('PermitTypeID'), Qt.Horizontal, 'PermitType')
 
         result = self.vrmModel.select()
         if result == False:
-            TOMsMessageLog.logMessage("In populateVrmWidget: No result from select: {} ".format(self.vrmModel.lastError().text()),
+            TOMsMessageLog.logMessage("In populateDemandWidget: No result from select: {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
 
         TOMsMessageLog.logMessage(
-            "In populateVrmWidget: nr Rows: {} ".format(self.vrmModel.rowCount()),
+            "In populateDemandWidget: nr Rows: {} ".format(self.vrmModel.rowCount()),
             level=Qgis.Info)
 
         self.setModel(self.vrmModel)

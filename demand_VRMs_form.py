@@ -163,7 +163,7 @@ class demandForm(DemandUtilsMixin):
         """
         vrmSurvey = True
 
-        if vrmSurvey:
+        if self.getDemandSurveyType() == 'VRM':
             self.checkPreviousSurvey(self.surveyID)
 
         self.enableToolbarItems()
