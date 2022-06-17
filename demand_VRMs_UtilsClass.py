@@ -122,7 +122,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         surveyType = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'DemandSurveyType')
         TOMsMessageLog.logMessage("In DemandUtils:getDemandSurveyType: {}".format(surveyType),
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         return surveyType
 
@@ -134,7 +134,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         mainTabName = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'MainTabName')
         TOMsMessageLog.logMessage("In DemandUtils:getMainTabName: {}".format(mainTabName),
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         return mainTabName
 
@@ -146,7 +146,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         extraTabName = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'ExtraTabName')
         TOMsMessageLog.logMessage("In DemandUtils:getExtraTabName: {}".format(extraTabName),
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         return extraTabName
 
@@ -210,15 +210,15 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         Check survey type ... If not vrm, then create widgets and populate fields
         """
         surveyType = self.getDemandSurveyType()
-        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. surveyType: {}".format(surveyType), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. surveyType: {}".format(surveyType), level=Qgis.Info)
 
         self.setMainTabName(restrictionDialog)
 
         if surveyType == 'Count':
-            TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addCountWidget ...", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addCountWidget ...", level=Qgis.Info)
             self.addCountWidget(restrictionDialog, currRestrictionLayer, currRestriction)
         else:
-            TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Info)
             self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
 
         #self.addScrollBars(restrictionDialog)
@@ -227,7 +227,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             set form location (based on last position)
         """
 
-        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. set form location ...", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. set form location ...", level=Qgis.Info)
 
         dw = restrictionDialog.width()
         dh = restrictionDialog.height()
@@ -259,7 +259,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage(
                 "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
-                level=Qgis.Warning)
+                level=Qgis.Info)
 
         RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
         RoadNameWidget.setText(query.value(RoadName))
@@ -424,7 +424,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def addCountWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
         thisCountWidget = countWidget(restrictionDialog, self.dbConn)
         self.countModel = thisCountWidget.getCountModel()
@@ -437,7 +437,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     @pyqtSlot()
     def startProgressDialog(self):
-        TOMsMessageLog.logMessage("In utils::startProgressDialog ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In utils::startProgressDialog ... ", level=Qgis.Info)
         self.progressDialog = QProgressDialog("Operation in progress.", "", 0, 100)
         self.progressDialog.setWindowModality(Qt.WindowModal)
         self.progressDialog.setWindowTitle("Resetting position ...")
@@ -450,7 +450,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     @pyqtSlot()
     def endProgressDialog(self):
-        TOMsMessageLog.logMessage("In utils::endProgressDialog ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In utils::endProgressDialog ... ", level=Qgis.Info)
         self.progressDialog.close()
 
     def getCurrSurveyName(self, currSurveyID):
@@ -491,13 +491,13 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def setMainTabName(self, restrictionDialog):
 
-        TOMsMessageLog.logMessage("In setMainTabName ... ", level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In setMainTabName ... ", level=Qgis.Info)
         demandTab = restrictionDialog.findChild(QTabWidget, "Details")
         idx_main = demandTab.indexOf(restrictionDialog.findChild(QWidget, "Demand"))
 
         mainTabText = self.getMainTabName()
 
-        TOMsMessageLog.logMessage("In setMainTabName ... newText: {}; idx: {}".format(mainTabText, idx_main), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In setMainTabName ... newText: {}; idx: {}".format(mainTabText, idx_main), level=Qgis.Info)
 
         if mainTabText:
             demandTab.setTabText (idx_main, mainTabText)

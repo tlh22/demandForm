@@ -69,7 +69,7 @@ class countWidget(QTableView):
 
         filterString = "\"SurveyID\" = {} AND \"GeometryID\" = \'{}\'".format(surveyID, GeometryID)
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... filterString: {}".format(filterString),
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         self.countModel.setFilter(filterString)
 
@@ -77,7 +77,7 @@ class countWidget(QTableView):
         self.mapper.setModel(self.countModel)
 
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... model set ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
         self.setupMainCountTab()
 
         if extraTabLabel:
@@ -92,19 +92,19 @@ class countWidget(QTableView):
         if result == False:
             TOMsMessageLog.logMessage(
                 "In populateDemandWidget: No result from select: {} ".format(self.countModel.lastError().text()),
-                level=Qgis.Warning)
+                level=Qgis.Info)
 
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... selected ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         TOMsMessageLog.logMessage(
             "In populateDemandWidget: nr Rows: {} ".format(self.countModel.rowCount()),
-            level=Qgis.Warning)
+            level=Qgis.Info)
 
         self.mapper.toFirst()  # TODO: check if this fails ...
 
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... finishing ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
     def setupMainCountTab(self):
 
@@ -167,12 +167,12 @@ class countWidget(QTableView):
         self.mapper.addMapping(self.restrictionDialog.findChild(QTextEdit, "Notes"), self.countModel.fieldIndex('Notes'))
 
         TOMsMessageLog.logMessage("In countWidget:setupMainCountTab ... mapping added ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
     def setupExtraCountTab(self):
 
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTab ... starting ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         extraTab = QWidget()
         demandLayout = QGridLayout(extraTab)
@@ -212,14 +212,14 @@ class countWidget(QTableView):
             ))
 
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTab ... finishing ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         return extraTab
 
     def setupExtraCountTabMapping(self):
 
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTabMapping ... starting ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCars_Suspended"),
                                self.countModel.fieldIndex('NrCars_Suspended'))
@@ -243,4 +243,4 @@ class countWidget(QTableView):
                                self.countModel.fieldIndex('NrBuses_Suspended'))
 
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTab ... mapping added ...",
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
