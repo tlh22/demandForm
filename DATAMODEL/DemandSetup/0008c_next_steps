@@ -10,33 +10,9 @@ Background
 
 Demand
   - VRMs or Counts
-  - RestrictionsInSurveys
   - PermitTypes (even if empty)
+  - RestrictionsInSurveys
   - Supply
   - SupplyRestrictionTypesInUse_View
   - Surveys
   - VehicleTypes
-
---- previously ...
-
-Count
-
-Using the load (count) project,
-
-a. create the background gpkg using QGIS "package layers"
- - topo polys
- - topo text
- - site area
- - road centre line
- - survey areas ?
- - Surveys
- - SupplyRestrictionTypesInUse_View
- - PolygonRestrictionTypesInUse_View
- - Supply
- - CPZs, PTAs, MatchDay zones
- - Unacceptable types ??
-
-b. use the prepareDemandLayers to create relevant layers
-  - Demand_<SurveybeatTitle>
-  - ...
-

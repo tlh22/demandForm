@@ -1,5 +1,5 @@
 
-DROP TABLE IF EXISTS demand."Count" CASCADE;
+DROP TABLE IF EXISTS demand."Counts" CASCADE;
 
 CREATE TABLE "demand"."Counts" (
   "ID" SERIAL,
@@ -37,21 +37,21 @@ CREATE TABLE "demand"."Counts" (
   "NrBuses_Suspended" integer,
 
 
-  CONSTRAINT "Count_pkey" PRIMARY KEY ("ID")
+  CONSTRAINT "Counts_pkey" PRIMARY KEY ("ID")
 )
 WITH (
   OIDS=FALSE
 );
 
-ALTER TABLE demand."Count"
+ALTER TABLE demand."Counts"
   OWNER TO postgres;
 
-CREATE UNIQUE INDEX "Count_unique_idx"
+CREATE UNIQUE INDEX "Counts_unique_idx"
 ON demand."Counts"("SurveyID", "GeometryID");
 
 -- and populate
 
-INSERT INTO "demand"."Count" ("SurveyID", "GeometryID")
+INSERT INTO "demand"."Counts" ("SurveyID", "GeometryID")
 SELECT "SurveyID", "GeometryID"
 FROM mhtc_operations."Supply" r, demand."Surveys";
 
