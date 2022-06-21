@@ -101,7 +101,8 @@ class vrmParams(TOMsParams):
         self.TOMsParamsList.extend([
                           "CameraNr",
                           "Enumerator",
-                          "CurrentSurvey"
+                          "CurrentSurvey",
+                          "rotateCamera"
                                ])
 
 class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
