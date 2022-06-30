@@ -18,11 +18,8 @@ CREATE TABLE "demand"."Counts" (
   "NrMiniBuses" integer,
   "NrBuses" integer,
   "NrSpaces" integer,
-  "Notes" character varying(250) COLLATE pg_catalog."default",
+  "Notes" character varying(10000) COLLATE pg_catalog."default",
 
-  "SuspensionReference" character varying(100) COLLATE pg_catalog."default",
-  "NrBaysSuspended" integer,
-  "ReasonForSuspension" character varying(100) COLLATE pg_catalog."default",
   "DoubleParkingDetails" character varying COLLATE pg_catalog."default",
 
   "NrCars_Suspended" integer,
