@@ -139,7 +139,7 @@ class countWidget(QTableView):
         # Now add "Notes" widget
         notes_layout = QFormLayout()
         demandNotes = QTextEdit(objectName='Notes')
-        demandNotes.setPlainText()
+        #demandNotes.setPlainText()
         notes_layout.addRow("Notes:", demandNotes)
 
         demandLayout.addLayout(countLayout, 0, 0)
