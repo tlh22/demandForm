@@ -80,7 +80,7 @@ class countWidget(QTableView):
                                   level=Qgis.Info)
         self.setupMainCountTab()
 
-        if extraTabLabel:
+        if extraTabLabel is not None:
             extraTab = self.setupExtraCountTab()
             TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... new tab added ...",
                                       level=Qgis.Warning)
