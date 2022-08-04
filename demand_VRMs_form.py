@@ -140,7 +140,7 @@ class demandForm(DemandUtilsMixin):
             QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Unable to start editing tool ..."))
             return   # TODO: allow function to continue without GPS enabled ...
 
-        self.dbConn = self.getDbConn('RestrictionsInSurveys')
+        self.dbConn, self.demand_schema = self.getDbConn('RestrictionsInSurveys')
 
         if not self.dbConn.open():
             reply = QMessageBox.information(None, "Error",

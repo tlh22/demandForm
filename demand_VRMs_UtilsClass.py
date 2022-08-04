@@ -367,6 +367,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             return None
 
         testUriName = testLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
+        demand_schema = None
 
         if provider.name() == 'postgres':
             # get the URI containing the connection parameters
@@ -385,6 +386,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
                     dbConn.setPort(int(provider.uri().port()))
                     dbConn.setUserName(provider.uri().username)
                     dbConn.setPassword(provider.uri().password)
+                    
+                    demand_schema = testUriName.schema()
 
         else:
             dbName = testUriName[:testUriName.find('|')]
@@ -393,7 +396,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             dbConn = QSqlDatabase.addDatabase("QSQLITE")
             dbConn.setDatabaseName(dbName)
 
-        return dbConn
+        return dbConn, demand_schema
 
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
