@@ -141,6 +141,7 @@ class demandForm(DemandUtilsMixin):
             return   # TODO: allow function to continue without GPS enabled ...
 
         self.dbConn, self.demand_schema = self.getDbConn('RestrictionsInSurveys')
+        TOMsMessageLog.logMessage("In enableDemandToolbarItems. schema: {}".format(self.demand_schema), level=Qgis.Warning)
 
         if not self.dbConn.open():
             reply = QMessageBox.information(None, "Error",
@@ -377,7 +378,8 @@ class demandForm(DemandUtilsMixin):
         query = QSqlQuery(self.dbConn)
         TOMsMessageLog.logMessage("In getCurrSurvey: connection is: {}".format(self.dbConn.driverName()), level=Qgis.Info)
         if self.dbConn.driverName() == 'QPSQL':
-            queryStr = 'SELECT "SurveyID", "BeatTitle" FROM demand."Surveys" ORDER BY "SurveyID" ASC;'
+            queryStr = 'SELECT "SurveyID", "BeatTitle" FROM "{}"."Surveys" ORDER BY "SurveyID" ASC;'.format(self.demand_schema)
+            TOMsMessageLog.logMessage("In getCurrSurvey: schema is: {}".format(self.demand_schema), level=Qgis.Warning)
         else:
             queryStr = 'SELECT "SurveyID", "BeatTitle" FROM "Surveys" ORDER BY "SurveyID" ASC;'
 
