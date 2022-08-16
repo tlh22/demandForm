@@ -117,17 +117,22 @@ UPDATE "demand"."Demand_Merged" SET "RestrictionLength" = "RestrictionLength";
 -- Step 3: output demand
 
 SELECT
-d."SurveyID", s."SurveyDay" As "Survey Day", s."BeatStartTime" || '-' || s."BeatEndTime" As "Survey Time", d."GeometryID",
-       (COALESCE("ncars"::float, 0)+COALESCE("ntaxis"::float, 0)) As "Nr Cars", COALESCE("nlgvs"::float, 0) As "Nr LGVs",
-       COALESCE("nmcls"::float, 0) AS "Nr MCLs", COALESCE("nogvs"::float, 0) AS "Nr OGVs", COALESCE("nbuses"::float, 0) AS "Nr Buses",
-       COALESCE("nspaces"::float, 0) AS "Nr Spaces",
-       COALESCE(d."sbays"::integer, 0) AS "Bays Suspended", d."snotes" AS "Suspension Notes", "Demand" As "Demand",
-             d."nnotes" AS "Surveyor Notes",
+d."SurveyID", s."SurveyDate" AS "Survey Date", s."SurveyDay" As "Survey Day", s."BeatStartTime" || '-' || s."BeatEndTime" As "Survey Time", d."GeometryID",
+       (COALESCE("NrCars"::float, 0)+COALESCE("NrTaxis"::float, 0)) As "Nr Cars", COALESCE("NrLGVs"::float, 0) As "Nr LGVs",
+       COALESCE("NrMCLs"::float, 0) AS "Nr MCLs", COALESCE("NrOGVs"::float, 0) AS "Nr OGVs", COALESCE("NrBuses"::float, 0) AS "Nr Buses",
+	   COALESCE("NrMiniBuses"::float, 0) AS "Nr Mini-Buses",
+       COALESCE("NrSpaces"::float, 0) AS "Nr Spaces",
+       COALESCE(RiS."NrBaysSuspended"::integer, 0) AS "Bays Suspended", RiS."SuspensionNotes" AS "Suspension Notes", RiS."Demand" As "Demand",
+             d."Notes" AS "Surveyor Notes",
         su."RestrictionTypeID", su."Capacity"
 
 FROM --"SYL_AllowableTimePeriods" syls,
-      demand."Demand_Merged" d, demand."Surveys" s, mhtc_operations."Supply" su  -- include Supply to ensure that only current supply elements are included
+      demand."Counts" d, demand."Surveys" s, demand."RestrictionsInSurveys" RiS,
+	  mhtc_operations."Supply" su  -- include Supply to ensure that only current supply elements are included
 WHERE s."SurveyID" = d."SurveyID"
+AND s."SurveyID" > 0
 AND d."GeometryID" = su."GeometryID"
+AND d."SurveyID" = RiS."SurveyID"
+AND d."GeometryID" = RiS."GeometryID"
 ORDER BY  "GeometryID", d."SurveyID"
 
