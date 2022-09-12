@@ -141,6 +141,7 @@ dmypy.json
 .idea/workspace.xml
 __pycache__/fieldRestrictionTypeUtilsClass.cpython-37.pyc
 
-.settings/org.eclipse.core.resources.prefs
 .project
+.settings/org.eclipse.core.resources.prefs
+
 .pydevproject

@@ -23,7 +23,7 @@ from qgis.PyQt.QtWidgets import (
     QComboBox, QSizePolicy, QGridLayout,
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QTableView, QTableWidgetItem, QListView, QGroupBox,
     QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem, QLineEdit, QSpacerItem,
-    QProgressDialog, QProgressBar, QTextEdit, QTabWidget
+    QProgressDialog, QProgressBar, QTextEdit, QTabWidget, QPlainTextEdit
 )
 
 from qgis.PyQt.QtSql import (
@@ -80,7 +80,7 @@ class countWidget(QTableView):
                                   level=Qgis.Info)
         self.setupMainCountTab()
 
-        if extraTabLabel:
+        if extraTabLabel is not None:
             extraTab = self.setupExtraCountTab()
             TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... new tab added ...",
                                       level=Qgis.Warning)

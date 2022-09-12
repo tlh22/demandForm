@@ -19,6 +19,3 @@ WITH (
 );
 ALTER TABLE demand."VRMs"
   OWNER TO postgres;
-
-CREATE UNIQUE INDEX "VRMs_unique_idx"
-ON demand."VRMs"("SurveyID", "GeometryID");

@@ -166,7 +166,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def setupFieldRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        TOMsMessageLog.logMessage("In DemandUtilsMixin:setupFieldRestrictionDialog: {}".format(currRestrictionLayer.name()),
+        TOMsMessageLog.logMessage("In DemandUtilsMixin:setupFieldRestrictionDialog: {}: {}".format(currRestrictionLayer.name(), currRestriction.attribute('GeometryID')),
                                   level=Qgis.Info)
 
         self.params.getParams()
@@ -305,7 +305,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         return
 
     def onSaveFieldRestrictionDetails(self, currFeature, currFeatureLayer, dialog):
-        TOMsMessageLog.logMessage("In onSaveFieldRestrictionDetails:  currFeatureID: ".format(currFeature.id()), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In onSaveFieldRestrictionDetails:  currFeatureID: {}; {}".format(currFeature.id(), currFeature.attribute('GeometryID')), level=Qgis.Info)
 
         try:
             self.camera1.endCamera()
