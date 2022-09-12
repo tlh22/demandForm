@@ -2,9 +2,7 @@
 DROP TABLE IF EXISTS demand."Counts" CASCADE;
 
 CREATE TABLE "demand"."Counts" (
-  "ID" SERIAL,
   "SurveyID" integer NOT NULL,
-  "SectionID" integer,
   "GeometryID" character varying(12) NOT NULL,
 
   "NrCars" integer,
@@ -36,8 +34,7 @@ CREATE TABLE "demand"."Counts" (
   "NrMiniBuses_Suspended" integer,
   "NrBuses_Suspended" integer,
 
-
-  CONSTRAINT "Counts_pkey" PRIMARY KEY ("ID")
+   CONSTRAINT "Counts_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
 )
 WITH (
   OIDS=FALSE
@@ -56,4 +53,13 @@ SELECT "SurveyID", "GeometryID"
 FROM mhtc_operations."Supply" r, demand."Surveys";
 
 
+/***
+UPDATE "demand"."Counts"
+SET
 
+ALTER TABLE "demand"."Counts" DROP CONSTRAINT "Counts_pkey";
+ALTER TABLE "demand"."Counts" ADD PRIMARY KEY ("SurveyID", "GeometryID");
+ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "ID";
+ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "SectionID";
+
+***/
