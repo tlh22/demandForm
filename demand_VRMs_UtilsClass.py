@@ -416,7 +416,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
         demandTab = restrictionDialog.findChild(QWidget, "Demand")
         demandLayout = demandTab.layout()
-        demandForm = vrmWidget(demandTab, self.dbConn)
+        demandForm = vrmWidget(demandTab, self.dbConn, self.demand_schema)
         demandForm.startOperation.connect(self.startProgressDialog)
         demandForm.progressUpdated.connect(self.showProgress)
         demandForm.endOperation.connect(self.endProgressDialog)
@@ -443,7 +443,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
-        thisCountWidget = countWidget(restrictionDialog, self.dbConn)
+        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema)
         self.countModel = thisCountWidget.getCountModel()
 
         currGeometryID = currRestriction.attribute("GeometryID")
@@ -480,9 +480,9 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         query = QSqlQuery()
         if self.dbConn.driverName() == 'QPSQL':
-            queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM {}.\"Surveys\" ORDER BY \"SurveyID\" ASC".format(self.demand_schema)
+            queryStr = 'SELECT \"SurveyID\", \"BeatTitle\" FROM "{}".\"Surveys\" ORDER BY \"SurveyID\" ASC;'.format(self.demand_schema)
         else:
-            queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM \"Surveys\" ORDER BY \"SurveyID\" ASC"
+            queryStr = 'SELECT \"SurveyID\", \"BeatTitle\" FROM \"Surveys\" ORDER BY \"SurveyID\" ASC;'
 
         if not query.exec(queryStr):
             reply = QMessageBox.information(None, "Error",

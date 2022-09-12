@@ -293,7 +293,7 @@ class demandForm(DemandUtilsMixin):
 
             TOMsMessageLog.logMessage("In doRestrictionDetails - tool activated", level=Qgis.Info)
 
-            self.showRestrictionMapTool = demandInfoMapTool(self.iface, self.surveyID, self.enumerator, self.dbConn)
+            self.showRestrictionMapTool = demandInfoMapTool(self.iface, self.surveyID, self.enumerator, self.dbConn, self.demand_schema)
             self.iface.mapCanvas().setMapTool(self.showRestrictionMapTool)
 
         else:

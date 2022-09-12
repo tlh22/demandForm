@@ -48,10 +48,11 @@ class countWidget(QTableView):
     startOperation = pyqtSignal()
     endOperation = pyqtSignal()
 
-    def __init__(self, parent=None, db=None):
+    def __init__(self, parent, dbConn, demand_schema):
         super(countWidget, self).__init__(parent)
         TOMsMessageLog.logMessage("In countWidget:init ... ", level=Qgis.Info)
-        self.dbConn = db
+        self.dbConn = dbConn
+        self.demand_schema = demand_schema
         self.countModel = QSqlRelationalTableModel(self, db=self.dbConn)
         self.restrictionDialog = parent
 
@@ -63,7 +64,9 @@ class countWidget(QTableView):
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... surveyID: {}; GeometryID: {}; extraTabLabel: {}".format(surveyID, GeometryID, extraTabLabel), level=Qgis.Info)
 
         if self.dbConn.driverName() == 'QPSQL':
-            self.countModel.setTable('demand' + '.\"Counts\"')
+            table = '"{}"."Counts"'.format(self.demand_schema)
+            self.vrmModel.setTable(table)
+            #self.countModel.setTable('demand' + '.\"Counts\"')
         else:
             self.countModel.setTable('Counts')
 

@@ -62,10 +62,12 @@ class vrmWidget(QTableView):
     startOperation = pyqtSignal()
     endOperation = pyqtSignal()
 
-    def __init__(self, parent=None, db=None):
+    def __init__(self, parent, dbConn, demand_schema):
         super(vrmWidget, self).__init__(parent)
         TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Info)
-        self.dbConn = db
+        self.dbConn = dbConn
+        self.demand_schema = demand_schema
+
         self.vrmModel = QSqlRelationalTableModel(self, db=self.dbConn)
         #vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
         #self.provider = vrmsLayer.dataProvider()
@@ -75,7 +77,9 @@ class vrmWidget(QTableView):
         TOMsMessageLog.logMessage("In vrmWidget:populateDemandWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
         if self.dbConn.driverName() == 'QPSQL':
-            self.vrmModel.setTable('demand' + '.\"VRMs\"')
+            table = '"{}"."VRMs"'.format(self.demand_schema)
+            self.vrmModel.setTable(table)
+            #self.vrmModel.setTable('demand' + '.\"VRMs\"')
         else:
             self.vrmModel.setTable('VRMs')
 
