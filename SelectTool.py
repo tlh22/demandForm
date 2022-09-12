@@ -171,7 +171,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
 
             try:
                 GeometryID = feature.attribute("GeometryID")
-                RestrictionDescription = self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute('RestrictionTypeID'))
+                RestrictionDescription = self.getLookupDescription(self.RESTRICTION_TYPES, feature.attribute("RestrictionTypeID"))
 
                 title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
                                                                          GeometryID=GeometryID)

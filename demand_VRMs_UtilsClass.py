@@ -58,7 +58,8 @@ from qgis.core import (
     QgsTransaction,
     QgsTransactionGroup,
     QgsProject,
-    QgsSettings
+    QgsSettings,
+    QgsDataSourceUri
 )
 
 from qgis.gui import *
@@ -238,10 +239,20 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def mapOtherFields(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
+        TOMsMessageLog.logMessage("In mapOtherFields. SurveyID: {}".format(self.surveyID), level=Qgis.Info)
         # is there a better way ???
         currSurveyName = self.getCurrSurveyName(self.surveyID)
+        TOMsMessageLog.logMessage("In mapOtherFields. currSurveyName: {}".format(currSurveyName), level=Qgis.Info)
+
         SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
-        SurveyBeatTitleWidget.setText(currSurveyName)
+
+        try:
+            SurveyBeatTitleWidget.setText(currSurveyName)
+        except Exception as e:
+            reply = QMessageBox.information(None, "Error",
+                                                "mapOtherFields. Problem setting SurveyName: {} for SurveyID: {}. Issue is {}".format(currSurveyName, self.surveyID, e),
+                                                QMessageBox.Ok)
+            return False
 
         if self.dbConn.driverName() == 'QPSQL':
             queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
@@ -367,7 +378,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             return None
 
         testUriName = testLayer.dataProvider().dataSourceUri()  # this returns a string with the db name and layer, eg. 'Z:/Tim//SYS2012_Demand_VRMs.gpkg|layername=VRMs'
-
+        demand_schema = None
+            
         if provider.name() == 'postgres':
             # get the URI containing the connection parameters
             # create a PostgreSQL connection using QSqlDatabase
@@ -386,6 +398,9 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
                     dbConn.setUserName(provider.uri().username)
                     dbConn.setPassword(provider.uri().password)
 
+            demand_schema = QgsDataSourceUri(testUriName).schema()
+            TOMsMessageLog.logMessage("In dbConn. demand_schema: {}".format(demand_schema), level=Qgis.Warning)
+
         else:
             dbName = testUriName[:testUriName.find('|')]
             TOMsMessageLog.logMessage("In getDbConn. dbName: {}".format(dbName), level=Qgis.Warning)
@@ -393,7 +408,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             dbConn = QSqlDatabase.addDatabase("QSQLITE")
             dbConn.setDatabaseName(dbName)
 
-        return dbConn
+
+        return dbConn, demand_schema
 
     def addVRMWidget(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
@@ -464,7 +480,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         query = QSqlQuery()
         if self.dbConn.driverName() == 'QPSQL':
-            queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM demand.\"Surveys\" ORDER BY \"SurveyID\" ASC"
+            queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM {}.\"Surveys\" ORDER BY \"SurveyID\" ASC".format(self.demand_schema)
         else:
             queryStr = "SELECT \"SurveyID\", \"BeatTitle\" FROM \"Surveys\" ORDER BY \"SurveyID\" ASC"
 
