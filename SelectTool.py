@@ -78,7 +78,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
 
     notifyFeatureFound = pyqtSignal(QgsVectorLayer, QgsFeature)
 
-    def __init__(self, iface, surveyID, enumerator, dbConn):
+    def __init__(self, iface, surveyID, enumerator, dbConn, demand_schema):
         GeometryInfoMapTool.__init__(self, iface)
         self.iface = iface
         DemandUtilsMixin.__init__(self, iface)
@@ -86,6 +86,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
         self.surveyID = surveyID
         self.enumerator = enumerator
         self.dbConn = dbConn
+        self.demand_schema = demand_schema
         self.params = vrmParams()
         TOMsMessageLog.logMessage("In demandInfoMapTool ... surveyID: {}; enumerator: {}".format(self.surveyID, self.enumerator), level=Qgis.Info)
 
