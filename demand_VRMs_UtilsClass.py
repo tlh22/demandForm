@@ -239,10 +239,20 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def mapOtherFields(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
+        TOMsMessageLog.logMessage("In mapOtherFields. SurveyID: {}".format(self.surveyID), level=Qgis.Info)
         # is there a better way ???
         currSurveyName = self.getCurrSurveyName(self.surveyID)
+        TOMsMessageLog.logMessage("In mapOtherFields. currSurveyName: {}".format(currSurveyName), level=Qgis.Info)
+
         SurveyBeatTitleWidget = restrictionDialog.findChild(QWidget, "SurveyBeatTitle")
-        SurveyBeatTitleWidget.setText(currSurveyName)
+
+        try:
+            SurveyBeatTitleWidget.setText(currSurveyName)
+        except Exception as e:
+            reply = QMessageBox.information(None, "Error",
+                                                "mapOtherFields. Problem setting SurveyName: {} for SurveyID: {}. Issue is {}".format(currSurveyName, self.surveyID, e),
+                                                QMessageBox.Ok)
+            return False
 
         if self.dbConn.driverName() == 'QPSQL':
             queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
