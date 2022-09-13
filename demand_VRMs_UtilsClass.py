@@ -166,7 +166,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def setupFieldRestrictionDialog(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
-        TOMsMessageLog.logMessage("In DemandUtilsMixin:setupFieldRestrictionDialog: {}: {}".format(currRestrictionLayer.name(), currRestriction.attribute('GeometryID')),
+        TOMsMessageLog.logMessage("In DemandUtilsMixin:setupFieldRestrictionDialog: {}: {}".format(currRestrictionLayer.name(), currRestriction.attribute("GeometryID")),
                                   level=Qgis.Info)
 
         self.params.getParams()
