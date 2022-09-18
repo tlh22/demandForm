@@ -22,7 +22,7 @@ from qgis.PyQt.QtWidgets import (
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
     QWidget, QVBoxLayout, QHBoxLayout, QFormLayout, QTableView, QTableWidgetItem, QListView, QGroupBox,
-    QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem, QLineEdit, QSpacerItem,
+    QRadioButton, QButtonGroup, QDataWidgetMapper, QSpacerItem, QLineEdit, QSpacerItem, QLayoutItem,
     QProgressDialog, QProgressBar, QTextEdit, QTabWidget, QPlainTextEdit
 )
 
@@ -115,28 +115,53 @@ class countWidget(QTableView):
         demandLayout = demandTab.layout()
 
         countLayout = QHBoxLayout()
-        col1_layout = QFormLayout()
+        col1_layout = QGridLayout()
         col2_layout = QFormLayout()
 
         #spacerItem = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        col1_layout.addRow("Cars:", QLineEdit(objectName='NrCars'))
-        col1_layout.addRow("LGVs:", QLineEdit(objectName='NrLGVs'))
-        col1_layout.addRow("MCLs:", QLineEdit(objectName='NrMCLs'))
-        col1_layout.addRow("Taxis:", QLineEdit(objectName='NrTaxis'))
-        col1_layout.addRow("OGVs:", QLineEdit(objectName='NrOGVs'))
-        col1_layout.addRow("Mini Buses:", QLineEdit(objectName='NrMiniBuses'))
+        col1_layout.addWidget(QLabel(""), 0, 0)
+        col1_layout.addWidget(QLabel("Correct"), 0, 1)
+        col1_layout.addWidget(QLabel("Idling"), 0, 2)
+        col1_layout.addWidget(QLabel("NOT Correct"), 0, 3)
 
+        col1_layout.addWidget(QLabel("Cars:"), 1, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrCars'), 1, 1)
+        col1_layout.addWidget(QLineEdit(objectName='NrCarsIdling'), 1, 2)
+        col1_layout.addWidget(QLineEdit(objectName='NrCarsParkedIncorrectly'), 1, 3)
+
+        col1_layout.addWidget(QLabel("LGVs:"), 2, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrLGVs'), 2, 1)
+
+        col1_layout.addWidget(QLabel("MCLs:"), 3, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrMCLs'), 3, 1)
+
+        col1_layout.addWidget(QLabel("Taxis:"), 4, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrTaxis'), 4, 1)
+
+        col1_layout.addWidget(QLabel("OGVs:"), 5, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrOGVs'), 5, 1)
+
+        col1_layout.addWidget(QLabel("Mini Buses:"), 6, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrMiniBuses'), 6, 1)
+
+        col1_layout.addWidget(QLabel("Buses:"), 7, 0)
+        col1_layout.addWidget(QLineEdit(objectName='NrMiniBuses'), 7, 1)
+
+        #verticalSpacer = QSpacerItem(10, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        #col2_layout.addItem(QLayoutItem.spacerItem())
+        #col2_layout.addWidget(QLabel())
         col2_layout.addRow("PCLs:", QLineEdit(objectName='NrPCLs'))
         col2_layout.addRow("E-Scooters:", QLineEdit(objectName='NrEScooters'))
         col2_layout.addRow("Dockless PCLs:", QLineEdit(objectName='NrDocklessPCLs'))
-        col2_layout.addRow("Buses:", QLineEdit(objectName='NrBuses'))
+
         #col2_layout.addRow(spacerItem)
+        #col2_layout.addItem("", QLabel(""))
         col2_layout.addRow("Spaces:", QLineEdit(objectName='NrSpaces'))
 
         countLayout.addLayout(col1_layout)
-        verticalSpacer = QSpacerItem(10, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        countLayout.addItem(verticalSpacer)
+        #verticalSpacer = QSpacerItem(10, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        #countLayout.addItem(verticalSpacer)
         countLayout.addLayout(col2_layout)
 
         # Now add "Notes" widget

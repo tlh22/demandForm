@@ -60,3 +60,14 @@ ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "ID";
 ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "SectionID";
 
 ***/
+
+/***
+ For RBKC
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsIdling" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsParkedIncorrectly" integer;
+
+ ***/
