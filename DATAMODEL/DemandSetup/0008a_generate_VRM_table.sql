@@ -8,6 +8,7 @@ CREATE TABLE demand."VRMs"
   "GeometryID" character varying(12) NOT NULL,
   "PositionID" integer,
   "VRM" character varying(12),
+  "Foreign" boolean,
   "VehicleTypeID" integer,
   "RestrictionTypeID" integer,
   "PermitTypeID" integer,
