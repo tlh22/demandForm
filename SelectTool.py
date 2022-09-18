@@ -68,6 +68,7 @@ from qgis.gui import (
 #from qgis.core import *
 #from qgis.gui import *
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
+from TOMs.restrictionTypeUtilsClass import (TOMsConfigFile)
 from .demand_VRMs_UtilsClass import DemandUtilsMixin, vrmParams
 from restrictionsWithGNSS.SelectTool import (GeometryInfoMapTool, RemoveRestrictionTool)
 #from .formUtils import demandFormUtils
@@ -154,6 +155,8 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
 
         self.setupFieldRestrictionDialog(dialog, restrictionsInSurveysLayer, currRestriction)
 
+        self.checkForPrompts(closestFeature.attribute("RestrictionTypeID"))
+
         dialog.show()
 
     def getFeatureDetails(self, featureList, layerList):
@@ -208,3 +211,29 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
 
         return None, None
 
+    def checkForPrompts(self, currRestrictionID):
+        '''
+        For RBKC, need to check different restrictions for specfic things.
+        Restrictions and prompt text are given in .conf file
+        '''
+
+        TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {}".format(currRestrictionID), level=Qgis.Warning)
+
+        TOMsConfigFileObject = TOMsConfigFile()
+        TOMsConfigFileObject.initialiseTOMsConfigFile()
+
+        promptsList = []
+        prompts = TOMsConfigFileObject.getTOMsConfigElement('Prompts', 'Restrictions')
+
+        TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {}".format(prompts), level=Qgis.Warning)
+
+        if prompts:
+            promptsList = prompts.split('\n')
+
+        for thisPrompt in promptsList:
+            theseDetails = thisPrompt.split(':')
+            TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {} and {}".format(theseDetails[0], theseDetails[1]), level=Qgis.Warning)
+            if int(theseDetails[0]) == currRestrictionID:
+                reply = QMessageBox.information(None, "Information",
+                                                "{}".format(theseDetails[1]),
+                                                QMessageBox.Ok)
