@@ -293,14 +293,14 @@ class countWidget(QTableView):
         # check to see if this is a P&D bay
 
         TOMsMessageLog.logMessage('countWidget:payByPhoneBay. ...',
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
 
         supplyLayer = QgsProject.instance().mapLayersByName('Supply')[0]
 
 
         query = "\"GeometryID\" = '{}'".format(self.currRestriction.attribute("GeometryID"))
         TOMsMessageLog.logMessage('countWidget:payByPhoneBay. query: {}'.format(query),
-                                  level=Qgis.Warning)
+                                  level=Qgis.Info)
         request = QgsFeatureRequest().setFilterExpression(query)
 
         # QgsMessageLog.logMessage("In getLookupLabelText. queryStatus: " + str(query), tag="TOMs panel")
@@ -312,7 +312,7 @@ class countWidget(QTableView):
                 # QgsMessageLog.logMessage("In getLookupLabelText: found row " + str(row.attribute("LabelText")), tag="TOMs panel")
                 currRestrictionTypeID = row.attribute("RestrictionTypeID")  # make assumption that only one row
                 TOMsMessageLog.logMessage('countWidget:payByPhoneBay. RestrictionTypeID found: {}'.format(currRestrictionTypeID),
-                                      level=Qgis.Warning)
+                                      level=Qgis.Info)
                 break
 
             if int(currRestrictionTypeID) == 103:

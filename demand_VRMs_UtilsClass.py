@@ -311,8 +311,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         try:
             self.camera1.endCamera()
-            self.camera2.endCamera()
-            self.camera3.endCamera()
+            #self.camera2.endCamera()
+            #self.camera3.endCamera()
         except:
             None
 
@@ -348,8 +348,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         try:
             self.camera1.endCamera()
-            self.camera2.endCamera()
-            self.camera3.endCamera()
+            #self.camera2.endCamera()
+            #self.camera3.endCamera()
         except:
             None
 
