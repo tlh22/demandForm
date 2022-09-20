@@ -98,6 +98,9 @@ ALTER TABLE IF EXISTS demand."Counts"
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrBusesIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrBusesParkedIncorrectly" integer;	
-	
+    ADD COLUMN "NrBusesParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsWithDisabledBadgeParkedInPandD" integer;
+
  ***/
