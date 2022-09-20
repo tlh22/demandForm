@@ -149,6 +149,7 @@ class vrmWidget(QTableView):
         self.setItemDelegate(QSqlRelationalDelegate(self.vrmModel))
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("PositionID"), readOnlyDelegate(self));
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("VRM"), vrmDelegate(self));
+        #self.setItemDelegateForColumn(self.vrmModel.fieldIndex("Foreign"), CheckBoxDelegate(self));  # Need to find way to include check box delegate
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.resizeColumnsToContents()
         self.setColumnWidth(self.vrmModel.fieldIndex("VRM"), 120)
