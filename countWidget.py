@@ -83,7 +83,12 @@ class countWidget(QTableView):
                                   level=Qgis.Info)
         self.setupMainCountTab()
 
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... checking for extraTab ...",
+                                  level=Qgis.Info)
+                                  
         if extraTabLabel is not None:
+            TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ...adding extraTab  ...",
+                                  level=Qgis.Info)
             extraTab = self.setupExtraCountTab()
             TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... new tab added ...",
                                       level=Qgis.Warning)
@@ -91,6 +96,9 @@ class countWidget(QTableView):
             demandTab.insertTab(1, extraTab, extraTabLabel)  # 0 based index
             self.setupExtraCountTabMapping()
 
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... about to select ...",
+                                  level=Qgis.Info)
+                                  
         result = self.countModel.select()
         if result == False:
             TOMsMessageLog.logMessage(
@@ -165,7 +173,7 @@ class countWidget(QTableView):
         countLayout.addLayout(col3_layout)
         countLayout.addLayout(col4_layout)
 
-        TOMsMessageLog.logMessage("In countWidget:setupMainCountTab. Finished col 2 ... ",
+        TOMsMessageLog.logMessage("In countWidget:setupMainCountTab. Finished adding bits ... ",
                                   level=Qgis.Info)
                                   
         # Now add "Notes" widget
@@ -175,7 +183,7 @@ class countWidget(QTableView):
         notes_layout.addRow("Notes:", demandNotes)
 
         demandLayout.addLayout(countLayout, 0, 0)
-        # demandLayout.addItem(QSpacerItem(1, 1), 1, 0)
+
         demandLayout.addLayout(notes_layout, 2, 0)
 
         # add validators
@@ -190,41 +198,49 @@ class countWidget(QTableView):
                 200  # top
             ))
 
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCars"), self.countModel.fieldIndex('NrCars'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCarsIdling"), self.countModel.fieldIndex('NrCarsIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCarsParkedIncorrectly"), self.countModel.fieldIndex('NrCarsParkedIncorrectly'))
-        
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVs"), self.countModel.fieldIndex('NrLGVs'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVIdling"), self.countModel.fieldIndex('NrLGVIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVParkedIncorrectly"), self.countModel.fieldIndex('NrLGVParkedIncorrectly'))
-        
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLs"), self.countModel.fieldIndex('NrMCLs'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLsIdling"), self.countModel.fieldIndex('NrMCLsIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLsParkedIncorrectly"), self.countModel.fieldIndex('NrMCLsParkedIncorrectly'))
-        
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxis"), self.countModel.fieldIndex('NrTaxis'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxisIdling"), self.countModel.fieldIndex('NrTaxisIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxisParkedIncorrectly"), self.countModel.fieldIndex('NrTaxisParkedIncorrectly'))
-               
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVs"), self.countModel.fieldIndex('NrOGVs'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVsIdling"), self.countModel.fieldIndex('NrOGVsIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVsParkedIncorrectly"), self.countModel.fieldIndex('NrOGVsParkedIncorrectly'))
-        
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBuses"), self.countModel.fieldIndex('NrMiniBuses'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBusesIdling"), self.countModel.fieldIndex('NrMiniBusesIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBusesParkedIncorrectly"), self.countModel.fieldIndex('NrMiniBusesParkedIncorrectly'))
-        
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBuses"), self.countModel.fieldIndex('NrBuse   s'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBusesIdling"), self.countModel.fieldIndex('NrBusesIdling'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBusesParkedIncorrectly"), self.countModel.fieldIndex('NrBusesParkedIncorrectly'))
+        TOMsMessageLog.logMessage("In countWidget:setupMainCountTab. Starting mapping ... ",
+                                  level=Qgis.Info)
+                                  
+        try:                                  
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCars"), self.countModel.fieldIndex('NrCars'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCarsIdling"), self.countModel.fieldIndex('NrCarsIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCarsParkedIncorrectly"), self.countModel.fieldIndex('NrCarsParkedIncorrectly'))
 
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrPCLs"), self.countModel.fieldIndex('NrPCLs'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrEScooters"), self.countModel.fieldIndex('NrEScooters'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrDocklessPCLs"), self.countModel.fieldIndex('NrDocklessPCLs'))
-         
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrSpaces"), self.countModel.fieldIndex('NrSpaces'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QTextEdit, "Notes"), self.countModel.fieldIndex('Notes'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVs"), self.countModel.fieldIndex('NrLGVs'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVsIdling"), self.countModel.fieldIndex('NrLGVsIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVsParkedIncorrectly"), self.countModel.fieldIndex('NrLGVsParkedIncorrectly'))
+            
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLs"), self.countModel.fieldIndex('NrMCLs'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLsIdling"), self.countModel.fieldIndex('NrMCLsIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLsParkedIncorrectly"), self.countModel.fieldIndex('NrMCLsParkedIncorrectly'))
+            
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxis"), self.countModel.fieldIndex('NrTaxis'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxisIdling"), self.countModel.fieldIndex('NrTaxisIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxisParkedIncorrectly"), self.countModel.fieldIndex('NrTaxisParkedIncorrectly'))
+                   
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVs"), self.countModel.fieldIndex('NrOGVs'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVsIdling"), self.countModel.fieldIndex('NrOGVsIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVsParkedIncorrectly"), self.countModel.fieldIndex('NrOGVsParkedIncorrectly'))
+            
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBuses"), self.countModel.fieldIndex('NrMiniBuses'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBusesIdling"), self.countModel.fieldIndex('NrMiniBusesIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBusesParkedIncorrectly"), self.countModel.fieldIndex('NrMiniBusesParkedIncorrectly'))
+            
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBuses"), self.countModel.fieldIndex('NrBuses'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBusesIdling"), self.countModel.fieldIndex('NrBusesIdling'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBusesParkedIncorrectly"), self.countModel.fieldIndex('NrBusesParkedIncorrectly'))
 
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrPCLs"), self.countModel.fieldIndex('NrPCLs'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrEScooters"), self.countModel.fieldIndex('NrEScooters'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrDocklessPCLs"), self.countModel.fieldIndex('NrDocklessPCLs'))
+             
+            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrSpaces"), self.countModel.fieldIndex('NrSpaces'))
+            self.mapper.addMapping(self.restrictionDialog.findChild(QTextEdit, "Notes"), self.countModel.fieldIndex('Notes'))
+        except Exception as e:
+            TOMsMessageLog.logMessage('countWidget:setupMainCountTab. Error with mapping: {}'.format(e),
+                              level=Qgis.Warning)
+            return
+            
         TOMsMessageLog.logMessage("In countWidget:setupMainCountTab ... mapping added ...",
                                   level=Qgis.Info)
 
