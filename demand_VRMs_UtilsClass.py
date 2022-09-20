@@ -79,6 +79,8 @@ from restrictionsWithGNSS.ui.imageLabel import (imageLabel)
 from .vrmWidget import vrmWidget
 from .countWidget import countWidget
 
+from .RBKC2022countWidget import RBKCcountWidget
+
 cv2_available = True
 try:
     import cv2
@@ -443,14 +445,14 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
-        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema)
+        thisCountWidget = RBKCcountWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
         self.countModel = thisCountWidget.getCountModel()
 
         currGeometryID = currRestriction.attribute("GeometryID")
 
         extraTabLabel = self.getExtraTabName()
 
-        thisCountWidget.populateDemandWidget(self.surveyID, currGeometryID, extraTabLabel)
+        thisCountWidget.populateDemandWidget(extraTabLabel)
 
     @pyqtSlot()
     def startProgressDialog(self):
