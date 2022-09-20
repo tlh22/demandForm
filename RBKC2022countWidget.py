@@ -40,7 +40,8 @@ from qgis.core import (
     Qgis
 )
 
-from . import countWidget
+from TOMs.core.TOMsMessageLog import TOMsMessageLog
+from .countWidget import countWidget
 
 class RBKCcountWidget(countWidget):
 

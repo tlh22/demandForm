@@ -445,7 +445,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
-        thisCountWidget = RBKCcountWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
+        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
         self.countModel = thisCountWidget.getCountModel()
 
         currGeometryID = currRestriction.attribute("GeometryID")
