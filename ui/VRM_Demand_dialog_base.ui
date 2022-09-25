@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
-    <height>640</height>
+    <width>800</width>
+    <height>716</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -324,6 +324,8 @@
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
          <horstretch>1</horstretch>
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -331,6 +333,8 @@
         <size>
          <width>750</width>
          <height>425</height>
+         <width>770</width>
+         <height>520</height>
         </size>
        </property>
        <property name="maximumSize">
@@ -529,6 +533,7 @@
           <layout class="QGridLayout" name="gridLayout_9"/>
          </item>
         </layout>
+        <layout class="QGridLayout" name="gridLayout_8"/>
        </widget>
        <widget class="QWidget" name="Photos_02">
         <attribute name="title">
@@ -607,6 +612,7 @@
           </widget>
          </item>
         </layout>
+        <layout class="QGridLayout" name="gridLayout_7"/>
        </widget>
        <widget class="QWidget" name="Photos_03">
         <attribute name="title">
@@ -685,6 +691,7 @@
           </widget>
          </item>
         </layout>
+        <layout class="QGridLayout" name="gridLayout"/>
        </widget>
       </widget>
      </item>
@@ -701,6 +708,7 @@
   <tabstop>Details</tabstop>
   <tabstop>NrBaysSuspended</tabstop>
   <tabstop>SuspensionReference</tabstop>
+<<<<<<< Updated upstream
   <tabstop>startCamera2</tabstop>
   <tabstop>getPhoto2</tabstop>
   <tabstop>startCamera3</tabstop>
