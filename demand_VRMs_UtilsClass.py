@@ -264,7 +264,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In mapOtherFields: queryString: {}".format(queryString), level=Qgis.Info)
         query = QSqlQuery(queryString)
 
-        RoadName, SectionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+        RoadName, RestrictionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         if not query.next():
             TOMsMessageLog.logMessage(
@@ -272,13 +272,13 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 level=Qgis.Warning)
 
         TOMsMessageLog.logMessage(
-                "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
+                "In mapOtherFields: RoadName: {}, RestrictionLength: {}".format(query.value(RoadName), query.value(RestrictionLength)),
                 level=Qgis.Info)
 
         RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
         RoadNameWidget.setText(query.value(RoadName))
-        SectionLengthWidget = restrictionDialog.findChild(QWidget, "SectionLength")
-        SectionLengthWidget.setText(str(query.value(SectionLength)))
+        RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
+        RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
 
         # get restriction details
 
