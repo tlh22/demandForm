@@ -233,6 +233,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
         for thisPrompt in promptsList:
             theseDetails = thisPrompt.split(':')
             TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {} and {}".format(theseDetails[0], theseDetails[1]), level=Qgis.Info)
+
             if int(theseDetails[0]) == currRestrictionID:
                 reply = QMessageBox.information(None, "Information",
                                                 "{}".format(theseDetails[1]),

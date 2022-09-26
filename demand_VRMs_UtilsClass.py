@@ -208,8 +208,6 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         #currRestrictionModel = self.setupRestrictionInSurveyModel(self.surveyID, currRestriction)
         #self.setupRestrictionMapping(currRestrictionModel)
 
-        self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
-
         """
         Check survey type ... If not vrm, then create widgets and populate fields
         """
@@ -225,6 +223,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addVRMWidget ...", level=Qgis.Info)
             self.addVRMWidget(restrictionDialog, currRestrictionLayer, currRestriction)
 
+        self.photoDetails_field(restrictionDialog, currRestrictionLayer, currRestriction)
+        
         #self.addScrollBars(restrictionDialog)
 
         """
@@ -309,13 +309,14 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def onSaveFieldRestrictionDetails(self, currFeature, currFeatureLayer, dialog):
         TOMsMessageLog.logMessage("In onSaveFieldRestrictionDetails:  currFeatureID: {}; {}".format(currFeature.id(), currFeature.attribute('GeometryID')), level=Qgis.Info)
 
+        '''
         try:
             self.camera1.endCamera()
             #self.camera2.endCamera()
             #self.camera3.endCamera()
         except:
             None
-
+        '''
         # set update time !!!
 
         try:
@@ -346,13 +347,15 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def onRejectFieldRestrictionDetailsFromForm(self, restrictionDialog, currFeatureLayer):
         TOMsMessageLog.logMessage("In onRejectFieldRestrictionDetailsFromForm", level=Qgis.Info)
 
+        '''
         try:
             self.camera1.endCamera()
             #self.camera2.endCamera()
             #self.camera3.endCamera()
         except:
             None
-
+        '''
+        
         currFeatureLayer.rollBack()
         if self.getDemandSurveyType() == 'Count':
             self.countModel.revertAll()
