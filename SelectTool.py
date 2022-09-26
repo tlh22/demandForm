@@ -217,7 +217,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
         Restrictions and prompt text are given in .conf file
         '''
 
-        TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {}".format(currRestrictionID), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {}".format(currRestrictionID), level=Qgis.Info)
 
         TOMsConfigFileObject = TOMsConfigFile()
         TOMsConfigFileObject.initialiseTOMsConfigFile()
@@ -225,14 +225,15 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
         promptsList = []
         prompts = TOMsConfigFileObject.getTOMsConfigElement('Prompts', 'Restrictions')
 
-        TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {}".format(prompts), level=Qgis.Warning)
+        TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {}".format(prompts), level=Qgis.Info)
 
         if prompts:
             promptsList = prompts.split('\n')
 
         for thisPrompt in promptsList:
             theseDetails = thisPrompt.split(':')
-            TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {} and {}".format(theseDetails[0], theseDetails[1]), level=Qgis.Warning)
+            TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {} and {}".format(theseDetails[0], theseDetails[1]), level=Qgis.Info)
+
             if int(theseDetails[0]) == currRestrictionID:
                 reply = QMessageBox.information(None, "Information",
                                                 "{}".format(theseDetails[1]),
