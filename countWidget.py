@@ -65,7 +65,7 @@ class countWidget(QTableView):
 
         if self.dbConn.driverName() == 'QPSQL':
             table = '"{}"."Counts"'.format(self.demand_schema)
-            self.vrmModel.setTable(table)
+            self.countModel.setTable(table)
             #self.countModel.setTable('demand' + '.\"Counts\"')
         else:
             self.countModel.setTable('Counts')

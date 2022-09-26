@@ -68,6 +68,7 @@ from qgis.gui import (
 #from qgis.core import *
 #from qgis.gui import *
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
+from TOMs.restrictionTypeUtilsClass import (TOMsConfigFile)
 from .demand_VRMs_UtilsClass import DemandUtilsMixin, vrmParams
 from restrictionsWithGNSS.SelectTool import (GeometryInfoMapTool, RemoveRestrictionTool)
 #from .formUtils import demandFormUtils
@@ -154,6 +155,8 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
 
         self.setupFieldRestrictionDialog(dialog, restrictionsInSurveysLayer, currRestriction)
 
+        self.checkForPrompts(closestFeature.attribute("RestrictionTypeID"))
+
         dialog.show()
 
     def getFeatureDetails(self, featureList, layerList):
@@ -230,6 +233,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
         for thisPrompt in promptsList:
             theseDetails = thisPrompt.split(':')
             TOMsMessageLog.logMessage("In demandInfoMapTool.checkForPrompts ... {} and {}".format(theseDetails[0], theseDetails[1]), level=Qgis.Info)
+
             if int(theseDetails[0]) == currRestrictionID:
                 reply = QMessageBox.information(None, "Information",
                                                 "{}".format(theseDetails[1]),
