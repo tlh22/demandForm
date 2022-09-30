@@ -19,6 +19,7 @@ CREATE TABLE demand."RestrictionsInSurveys"
     "Photos_01" character varying (255) COLLATE pg_catalog."default",
     "Photos_02" character varying (255) COLLATE pg_catalog."default",
     "Photos_03" character varying (255) COLLATE pg_catalog."default",
+    "CaptureSource" character varying (255) COLLATE pg_catalog."default",
     geom geometry(LineString,27700) NOT NULL,
 	CONSTRAINT "RestrictionsInSurveys_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
 )
