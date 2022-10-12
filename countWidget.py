@@ -194,7 +194,7 @@ class countWidget(QWidget):
 
         # Now add "Notes" widget
         notes_layout = QFormLayout()
-        demandNotes = QTextEdit(objectName='Notes')
+        demandNotes = QPlainTextEdit(objectName='Notes')
         # demandNotes.setPlainText()
         notes_layout.addRow("Notes:", demandNotes)
 
@@ -276,7 +276,7 @@ class countWidget(QWidget):
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrSpaces"),
                                    self.countModel.fieldIndex('NrSpaces'))
-            self.mapper.addMapping(self.findChild(QTextEdit, "Notes"),
+            self.mapper.addMapping(self.findChild(QPlainTextEdit, "Notes"),
                                    self.countModel.fieldIndex('Notes'))
 
             if self.payByPhoneBay():
