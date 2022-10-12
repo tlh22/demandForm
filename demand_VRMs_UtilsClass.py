@@ -79,6 +79,8 @@ from restrictionsWithGNSS.ui.imageLabel import (imageLabel)
 from .vrmWidget import vrmWidget
 from .countWidget import countWidget
 
+from .RBKC2022countWidget import RBKCcountWidget
+
 cv2_available = True
 try:
     import cv2
@@ -262,7 +264,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In mapOtherFields: queryString: {}".format(queryString), level=Qgis.Info)
         query = QSqlQuery(queryString)
 
-        RoadName, SectionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+        RoadName, RestrictionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         if not query.next():
             TOMsMessageLog.logMessage(
@@ -270,13 +272,13 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 level=Qgis.Warning)
 
         TOMsMessageLog.logMessage(
-                "In mapOtherFields: RoadName: {}, SectionLength: {}".format(query.value(RoadName), query.value(SectionLength)),
+                "In mapOtherFields: RoadName: {}, RestrictionLength: {}".format(query.value(RoadName), query.value(RestrictionLength)),
                 level=Qgis.Info)
 
         RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
         RoadNameWidget.setText(query.value(RoadName))
-        SectionLengthWidget = restrictionDialog.findChild(QWidget, "SectionLength")
-        SectionLengthWidget.setText(str(query.value(SectionLength)))
+        RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
+        RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
 
         # get restriction details
 
@@ -310,8 +312,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         '''
         try:
             self.camera1.endCamera()
-            self.camera2.endCamera()
-            self.camera3.endCamera()
+            #self.camera2.endCamera()
+            #self.camera3.endCamera()
         except:
             None
         '''
@@ -348,8 +350,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         '''
         try:
             self.camera1.endCamera()
-            self.camera2.endCamera()
-            self.camera3.endCamera()
+            #self.camera2.endCamera()
+            #self.camera3.endCamera()
         except:
             None
         '''
@@ -446,14 +448,14 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
-        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema)
+        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
         self.countModel = thisCountWidget.getCountModel()
 
         currGeometryID = currRestriction.attribute("GeometryID")
 
         extraTabLabel = self.getExtraTabName()
 
-        thisCountWidget.populateDemandWidget(self.surveyID, currGeometryID, extraTabLabel)
+        thisCountWidget.populateDemandWidget(extraTabLabel)
 
     @pyqtSlot()
     def startProgressDialog(self):

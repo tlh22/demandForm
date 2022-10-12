@@ -180,7 +180,7 @@ class demandInfoMapTool(DemandUtilsMixin, GeometryInfoMapTool):
                 title = "{RestrictionDescription} [{GeometryID}]".format(RestrictionDescription=RestrictionDescription,
                                                                          GeometryID=GeometryID)
             except Exception as e:
-                reply = QMessageBox.information(None, "Information", "Problem getting description for restriction ...{}".format(e), QMessageBox.Ok)
+                reply = QMessageBox.information(None, "Information", "Problem getting restriction description ...{}".format(e), QMessageBox.Ok)
                 return None, None
 
             action = QAction(title, self.menu)

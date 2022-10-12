@@ -20,26 +20,28 @@ ALTER TABLE "mhtc_operations"."RC_Sections_merged"
 --
 
 UPDATE "mhtc_operations"."RC_Sections_merged" AS s
-SET "SurveyArea" = a.id
-FROM mhtc_operations."SurveyAreas" a
-WHERE ST_WITHIN (s.geom, a.geom);
-
--- OR
-
-UPDATE "mhtc_operations"."Supply" AS s
-SET "SurveyArea" = a.id
+SET "SurveyArea" = a."Code"
 FROM mhtc_operations."SurveyAreas" a
 WHERE ST_WITHIN (s.geom, a.geom);
 
 --
 -- Calculate length of section within area
 
-SELECT a.name, SUM(s."SectionLength")
+SELECT a."SurveyAreaName", SUM(s."SectionLength")
 FROM mhtc_operations."RC_Sections_merged" s, mhtc_operations."SurveyAreas" a
 WHERE ST_WITHIN (s.geom, a.geom)
-GROUP BY a.name;
+GROUP BY a."SurveyAreaName"
+ORDER BY a."SurveyAreaName";
 
-SELECT a.name, SUM(s."RestrictionLength")
+-- OR
+
+UPDATE "mhtc_operations"."Supply" AS s
+SET "SurveyAreaID" = a."Code"
+FROM mhtc_operations."SurveyAreas" a
+WHERE ST_WITHIN (s.geom, a.geom);
+
+SELECT a."SurveyAreaName", SUM(s."RestrictionLength"), SUM("Capacity")
 FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas" a
-WHERE a.id = s."SurveyArea"
-GROUP BY a.name;
+WHERE a."Code" = s."SurveyAreaID"
+GROUP BY a."SurveyAreaName"
+ORDER BY a."SurveyAreaName";

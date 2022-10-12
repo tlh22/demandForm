@@ -60,3 +60,47 @@ ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "ID";
 ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "SectionID";
 
 ***/
+
+
+/***
+ For RBKC
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrLGVsIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrLGVsParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrMCLsIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrMCLsParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrTaxisIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrTaxisParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrOGVsIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrOGVsParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrMiniBusesIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrMiniBusesParkedIncorrectly" integer;	
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrBusesIdling" integer;
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrBusesParkedIncorrectly" integer;
+
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsWithDisabledBadgeParkedInPandD" integer;
+
+ ***/

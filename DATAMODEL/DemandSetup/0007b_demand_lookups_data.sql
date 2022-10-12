@@ -38,3 +38,9 @@ INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (16, '
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (17, 'No permit required (MCL)');
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (18, 'No permit required (Non Resident MCL)');
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (19, 'Homes for Haringey');
+
+-- User types
+
+INSERT INTO "demand_lookups"."UserTypes" ("Code", "Description") VALUES (1, 'Resident');
+INSERT INTO "demand_lookups"."UserTypes" ("Code", "Description") VALUES (2, 'Commuter');
+INSERT INTO "demand_lookups"."UserTypes" ("Code", "Description") VALUES (3, 'Visitor');
