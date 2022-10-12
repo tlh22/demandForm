@@ -62,8 +62,8 @@ class vrmWidget(QTableView):
     startOperation = pyqtSignal()
     endOperation = pyqtSignal()
 
-    def __init__(self, parent, dbConn, demand_schema):
-        super(vrmWidget, self).__init__(parent)
+    def __init__(self, dbConn, demand_schema):
+        super(vrmWidget, self).__init__()
         TOMsMessageLog.logMessage("In vrmWidget:init ... ", level=Qgis.Info)
         self.dbConn = dbConn
         self.demand_schema = demand_schema
@@ -101,11 +101,19 @@ class vrmWidget(QTableView):
 
         if self.dbConn.driverName() == 'QPSQL':
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('demand_lookups'+'.\"VehicleTypes\"', '\"Code\"', '\"Description\"'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('demand_lookups'+'.\"PermitTypes\"', '\"Code\"', '\"Description\"'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("InternationalCodeID")), QSqlRelation('demand_lookups'+'.\"InternationalCodes\"', '\"Code\"', '\"Description\"'))
         else:
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")),
                                       QSqlRelation('VehicleTypes', 'Code',
                                                    'Description'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')),
+                                      QSqlRelation('PermitTypes', 'Code', 'Description'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("InternationalCodeID")),
+                                      QSqlRelation('InternationalCodes', 'Code',
+                                                   'Description'))
 
+        # Vehicle types
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('VehicleTypeID')))
         if not rel.isValid():
             #print ('Relation not valid ...')
@@ -113,10 +121,12 @@ class vrmWidget(QTableView):
                                       level=Qgis.Warning)
         self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('VehicleTypeID'), Qt.Horizontal, 'VehicleType')
 
-        if self.dbConn.driverName() == 'QPSQL':
+        """if self.dbConn.driverName() == 'QPSQL':
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('demand_lookups'+'.\"PermitTypes\"', '\"Code\"', '\"Description\"'))
         else:
-            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('PermitTypes', 'Code', 'Description'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('PermitTypes', 'Code', 'Description'))"""
+
+        # Permit types
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('PermitTypeID')))
 
         if not rel.isValid():
@@ -124,6 +134,15 @@ class vrmWidget(QTableView):
             TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
         self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('PermitTypeID'), Qt.Horizontal, 'PermitType')
+
+        # International codes
+        rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('InternationalCodeID')))
+
+        if not rel.isValid():
+            #print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('InternationalCodeID'), Qt.Horizontal, 'Foreign')
 
         result = self.vrmModel.select()
         if result == False:

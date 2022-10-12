@@ -421,7 +421,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
         demandTab = restrictionDialog.findChild(QWidget, "Demand")
         demandLayout = demandTab.layout()
-        demandForm = vrmWidget(demandTab, self.dbConn, self.demand_schema)
+        demandForm = vrmWidget(self.dbConn, self.demand_schema)
         demandForm.startOperation.connect(self.startProgressDialog)
         demandForm.progressUpdated.connect(self.showProgress)
         demandForm.endOperation.connect(self.endProgressDialog)
@@ -439,7 +439,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         buttonLayout.addWidget(addButton)
         buttonLayout.addWidget(removeButton)
 
-        demandLayout.addLayout(buttonLayout, 1, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        demandLayout.addLayout(buttonLayout, 0, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
 
         addButton.clicked.connect(functools.partial(demandForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(demandForm.deleteVrm)
@@ -448,14 +448,18 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
+        #demandTab = restrictionDialog.findChild(QWidget, "Demand")
+        #demandLayout = demandTab.layout()
         thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
         self.countModel = thisCountWidget.getCountModel()
 
-        currGeometryID = currRestriction.attribute("GeometryID")
+        #currGeometryID = currRestriction.attribute("GeometryID")
 
         extraTabLabel = self.getExtraTabName()
 
         thisCountWidget.populateDemandWidget(extraTabLabel)
+
+        #demandLayout.addWidget(thisCountWidget)
 
     @pyqtSlot()
     def startProgressDialog(self):

@@ -71,3 +71,25 @@ ALTER TABLE "demand_lookups"."UserTypes" OWNER TO "postgres";
 
 ALTER TABLE demand_lookups."UserTypes"
     ADD PRIMARY KEY ("Code");
+
+-- International codes
+
+CREATE SEQUENCE "demand_lookups"."InternationalCodes_Code_seq"
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE "demand_lookups"."InternationalCodes_Code_seq" OWNER TO "postgres";
+
+CREATE TABLE "demand_lookups"."InternationalCodes" (
+    "Code" SERIAL,
+    "Description" character varying,
+    "Country" character varying
+);
+
+ALTER TABLE "demand_lookups"."InternationalCodes" OWNER TO "postgres";
+
+ALTER TABLE demand_lookups."InternationalCodes"
+    ADD PRIMARY KEY ("Code");

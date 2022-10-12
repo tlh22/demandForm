@@ -454,33 +454,59 @@ class demandForm(DemandUtilsMixin):
                     "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
                     level=Qgis.Warning)
             query.next()
-            TOMsMessageLog.logMessage("In checkPreviousSurvey: survey1Day: {}, suvey2day: {}".format(query.value(0), query.value(1)), level=Qgis.Info)
+            TOMsMessageLog.logMessage("In checkPreviousSurvey: survey1Day: {}, survey2day: {}".format(query.value(0), query.value(1)), level=Qgis.Info)
 
-            if query.value(0) == query.value(1):
-                # same day - check for VRMs
-                queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID - 1)
-                TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 3: {}".format(queryString),
-                                          level=Qgis.Info)
-                query = QSqlQuery(queryString)
-                query.next()
-                nrVrmsInPrevSurvey = query.value(0)
-                TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInPrevSurvey: {}".format(nrVrmsInPrevSurvey),
-                                          level=Qgis.Info)
-                if nrVrmsInPrevSurvey > 0:
+            #if query.value(0) == query.value(1): """ removing same day check """
+            # same day - check for VRMs
+            queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID - 1)
+            TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 3: {}".format(queryString),
+                                      level=Qgis.Info)
+            query = QSqlQuery(queryString)
+            query.next()
+            nrVrmsInPrevSurvey = query.value(0)
+            TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInPrevSurvey: {}".format(nrVrmsInPrevSurvey),
+                                      level=Qgis.Info)
+            if nrVrmsInPrevSurvey > 0:
 
-                    reply = QMessageBox.question(None, 'Add details from previous survey',
-                                                 # How do you access the main window to make the popup ???
-                                                 'Do you want to add the VRMs from the previous time period?.',
-                                                 QMessageBox.Yes, QMessageBox.No)
-                    if reply == QMessageBox.Yes:
+                # get name for previous time period
 
-                        queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes) " \
-                                      "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, currSurveyID-1)
-                        TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
-                                                  level=Qgis.Info)
-                        query = QSqlQuery()
-                        if not query.exec(queryString):
-                            TOMsMessageLog.logMessage(
-                                "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
-                                level=Qgis.Warning)
+                reply = QMessageBox.question(None, 'Add details from previous survey',
+                                             # How do you access the main window to make the popup ???
+                                             'Do you want to add the VRMs from the previous time period?.',
+                                             QMessageBox.Yes, QMessageBox.No)
+                if reply == QMessageBox.Yes:
 
+                    queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes) " \
+                                  "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, currSurveyID-1)
+                    TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
+                                              level=Qgis.Info)
+                    query = QSqlQuery()
+                    if not query.exec(queryString):
+                        TOMsMessageLog.logMessage(
+                            "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
+                            level=Qgis.Warning)
+
+    def getSurveyName(self, currSurveyID):
+        TOMsMessageLog.logMessage("In getSurveyName: currSurveyID: {}".format(currSurveyID), level=Qgis.Info)
+
+        query = QSqlQuery(self.dbConn)
+        TOMsMessageLog.logMessage("In getSurveyName: connection is: {}".format(self.dbConn.driverName()), level=Qgis.Info)
+        if self.dbConn.driverName() == 'QPSQL':
+            queryStr = 'SELECT "BeatTitle" FROM "{}"."Surveys" WHERE "SurveyID" = {};'.format(self.demand_schema, currSurveyID)
+            TOMsMessageLog.logMessage("In getCurrSurvey: schema is: {}".format(self.demand_schema), level=Qgis.Warning)
+        else:
+            queryStr = 'SELECT "BeatTitle" FROM "Surveys" WHERE "SurveyID" = {};'.format(currSurveyID)
+
+        if not query.exec(queryStr):
+            reply = QMessageBox.information(None, "Error",
+                                            "Problem with Surveys - {} {} {}\n".format(query.lastQuery(), query.lastError().type(),
+                                                                                      query.lastError().databaseText()
+                                            ), QMessageBox.Ok)
+
+        BeatTitle = range(1)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+
+        while query.next():
+            TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; BeatTitle: {}".format(currSurveyID, query.value(BeatTitle)), level=Qgis.Info)
+            return query.value(BeatTitle)
+
+        return None
