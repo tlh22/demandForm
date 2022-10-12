@@ -448,18 +448,19 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
-        #demandTab = restrictionDialog.findChild(QWidget, "Demand")
-        #demandLayout = demandTab.layout()
-        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
+        demandTab = restrictionDialog.findChild(QWidget, "Demand")
+        demandLayout = demandTab.layout()
+        thisCountWidget = countWidget(self.dbConn, self.demand_schema, self.surveyID, currRestriction)
+        thisCountWidget.setupUi()
         self.countModel = thisCountWidget.getCountModel()
 
         #currGeometryID = currRestriction.attribute("GeometryID")
 
+        demandLayout.addWidget(thisCountWidget)
+
         extraTabLabel = self.getExtraTabName()
 
         thisCountWidget.populateDemandWidget(extraTabLabel)
-
-        #demandLayout.addWidget(thisCountWidget)
 
     @pyqtSlot()
     def startProgressDialog(self):

@@ -44,19 +44,19 @@ from qgis.core import (
 
 from TOMs.core.TOMsMessageLog import TOMsMessageLog
 
-class countWidget(QTableView):
+class countWidget(QWidget):
 
     progressUpdated = pyqtSignal(int)
     startOperation = pyqtSignal()
     endOperation = pyqtSignal()
 
-    def __init__(self, parent, dbConn, demand_schema, currSurveyID, currRestriction):
-        super(countWidget, self).__init__(parent)
+    def __init__(self, dbConn, demand_schema, currSurveyID, currRestriction):
+        super(countWidget, self).__init__()
         TOMsMessageLog.logMessage("In countWidget:init ... ", level=Qgis.Info)
         self.dbConn = dbConn
         self.demand_schema = demand_schema
         self.countModel = QSqlRelationalTableModel(self, db=self.dbConn)
-        self.restrictionDialog = parent
+        #self.restrictionDialog = QWidget()
         self.currSurveyID = currSurveyID
         self.currRestriction = currRestriction
         self.currGeometryID = self.currRestriction.attribute("GeometryID")
@@ -64,9 +64,9 @@ class countWidget(QTableView):
     def getCountModel(self):
         return self.countModel
 
-    def populateDemandWidget(self, extraTabLabel=None):
+    def setupUi(self, extraTabLabel=None):
 
-        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... surveyID: {}; GeometryID: {}; extraTabLabel: {}".format(self.currSurveyID, self.currGeometryID, extraTabLabel), level=Qgis.Info)
+        TOMsMessageLog.logMessage("In countWidget:setupUi ... surveyID: {}; GeometryID: {}; extraTabLabel: {}".format(self.currSurveyID, self.currGeometryID, extraTabLabel), level=Qgis.Info)
 
         if self.dbConn.driverName() == 'QPSQL':
             table = '"{}"."Counts"'.format(self.demand_schema)
@@ -79,7 +79,7 @@ class countWidget(QTableView):
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... filterString: {}".format(filterString),
                                   level=Qgis.Info)
 
-        self.countModel.setFilter(filterString)
+        #self.countModel.setFilter(filterString)
 
         self.mapper = QDataWidgetMapper(self)
         self.mapper.setModel(self.countModel)
@@ -90,8 +90,9 @@ class countWidget(QTableView):
 
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... checking for extraTab ...",
                                   level=Qgis.Info)
-                                  
+
         if extraTabLabel is not None:
+            """ TODO: need to rethink this """
             TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ...adding extraTab  ...",
                                   level=Qgis.Info)
             extraTab = self.setupExtraCountTab()
@@ -101,9 +102,10 @@ class countWidget(QTableView):
             demandTab.insertTab(1, extraTab, extraTabLabel)  # 0 based index
             self.setupExtraCountTabMapping()
 
+        """
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... about to select ...",
                                   level=Qgis.Info)
-                                  
+
         result = self.countModel.select()
         if result == False:
             TOMsMessageLog.logMessage(
@@ -118,17 +120,18 @@ class countWidget(QTableView):
             level=Qgis.Info)
 
         self.mapper.toFirst()  # TODO: check if this fails ...
-
+        """
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... finishing ...",
                                   level=Qgis.Info)
 
     def setupMainCountTab(self):
 
-        TOMsMessageLog.logMessage("In RBKCcountWidget:setupMainCountTab ... ",
+        TOMsMessageLog.logMessage("In countWidget:setupMainCountTab ... ",
                                   level=Qgis.Info)
 
-        demandTab = self.restrictionDialog.findChild(QWidget, "Demand")
-        demandLayout = demandTab.layout()
+        #demandTab = self.restrictionDialog.findChild(QWidget, "Demand")
+        #demandLayout = demandTab.layout()
+        demandLayout = QGridLayout(self)
 
         countLayout = QHBoxLayout()
         col1_layout = QFormLayout()
@@ -215,70 +218,70 @@ class countWidget(QTableView):
                                   level=Qgis.Info)
 
         try:
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCars"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrCars"),
                                    self.countModel.fieldIndex('NrCars'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCarsIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrCarsIdling"),
                                    self.countModel.fieldIndex('NrCarsIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCarsParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrCarsParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrCarsParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVs"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVs"),
                                    self.countModel.fieldIndex('NrLGVs'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVsIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVsIdling"),
                                    self.countModel.fieldIndex('NrLGVsIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVsParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVsParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrLGVsParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLs"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLs"),
                                    self.countModel.fieldIndex('NrMCLs'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLsIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLsIdling"),
                                    self.countModel.fieldIndex('NrMCLsIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLsParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLsParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrMCLsParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxis"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxis"),
                                    self.countModel.fieldIndex('NrTaxis'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxisIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxisIdling"),
                                    self.countModel.fieldIndex('NrTaxisIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxisParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxisParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrTaxisParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVs"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVs"),
                                    self.countModel.fieldIndex('NrOGVs'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVsIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVsIdling"),
                                    self.countModel.fieldIndex('NrOGVsIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVsParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVsParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrOGVsParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBuses"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBuses"),
                                    self.countModel.fieldIndex('NrMiniBuses'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBusesIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBusesIdling"),
                                    self.countModel.fieldIndex('NrMiniBusesIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBusesParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBusesParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrMiniBusesParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBuses"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrBuses"),
                                    self.countModel.fieldIndex('NrBuses'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBusesIdling"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrBusesIdling"),
                                    self.countModel.fieldIndex('NrBusesIdling'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBusesParkedIncorrectly"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrBusesParkedIncorrectly"),
                                    self.countModel.fieldIndex('NrBusesParkedIncorrectly'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrPCLs"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrPCLs"),
                                    self.countModel.fieldIndex('NrPCLs'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrEScooters"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrEScooters"),
                                    self.countModel.fieldIndex('NrEScooters'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrDocklessPCLs"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrDocklessPCLs"),
                                    self.countModel.fieldIndex('NrDocklessPCLs'))
 
-            self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrSpaces"),
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrSpaces"),
                                    self.countModel.fieldIndex('NrSpaces'))
-            self.mapper.addMapping(self.restrictionDialog.findChild(QTextEdit, "Notes"),
+            self.mapper.addMapping(self.findChild(QTextEdit, "Notes"),
                                    self.countModel.fieldIndex('Notes'))
 
             if self.payByPhoneBay():
                 self.mapper.addMapping(
-                    self.restrictionDialog.findChild(QLineEdit, "NrCarsWithDisabledBadgeParkedInPandD"),
+                    self.findChild(QLineEdit, "NrCarsWithDisabledBadgeParkedInPandD"),
                     self.countModel.fieldIndex('NrCarsWithDisabledBadgeParkedInPandD'))
 
         except Exception as e:
@@ -375,26 +378,91 @@ class countWidget(QTableView):
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTabMapping ... starting ...",
                                   level=Qgis.Info)
 
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrCars_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrCars_Suspended"),
                                self.countModel.fieldIndex('NrCars_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrLGVs_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVs_Suspended"),
                                self.countModel.fieldIndex('NrLGVs_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMCLs_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLs_Suspended"),
                                self.countModel.fieldIndex('NrMCLs_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrTaxis_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxis_Suspended"),
                                self.countModel.fieldIndex('NrTaxis_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrPCLs_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrPCLs_Suspended"),
                                self.countModel.fieldIndex('NrPCLs_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrEScooters_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrEScooters_Suspended"),
                                self.countModel.fieldIndex('NrEScooters_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrDocklessPCLs_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrDocklessPCLs_Suspended"),
                                self.countModel.fieldIndex('NrDocklessPCLs_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrOGVs_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVs_Suspended"),
                                self.countModel.fieldIndex('NrOGVs_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrMiniBuses_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBuses_Suspended"),
                                self.countModel.fieldIndex('NrMiniBuses_Suspended'))
-        self.mapper.addMapping(self.restrictionDialog.findChild(QLineEdit, "NrBuses_Suspended"),
+        self.mapper.addMapping(self.findChild(QLineEdit, "NrBuses_Suspended"),
                                self.countModel.fieldIndex('NrBuses_Suspended'))
 
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTab ... mapping added ...",
                                   level=Qgis.Info)
+
+    def populateDemandWidget(self, extraTabLabel=None):
+
+        #TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... surveyID: {}; GeometryID: {}; extraTabLabel: {}".format(self.currSurveyID, self.currGeometryID, extraTabLabel), level=Qgis.Info)
+
+        """
+        if self.dbConn.driverName() == 'QPSQL':
+            table = '"{}"."Counts"'.format(self.demand_schema)
+            self.countModel.setTable(table)
+            #self.countModel.setTable('demand' + '.\"Counts\"')
+        else:
+            self.countModel.setTable('Counts')
+        """
+
+        filterString = "\"SurveyID\" = {} AND \"GeometryID\" = \'{}\'".format(self.currSurveyID, self.currGeometryID)
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... filterString: {}".format(filterString),
+                                  level=Qgis.Info)
+
+        self.countModel.setFilter(filterString)
+
+        """
+        self.mapper = QDataWidgetMapper(self)
+        self.mapper.setModel(self.countModel)
+
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... model set ...",
+                                  level=Qgis.Info)
+        self.setupMainCountTab()
+
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... checking for extraTab ...",
+                                  level=Qgis.Info)
+
+        
+        if extraTabLabel is not None:
+            # TODO: need to rethink this
+            TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ...adding extraTab  ...",
+                                  level=Qgis.Info)
+            extraTab = self.setupExtraCountTab()
+            TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... new tab added ...",
+                                      level=Qgis.Warning)
+            demandTab = self.restrictionDialog.findChild(QTabWidget, "Details")
+            demandTab.insertTab(1, extraTab, extraTabLabel)  # 0 based index
+            self.setupExtraCountTabMapping()
+        """
+
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... about to select ...",
+                                  level=Qgis.Info)
+
+        result = self.countModel.select()
+        if result == False:
+            TOMsMessageLog.logMessage(
+                "In populateDemandWidget: No result from select: {} ".format(self.countModel.lastError().text()),
+                level=Qgis.Info)
+
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... selected ...",
+                                  level=Qgis.Info)
+
+        TOMsMessageLog.logMessage(
+            "In populateDemandWidget: nr Rows: {} ".format(self.countModel.rowCount()),
+            level=Qgis.Info)
+
+        self.mapper.toFirst()  # TODO: check if this fails ...
+
+        TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... finishing ...",
+                                  level=Qgis.Info)
+
