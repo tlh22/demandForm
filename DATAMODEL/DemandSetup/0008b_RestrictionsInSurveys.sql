@@ -33,6 +33,10 @@ CREATE UNIQUE INDEX "RiS_unique_idx"
 ON demand."RestrictionsInSurveys"("SurveyID", "GeometryID");
 
 /***
+
+ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"
+    ADD COLUMN "CaptureSource" character varying(255);
+
 INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", gid::text AS "GeometryID", r.geom As geom
 FROM mhtc_operations."RC_Sections_merged" r, demand."Surveys";

@@ -8,7 +8,7 @@ CREATE TABLE demand."VRMs"
   "GeometryID" character varying(12) NOT NULL,
   "PositionID" integer,
   "VRM" character varying(12),
-  "Foreign" boolean,
+  "InternationalCodeID" integer,
   "VehicleTypeID" integer,
   "RestrictionTypeID" integer,
   "PermitTypeID" integer,
@@ -20,3 +20,9 @@ WITH (
 );
 ALTER TABLE demand."VRMs"
   OWNER TO postgres;
+
+
+/***
+ALTER TABLE demand."VRMs" ALTER "Foreign" TYPE INTEGER USING CASE WHEN false THEN 0 ELSE 1 END;
+ALTER TABLE demand."VRMs" RENAME COLUMN "Foreign" TO "InternationalCodeID";
+***/

@@ -44,3 +44,48 @@ INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (19, '
 INSERT INTO "demand_lookups"."UserTypes" ("Code", "Description") VALUES (1, 'Resident');
 INSERT INTO "demand_lookups"."UserTypes" ("Code", "Description") VALUES (2, 'Commuter');
 INSERT INTO "demand_lookups"."UserTypes" ("Code", "Description") VALUES (3, 'Visitor');
+
+-- Foreign reg plates
+
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (0, '', 'Default');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'A', 'Austria');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (2, 'B', 'Belgium');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (3, 'BG', 'Bulgaria');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (4, 'CH', 'Switzerland');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (5, 'CZ', 'Czech Republic');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (6, 'D', 'Germany');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (7, 'DK', 'Denmark');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (8, 'E', 'Spain');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (9, 'EST', 'Estonia');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (10, 'F', 'France');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (11, 'FIN', 'Finland');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (12, 'GBG', 'Guernsey');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (13, 'GBJ', 'Jersey');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (14, 'GBM', 'Isle of Man');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (15, 'GR', 'Greece');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (16, 'H', 'Hungary');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (17, 'I', 'Italy');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (18, 'L', 'Luxembourg');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (19, 'N', 'Norway');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (20, 'NL', 'Netherlands');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (21, 'P', 'Portugal');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (22, 'PL', 'Poland');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (23, 'RO', 'Romania');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (24, 'S', 'Sweden');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (25, 'SK', 'Slovakia');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (26, 'SLO', 'Slovenia');
+
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (99, 'Other', 'Other');
+
+
+
+
+
+
+
+
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'LV', 'Latvia');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'LT', 'Lithuania');
+
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'S', 'Sweden');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'IRL', 'Ireland');

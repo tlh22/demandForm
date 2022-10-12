@@ -257,14 +257,14 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             return False
 
         if self.dbConn.driverName() == 'QPSQL':
-            queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
+            queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), COALESCE(\"Capacity\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
         else:
-            queryString = "SELECT COALESCE(\"RoadName\", '[No Road Name]'), COALESCE(\"RestrictionLength\", '[Not known]'), \"RestrictionTypeID\" FROM \"Supply\" WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
+            queryString = "SELECT COALESCE(\"RoadName\", '[No Road Name]'), COALESCE(\"RestrictionLength\", '[Not known]'), COALESCE(\"Capacity\", '[Not known]'), \"RestrictionTypeID\" FROM \"Supply\" WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
 
         TOMsMessageLog.logMessage("In mapOtherFields: queryString: {}".format(queryString), level=Qgis.Info)
         query = QSqlQuery(queryString)
 
-        RoadName, RestrictionLength, RestrictionTypeID = range(3)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+        RoadName, RestrictionLength, Capacity, RestrictionTypeID = range(4)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         if not query.next():
             TOMsMessageLog.logMessage(
@@ -277,8 +277,12 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
         RoadNameWidget.setText(query.value(RoadName))
+
         RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
         RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
+
+        CapacityWidget = restrictionDialog.findChild(QWidget, "Capacity")
+        CapacityWidget.setText(str(query.value(Capacity)))
 
         # get restriction details
 
@@ -421,7 +425,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         TOMsMessageLog.logMessage("In addVRMWidget ... ", level=Qgis.Info)
         demandTab = restrictionDialog.findChild(QWidget, "Demand")
         demandLayout = demandTab.layout()
-        demandForm = vrmWidget(demandTab, self.dbConn, self.demand_schema)
+        demandForm = vrmWidget(self.dbConn, self.demand_schema)
         demandForm.startOperation.connect(self.startProgressDialog)
         demandForm.progressUpdated.connect(self.showProgress)
         demandForm.endOperation.connect(self.endProgressDialog)
@@ -439,7 +443,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         buttonLayout.addWidget(addButton)
         buttonLayout.addWidget(removeButton)
 
-        demandLayout.addLayout(buttonLayout, 1, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
+        demandLayout.addLayout(buttonLayout, 0, 1, alignment=QtCore.Qt.AlignRight | QtCore.Qt.AlignTop)
 
         addButton.clicked.connect(functools.partial(demandForm.insertVrm, self.surveyID, currGeometryID))
         removeButton.clicked.connect(demandForm.deleteVrm)
@@ -448,10 +452,15 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         TOMsMessageLog.logMessage("In addCountWidget ... ", level=Qgis.Info)
 
-        thisCountWidget = countWidget(restrictionDialog, self.dbConn, self.demand_schema, self.surveyID, currRestriction)
+        demandTab = restrictionDialog.findChild(QWidget, "Demand")
+        demandLayout = demandTab.layout()
+        thisCountWidget = countWidget(self.dbConn, self.demand_schema, self.surveyID, currRestriction)
+        thisCountWidget.setupUi()
         self.countModel = thisCountWidget.getCountModel()
 
-        currGeometryID = currRestriction.attribute("GeometryID")
+        #currGeometryID = currRestriction.attribute("GeometryID")
+
+        demandLayout.addWidget(thisCountWidget)
 
         extraTabLabel = self.getExtraTabName()
 
