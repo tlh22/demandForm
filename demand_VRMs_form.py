@@ -444,8 +444,13 @@ class demandForm(DemandUtilsMixin):
         TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInCurrSurvey: {}".format(nrVrmsInCurrSurvey), level=Qgis.Info)
 
         if nrVrmsInCurrSurvey == 0:
+
+            previousSurveyID = currSurveyID-1
+            if self.allowCopyFromPreviousDay:
+                previousSurveyID = self.getPreviousSurvey(currSurveyID)
+
             # no details added to current survey - check previous survey
-            queryString = "SELECT s1.SurveyDay, s2.SurveyDay FROM Surveys s1, Surveys s2 WHERE s1.SurveyID = {} AND s2.SurveyID = {}".format(currSurveyID, currSurveyID-1)
+            queryString = "SELECT s1.SurveyDay, s2.SurveyDay FROM Surveys s1, Surveys s2 WHERE s1.SurveyID = {} AND s2.SurveyID = {}".format(currSurveyID, previousSurveyID)
             TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 2: {}".format(queryString),
                                       level=Qgis.Info)
             query = QSqlQuery()
@@ -456,35 +461,37 @@ class demandForm(DemandUtilsMixin):
             query.next()
             TOMsMessageLog.logMessage("In checkPreviousSurvey: survey1Day: {}, survey2day: {}".format(query.value(0), query.value(1)), level=Qgis.Info)
 
-            #if query.value(0) == query.value(1): """ removing same day check """
-            # same day - check for VRMs
-            queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(currSurveyID - 1)
-            TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 3: {}".format(queryString),
-                                      level=Qgis.Info)
-            query = QSqlQuery(queryString)
-            query.next()
-            nrVrmsInPrevSurvey = query.value(0)
-            TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInPrevSurvey: {}".format(nrVrmsInPrevSurvey),
-                                      level=Qgis.Info)
-            if nrVrmsInPrevSurvey > 0:
+            if query.value(0) == query.value(1) or self.allowCopyFromPreviousDay:
 
-                # get name for previous time period
+                # same day - check for VRMs
 
-                reply = QMessageBox.question(None, 'Add details from previous survey',
-                                             # How do you access the main window to make the popup ???
-                                             'Do you want to add the VRMs from the previous time period?.',
-                                             QMessageBox.Yes, QMessageBox.No)
-                if reply == QMessageBox.Yes:
+                queryString = "SELECT COUNT(*) FROM VRMs WHERE SurveyID = {}".format(previousSurveyID)
+                TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 3: {}".format(queryString),
+                                          level=Qgis.Info)
+                query = QSqlQuery(queryString)
+                query.next()
+                nrVrmsInPrevSurvey = query.value(0)
+                TOMsMessageLog.logMessage("In checkPreviousSurvey: nrVrmsInPrevSurvey: {}".format(nrVrmsInPrevSurvey),
+                                          level=Qgis.Info)
+                if nrVrmsInPrevSurvey > 0:
 
-                    queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes) " \
-                                  "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, currSurveyID-1)
-                    TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
-                                              level=Qgis.Info)
-                    query = QSqlQuery()
-                    if not query.exec(queryString):
-                        TOMsMessageLog.logMessage(
-                            "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
-                            level=Qgis.Warning)
+                    # get name for previous time period
+
+                    reply = QMessageBox.question(None, 'Add details from previous survey',
+                                                 # How do you access the main window to make the popup ???
+                                                 'Do you want to add the VRMs from the previous time period?.',
+                                                 QMessageBox.Yes, QMessageBox.No)
+                    if reply == QMessageBox.Yes:
+
+                        queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes) " \
+                                      "SELECT {}, SectionID, GeometryID, PositionID, VRM, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, previousSurveyID)
+                        TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
+                                                  level=Qgis.Info)
+                        query = QSqlQuery()
+                        if not query.exec(queryString):
+                            TOMsMessageLog.logMessage(
+                                "In checkPreviousSurvey: error with {}: {}".format(queryString, query.lastError()),
+                                level=Qgis.Warning)
 
     def getSurveyName(self, currSurveyID):
         TOMsMessageLog.logMessage("In getSurveyName: currSurveyID: {}".format(currSurveyID), level=Qgis.Info)
@@ -508,5 +515,35 @@ class demandForm(DemandUtilsMixin):
         while query.next():
             TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; BeatTitle: {}".format(currSurveyID, query.value(BeatTitle)), level=Qgis.Info)
             return query.value(BeatTitle)
+
+        return None
+
+    def getPreviousSurvey(self, currSurveyID):
+        TOMsMessageLog.logMessage("In getPreviousSurvey: currSurveyID: {}".format(currSurveyID), level=Qgis.Info)
+
+        previousSurveyID = 0
+
+        query = QSqlQuery(self.dbConn)
+        TOMsMessageLog.logMessage("In getSurveyName: connection is: {}".format(self.dbConn.driverName()), level=Qgis.Info)
+        if self.dbConn.driverName() == 'QPSQL':
+            queryStr = 'SELECT "SurveyID" FROM "{}"."Surveys" ORDER BY "SurveyID" ASC;'.format(self.demand_schema)
+            TOMsMessageLog.logMessage("In getCurrSurvey: schema is: {}".format(self.demand_schema), level=Qgis.Warning)
+        else:
+            queryStr = 'SELECT "SurveyID" FROM "Surveys" ORDER BY "SurveyID" ASC;'
+
+        if not query.exec(queryStr):
+            reply = QMessageBox.information(None, "Error",
+                                            "Problem with Surveys - {} {} {}\n".format(query.lastQuery(), query.lastError().type(),
+                                                                                      query.lastError().databaseText()
+                                            ), QMessageBox.Ok)
+
+        surveyID = range(1)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+
+        while query.next():
+            TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; BeatTitle: {}".format(currSurveyID, query.value(surveyID)), level=Qgis.Info)
+            if query.value(surveyID) == currSurveyID:
+                return previousSurveyID
+            else:
+                previousSurveyID = query.value(surveyID)
 
         return None
