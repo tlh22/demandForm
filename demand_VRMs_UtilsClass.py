@@ -154,6 +154,21 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         return extraTabName
 
+    def allowCopyFromPreviousDay(self):
+
+        allowedToCopyFromPreviousDay = False
+        self.TOMsConfigFileObject = TOMsConfigFile()
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
+
+        option = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'AllowCopyFromPreviousDay')
+        TOMsMessageLog.logMessage("In DemandUtils:getExtraTabName: {}".format(option),
+                                  level=Qgis.Info)
+
+        if option == 'Yes':
+            allowedToCopyFromPreviousDay = True
+
+        return allowedToCopyFromPreviousDay
+
     def setDefaultFieldRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         TOMsMessageLog.logMessage("In DemandUtils:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Info)
 
@@ -237,7 +252,9 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         dh = restrictionDialog.height()
         restrictionDialog.setGeometry(int(self.readLastUsedDetails(currRestrictionLayer.name(), 'geometry_x', 200)),
                                       int(self.readLastUsedDetails(currRestrictionLayer.name(), 'geometry_y', 200)),
-                                      dw, dh)
+                                      int(self.readLastUsedDetails(currRestrictionLayer.name(), 'geometry_w', dw)),
+                                      int(self.readLastUsedDetails(currRestrictionLayer.name(), 'geometry_h', dh))
+                                      )
 
     def mapOtherFields(self, restrictionDialog, currRestrictionLayer, currRestriction):
 
@@ -275,14 +292,22 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 "In mapOtherFields: RoadName: {}, RestrictionLength: {}".format(query.value(RoadName), query.value(RestrictionLength)),
                 level=Qgis.Info)
 
-        RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
-        RoadNameWidget.setText(query.value(RoadName))
+        try:
 
-        RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
-        RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
+            RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
+            RoadNameWidget.setText(query.value(RoadName))
 
-        CapacityWidget = restrictionDialog.findChild(QWidget, "Capacity")
-        CapacityWidget.setText(str(query.value(Capacity)))
+            RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
+            RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
+
+            CapacityWidget = restrictionDialog.findChild(QWidget, "Capacity")
+            CapacityWidget.setText(str(query.value(Capacity)))
+
+        except Exception as e:
+            reply = QMessageBox.information(None, "Error",
+                                                "mapOtherFields. Problem setting attributes: {} for SurveyID: {}. Issue is {}".format(currSurveyName, self.surveyID, e),
+                                                QMessageBox.Ok)
+            #return False
 
         # get restriction details
 
@@ -345,6 +370,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         """
         self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_x', dialog.geometry().x())
         self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_y', dialog.geometry().y())
+        self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_h', dialog.geometry().height())
+        self.storeLastUsedDetails(currFeatureLayer.name(), 'geometry_w', dialog.geometry().width())
 
         status = dialog.close()
 
@@ -434,7 +461,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         demandForm.populateDemandWidget(self.surveyID, currGeometryID)
 
-        demandLayout.addWidget(demandForm)
+        demandLayout.addWidget(demandForm, 0, 0)
 
         buttonLayout = QVBoxLayout()
         buttonLayout.setSpacing(50)
