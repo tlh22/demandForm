@@ -536,14 +536,16 @@ class demandForm(DemandUtilsMixin):
                                             "Problem with Surveys - {} {} {}\n".format(query.lastQuery(), query.lastError().type(),
                                                                                       query.lastError().databaseText()
                                             ), QMessageBox.Ok)
+            return None
 
         surveyID = range(1)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         while query.next():
-            TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; BeatTitle: {}".format(currSurveyID, query.value(surveyID)), level=Qgis.Info)
-            if query.value(surveyID) == currSurveyID:
+            thisSurveyID = query.value(0)
+            TOMsMessageLog.logMessage("In getCurrSurvey: currSurveyID: {}; thisSurveyID: {}".format(currSurveyID, thisSurveyID), level=Qgis.Info)
+            if thisSurveyID == currSurveyID:
                 return previousSurveyID
             else:
-                previousSurveyID = query.value(surveyID)
+                previousSurveyID = thisSurveyID
 
         return None

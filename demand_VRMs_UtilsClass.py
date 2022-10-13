@@ -292,14 +292,22 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
                 "In mapOtherFields: RoadName: {}, RestrictionLength: {}".format(query.value(RoadName), query.value(RestrictionLength)),
                 level=Qgis.Info)
 
-        RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
-        RoadNameWidget.setText(query.value(RoadName))
+        try:
 
-        RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
-        RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
+            RoadNameWidget = restrictionDialog.findChild(QWidget, "RoadName")
+            RoadNameWidget.setText(query.value(RoadName))
 
-        CapacityWidget = restrictionDialog.findChild(QWidget, "Capacity")
-        CapacityWidget.setText(str(query.value(Capacity)))
+            RestrictionLengthWidget = restrictionDialog.findChild(QWidget, "RestrictionLength")
+            RestrictionLengthWidget.setText(str(query.value(RestrictionLength)))
+
+            CapacityWidget = restrictionDialog.findChild(QWidget, "Capacity")
+            CapacityWidget.setText(str(query.value(Capacity)))
+
+        except Exception as e:
+            reply = QMessageBox.information(None, "Error",
+                                                "mapOtherFields. Problem setting attributes: {} for SurveyID: {}. Issue is {}".format(currSurveyName, self.surveyID, e),
+                                                QMessageBox.Ok)
+            #return False
 
         # get restriction details
 
@@ -453,7 +461,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         demandForm.populateDemandWidget(self.surveyID, currGeometryID)
 
-        demandLayout.addWidget(demandForm)
+        demandLayout.addWidget(demandForm, 0, 0)
 
         buttonLayout = QVBoxLayout()
         buttonLayout.setSpacing(50)
