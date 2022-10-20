@@ -3,6 +3,7 @@
 
 -- vehicle types
 
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (0, NULL, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (1, 'Car', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (2, 'LGV', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (3, 'MCL', 0.4);
@@ -19,6 +20,7 @@ INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUE
 -- permit types
 
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (0, NULL);
+
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (1, 'Resident (Zone)');
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (2, 'Resident (Other)');
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (3, 'Visitor voucher');
@@ -74,18 +76,24 @@ INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Count
 INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (24, 'S', 'Sweden');
 INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (25, 'SK', 'Slovakia');
 INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (26, 'SLO', 'Slovenia');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (27, 'UA', 'Ukraine');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (28, 'LV', 'Latvia');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (29, 'LT', 'Lithuania');
+INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (30, 'IRL', 'Ireland');
 
 INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (99, 'Other', 'Other');
 
+-- Parking Activity types
 
+INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (1, 'Parked');
+INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (2, 'Waiting');
+INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (3, 'Loading');
+INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (4, 'Other');
 
+-- Parking Manner types
 
-
-
-
-
-INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'LV', 'Latvia');
-INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'LT', 'Lithuania');
-
-INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'S', 'Sweden');
-INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Country") VALUES (1, 'IRL', 'Ireland');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (1, 'Parallel');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (2, 'Perpendicular');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (3, 'Echelon');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (4, '2 Wheels on footpath');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (5, '4 Wheels on footpath');

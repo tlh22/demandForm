@@ -120,9 +120,10 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def getDemandSurveyType(self):
 
-        surveyType = None
         self.TOMsConfigFileObject = TOMsConfigFile()
         self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
+
+        surveyType = None
 
         surveyType = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'DemandSurveyType')
         TOMsMessageLog.logMessage("In DemandUtils:getDemandSurveyType: {}".format(surveyType),
@@ -131,6 +132,9 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         return surveyType
 
     def getMainTabName(self):
+
+        self.TOMsConfigFileObject = TOMsConfigFile()
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
 
         mainTabName = None
         self.TOMsConfigFileObject = TOMsConfigFile()
@@ -144,9 +148,10 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def getExtraTabName(self):
 
-        extraTabName = None
         self.TOMsConfigFileObject = TOMsConfigFile()
         self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
+
+        extraTabName = None
 
         extraTabName = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'ExtraTabName')
         TOMsMessageLog.logMessage("In DemandUtils:getExtraTabName: {}".format(extraTabName),
@@ -156,9 +161,10 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
     def allowCopyFromPreviousDay(self):
 
-        allowedToCopyFromPreviousDay = False
         self.TOMsConfigFileObject = TOMsConfigFile()
         self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
+
+        allowedToCopyFromPreviousDay = False
 
         option = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'AllowCopyFromPreviousDay')
         TOMsMessageLog.logMessage("In DemandUtils:getExtraTabName: {}".format(option),
@@ -168,6 +174,19 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             allowedToCopyFromPreviousDay = True
 
         return allowedToCopyFromPreviousDay
+
+    def getDemandFieldsListFromConfigFile(self):
+
+        self.TOMsConfigFileObject = TOMsConfigFile()
+        self.TOMsConfigFileObject.initialiseTOMsConfigFile() # assume OK to read
+
+        fields = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'DemandFields')
+        #demandFieldsList = []
+        if fields:
+            demandFieldsList = fields.split('\n')
+            return demandFieldsList
+
+        return None
 
     def setDefaultFieldRestrictionDetails(self, currRestriction, currRestrictionLayer, currDate):
         TOMsMessageLog.logMessage("In DemandUtils:setDefaultFieldRestrictionDetails: {}".format(currRestrictionLayer.name()), level=Qgis.Info)
@@ -459,7 +478,11 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         currGeometryID = currRestriction.attribute("GeometryID")
 
-        demandForm.populateDemandWidget(self.surveyID, currGeometryID)
+        # get fields to display
+
+        demandFields = self.getDemandFieldsListFromConfigFile()
+
+        demandForm.populateDemandWidget(self.surveyID, currGeometryID, demandFields)
 
         demandLayout.addWidget(demandForm, 0, 0)
 
@@ -559,4 +582,3 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         if mainTabText:
             demandTab.setTabText (idx_main, mainTabText)
-

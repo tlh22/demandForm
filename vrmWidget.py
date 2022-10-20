@@ -72,7 +72,7 @@ class vrmWidget(QTableView):
         #vrmsLayer = QgsProject.instance().mapLayersByName("VRMs")[0]
         #self.provider = vrmsLayer.dataProvider()
 
-    def populateDemandWidget(self, surveyID, GeometryID):
+    def populateDemandWidget(self, surveyID, GeometryID, demandFields):
 
         TOMsMessageLog.logMessage("In vrmWidget:populateDemandWidget ... surveyID: {}; GeometryID: {}".format(surveyID, GeometryID), level=Qgis.Info)
 
@@ -92,7 +92,7 @@ class vrmWidget(QTableView):
         self.vrmModel.setFilter(filterString)
         #vrmModel.setFilter("SurveyID = 1 AND SectionID = 5")
         self.vrmModel.setSort(int(self.vrmModel.fieldIndex("PositionID")), Qt.AscendingOrder)
-        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PositionID"), Qt.Horizontal, 'Pos')
+        #self.vrmModel.setHeaderData(self.vrmModel.fieldIndex("PositionID"), Qt.Horizontal, 'Pos')
 
         """
         It was a challenge to work out the required structure/format for accessing postgres records. The clue came from here - https://osgeo-fr.github.io/presentations_foss4gfr/2016/J2/SylvainPierre.pdf
@@ -103,6 +103,8 @@ class vrmWidget(QTableView):
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")), QSqlRelation('demand_lookups'+'.\"VehicleTypes\"', '\"Code\"', '\"Description\"'))
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('demand_lookups'+'.\"PermitTypes\"', '\"Code\"', '\"Description\"'))
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("InternationalCodeID")), QSqlRelation('demand_lookups'+'.\"InternationalCodes\"', '\"Code\"', '\"Description\"'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("ParkingActivityTypeID")), QSqlRelation('demand_lookups'+'.\"ParkingActivityTypes\"', '\"Code\"', '\"Description\"'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("ParkingMannerTypeID")), QSqlRelation('demand_lookups'+'.\"ParkingMannerTypes\"', '\"Code\"', '\"Description\"'))
         else:
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("VehicleTypeID")),
                                       QSqlRelation('VehicleTypes', 'Code',
@@ -112,6 +114,10 @@ class vrmWidget(QTableView):
             self.vrmModel.setRelation(int(self.vrmModel.fieldIndex("InternationalCodeID")),
                                       QSqlRelation('InternationalCodes', 'Code',
                                                    'Description'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('ParkingActivityTypeID')),
+                                      QSqlRelation('ParkingActivityTypes', 'Code', 'Description'))
+            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('ParkingMannerTypeID')),
+                                      QSqlRelation('ParkingMannerTypes', 'Code', 'Description'))
 
         # Vehicle types
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('VehicleTypeID')))
@@ -119,30 +125,39 @@ class vrmWidget(QTableView):
             #print ('Relation not valid ...')
             TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
-        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('VehicleTypeID'), Qt.Horizontal, 'VehicleType')
-
-        """if self.dbConn.driverName() == 'QPSQL':
-            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('demand_lookups'+'.\"PermitTypes\"', '\"Code\"', '\"Description\"'))
-        else:
-            self.vrmModel.setRelation(int(self.vrmModel.fieldIndex('PermitTypeID')), QSqlRelation('PermitTypes', 'Code', 'Description'))"""
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('VehicleTypeID'), Qt.Horizontal, 'VehicleTypeID')
 
         # Permit types
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('PermitTypeID')))
-
         if not rel.isValid():
             #print ('Relation not valid ...')
             TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
-        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('PermitTypeID'), Qt.Horizontal, 'PermitType')
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('PermitTypeID'), Qt.Horizontal, 'PermitTypeID')
 
         # International codes
         rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('InternationalCodeID')))
-
         if not rel.isValid():
             #print ('Relation not valid ...')
             TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
                                       level=Qgis.Warning)
-        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('InternationalCodeID'), Qt.Horizontal, 'Foreign')
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('InternationalCodeID'), Qt.Horizontal, 'InternationalCodeID')
+
+        # Parking Activity types
+        rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('ParkingActivityTypeID')))
+        if not rel.isValid():
+            #print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('ParkingActivityTypeID'), Qt.Horizontal, 'ParkingActivityTypeID')
+
+        # Parking Manner types
+        rel = self.vrmModel.relation(int(self.vrmModel.fieldIndex('ParkingMannerTypeID')))
+        if not rel.isValid():
+            #print ('Relation not valid ...')
+            TOMsMessageLog.logMessage("In populateDemandWidget: Relation not valid ... {} ".format(self.vrmModel.lastError().text()),
+                                      level=Qgis.Warning)
+        self.vrmModel.setHeaderData(self.vrmModel.fieldIndex('ParkingMannerTypeID'), Qt.Horizontal, 'ParkingMannerTypeID')
 
         result = self.vrmModel.select()
         if result == False:
@@ -151,24 +166,59 @@ class vrmWidget(QTableView):
 
         TOMsMessageLog.logMessage(
             "In populateDemandWidget: nr Rows: {} ".format(self.vrmModel.rowCount()),
-            level=Qgis.Info)
+            level=Qgis.Warning)
 
         self.setModel(self.vrmModel)
-        try:
-            self.setColumnHidden(self.vrmModel.fieldIndex('fid'), True)  # Not present within postgres
-        except:
-            None
 
-        self.setColumnHidden(self.vrmModel.fieldIndex('ID'), True)
-        self.setColumnHidden(self.vrmModel.fieldIndex('SurveyID'), True)
-        self.setColumnHidden(self.vrmModel.fieldIndex('SectionID'), True)
-        self.setColumnHidden(self.vrmModel.fieldIndex('GeometryID'), True)
-        self.setColumnHidden(self.vrmModel.fieldIndex('RestrictionTypeID'), True)
+        # TODO: check to see which fields are required ...
+
+        # read required fields from config file
+
+        for i in range(self.vrmModel.columnCount()):
+            currFieldName = str(self.vrmModel.headerData(i, Qt.Horizontal, Qt.DisplayRole))
+            TOMsMessageLog.logMessage("In populateDemandWidget: Considering {} ...".format(currFieldName), level=Qgis.Warning)
+
+            found = False
+
+            for thisField in demandFields:
+                details = thisField.split(":")
+                TOMsMessageLog.logMessage("In populateDemandWidget: field: {} ...".format(details[0]),
+                                          level=Qgis.Warning)
+
+                if details[0] == currFieldName:
+                    # check for new name
+                    found = True
+                    TOMsMessageLog.logMessage("In populateDemandWidget: field found", level=Qgis.Warning)
+                    if len(details) > 1:
+                        self.vrmModel.setHeaderData(i, Qt.Horizontal, details[1])
+                    break
+
+            if not found:
+                TOMsMessageLog.logMessage("In populateDemandWidget: {} field not found. Hiding".format(currFieldName), level=Qgis.Warning)
+
+                try:
+                    self.setColumnHidden(self.vrmModel.fieldIndex(currFieldName), True)  # fid not present within postgres
+                    #self.vrmModel.removeColumns(self.vrmModel.fieldIndex(currFieldName), 1, self.vrmModel.fieldIndex(currFieldName))  # fid not present within postgres
+                except Exception as e:
+                    # QMessageBox.information(self.iface.mainWindow(), "ERROR", ("Error opening test layer {}".format(e)))
+                    TOMsMessageLog.logMessage("In populateDemandWidget: error {}".format(e), level=Qgis.Warning)
+                    #pass
+
+        #self.setColumnHidden(self.vrmModel.fieldIndex('ID'), True)
+        #self.setColumnHidden(self.vrmModel.fieldIndex('SurveyID'), True)
+
+        ###self.setColumnHidden(self.vrmModel.fieldIndex('SectionID'), True)
+
+        #self.setColumnHidden(self.vrmModel.fieldIndex('GeometryID'), True)
+
+        ###self.setColumnHidden(self.vrmModel.fieldIndex('RestrictionTypeID'), True)
+
         self.verticalHeader().hide()
         self.setItemDelegate(QSqlRelationalDelegate(self.vrmModel))
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("PositionID"), readOnlyDelegate(self));
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("VRM"), vrmDelegate(self));
         #self.setItemDelegateForColumn(self.vrmModel.fieldIndex("Foreign"), CheckBoxDelegate(self));  # Need to find way to include check box delegate
+
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.resizeColumnsToContents()
         self.setColumnWidth(self.vrmModel.fieldIndex("VRM"), 120)
