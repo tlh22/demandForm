@@ -338,21 +338,15 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
     def onSaveFieldRestrictionDetails(self, currFeature, currFeatureLayer, dialog):
         TOMsMessageLog.logMessage("In onSaveFieldRestrictionDetails:  currFeatureID: {}; {}".format(currFeature.id(), currFeature.attribute('GeometryID')), level=Qgis.Info)
 
-        '''
-        try:
-            self.camera1.endCamera()
-            #self.camera2.endCamera()
-            #self.camera3.endCamera()
-        except:
-            None
-        '''
-        # set update time !!!
+        # set update time on tablet (or when not set) !!!
 
-        try:
-            currFeature.setAttribute("DemandSurveyDateTime", QDateTime.currentDateTime())
-            currFeature.setAttribute("Enumerator", self.enumerator)
-        except Exception as e:
-            reply = QMessageBox.information(None, "Information", "Problem setting date/time: {}".format(e), QMessageBox.Ok)
+        if self.dbConn.driverName() != 'QPSQL' or currFeature.attribute("DemandSurveyDateTime") is None:
+
+            try:
+                currFeature.setAttribute("DemandSurveyDateTime", QDateTime.currentDateTime())
+                currFeature.setAttribute("Enumerator", self.enumerator)
+            except Exception as e:
+                reply = QMessageBox.information(None, "Information", "Problem setting date/time: {}".format(e), QMessageBox.Ok)
 
         currFeatureLayer.updateFeature(currFeature)
 
