@@ -32,15 +32,6 @@ ALTER TABLE demand_lookups."VehicleTypes"
 
 -- permit types
 
-CREATE SEQUENCE "demand_lookups"."PermitTypes_Code_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE "demand_lookups"."PermitTypes_Code_seq" OWNER TO "postgres";
-
 CREATE TABLE "demand_lookups"."PermitTypes" (
     "Code" SERIAL,
     "Description" character varying
@@ -52,15 +43,6 @@ ALTER TABLE demand_lookups."PermitTypes"
     ADD PRIMARY KEY ("Code");
 
 -- user types
-
-CREATE SEQUENCE "demand_lookups"."UserTypes_Code_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE "demand_lookups"."UserTypes_Code_seq" OWNER TO "postgres";
 
 CREATE TABLE "demand_lookups"."UserTypes" (
     "Code" SERIAL,
@@ -74,15 +56,6 @@ ALTER TABLE demand_lookups."UserTypes"
 
 -- International codes
 
-CREATE SEQUENCE "demand_lookups"."InternationalCodes_Code_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE "demand_lookups"."InternationalCodes_Code_seq" OWNER TO "postgres";
-
 CREATE TABLE "demand_lookups"."InternationalCodes" (
     "Code" SERIAL,
     "Description" character varying,
@@ -92,4 +65,28 @@ CREATE TABLE "demand_lookups"."InternationalCodes" (
 ALTER TABLE "demand_lookups"."InternationalCodes" OWNER TO "postgres";
 
 ALTER TABLE demand_lookups."InternationalCodes"
+    ADD PRIMARY KEY ("Code");
+
+-- Activity Type
+
+CREATE TABLE "demand_lookups"."ParkingActivityTypes" (
+    "Code" SERIAL,
+    "Description" character varying
+);
+
+ALTER TABLE "demand_lookups"."ParkingActivityTypes" OWNER TO "postgres";
+
+ALTER TABLE demand_lookups."ParkingActivityTypes"
+    ADD PRIMARY KEY ("Code");
+
+-- Parking Manner Type
+
+CREATE TABLE "demand_lookups"."ParkingMannerTypes" (
+    "Code" SERIAL,
+    "Description" character varying
+);
+
+ALTER TABLE "demand_lookups"."ParkingMannerTypes" OWNER TO "postgres";
+
+ALTER TABLE demand_lookups."ParkingMannerTypes"
     ADD PRIMARY KEY ("Code");

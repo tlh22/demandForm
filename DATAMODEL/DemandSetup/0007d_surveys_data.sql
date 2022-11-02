@@ -10,4 +10,4 @@ WHERE "BeatTitle" IS NULL;
 
 -- Add test survey
 
-INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime", "BeatTitle") VALUES (0, 'Wednesday', 'early', 'early', 'TestBeat');
+INSERT INTO demand."Surveys"("SurveyID", "SurveyDay", "BeatStartTime", "BeatEndTime", "BeatTitle") VALUES (0, 'Wednesday', 'start', 'end', 'TestBeat');
