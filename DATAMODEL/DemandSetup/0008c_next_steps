@@ -11,6 +11,8 @@ Background
 Demand
   - VRMs or Counts
   - InternationalCodes
+  - ParkingActivityTypes
+  - ParkingMannerTypes
   - PermitTypes (even if empty)
   - RestrictionsInSurveys
   - Supply
