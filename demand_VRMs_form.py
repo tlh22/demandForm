@@ -483,8 +483,8 @@ class demandForm(DemandUtilsMixin):
                                                  QMessageBox.Yes, QMessageBox.No)
                     if reply == QMessageBox.Yes:
 
-                        queryString = "INSERT INTO VRMs (SurveyID, SectionID, GeometryID, PositionID, VRM, InternationalCodeID, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes) " \
-                                      "SELECT {}, SectionID, GeometryID, PositionID, VRM, InternationalCodeID, VehicleTypeID, RestrictionTypeID, PermitTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, previousSurveyID)
+                        queryString = "INSERT INTO VRMs (SurveyID, GeometryID, PositionID, VRM, InternationalCodeID, VehicleTypeID, PermitTypeID, ParkingActivityTypeID, ParkingMannerTypeID, Notes) " \
+                                      "SELECT {}, GeometryID, PositionID, VRM, InternationalCodeID, VehicleTypeID, PermitTypeID, ParkingActivityTypeID, ParkingMannerTypeID, Notes FROM VRMs WHERE SurveyID = {}".format(currSurveyID, previousSurveyID)
                         TOMsMessageLog.logMessage("In checkPreviousSurvey: queryString 4: {}".format(queryString),
                                                   level=Qgis.Info)
                         query = QSqlQuery()
