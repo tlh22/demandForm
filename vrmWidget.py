@@ -13,7 +13,7 @@ from qgis.PyQt.QtWidgets import (
     QPushButton,
     QApplication,
     QComboBox, QSizePolicy, QGridLayout,
-    QWidget, QVBoxLayout, QTableView, QTableWidgetItem, QLayout, QItemDelegate, QStyledItemDelegate, QLineEdit
+    QWidget, QVBoxLayout, QTableView, QTableWidgetItem, QLayout, QItemDelegate, QStyledItemDelegate, QLineEdit, QHeaderView
 )
 
 from qgis.PyQt.QtGui import (
@@ -214,6 +214,7 @@ class vrmWidget(QTableView):
         ###self.setColumnHidden(self.vrmModel.fieldIndex('RestrictionTypeID'), True)
 
         self.verticalHeader().hide()
+        self.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
         self.setItemDelegate(QSqlRelationalDelegate(self.vrmModel))
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("PositionID"), readOnlyDelegate(self));
         self.setItemDelegateForColumn(self.vrmModel.fieldIndex("VRM"), vrmDelegate(self));
