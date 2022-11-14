@@ -141,7 +141,7 @@ class countWidget(QWidget):
 
         # spacerItem = QSpacerItem(0, 0, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        col1_layout.addRow(QLabel(""), QLabel("Correct"))
+        col1_layout.addRow(QLabel(""), QLabel("Parked"))
         col1_layout.addRow(QLabel("Cars:"), QLineEdit(objectName='NrCars'))
         col1_layout.addRow(QLabel("LGVs:"), QLineEdit(objectName='NrLGVs'))
         col1_layout.addRow(QLabel("MCLs:"), QLineEdit(objectName='NrMCLs'))
@@ -150,23 +150,23 @@ class countWidget(QWidget):
         col1_layout.addRow(QLabel("Mini Buses:"), QLineEdit(objectName='NrMiniBuses'))
         col1_layout.addRow(QLabel("Buses:"), QLineEdit(objectName='NrBuses'))
 
-        col2_layout.addRow(QLabel("Idling"))
-        col2_layout.addRow(QLineEdit(objectName='NrCarsIdling'))
-        col2_layout.addRow(QLineEdit(objectName='NrLGVsIdling'))
-        col2_layout.addRow(QLineEdit(objectName='NrMCLsIdling'))
-        col2_layout.addRow(QLineEdit(objectName='NrTaxisIdling'))
-        col2_layout.addRow(QLineEdit(objectName='NrOGVsIdling'))
-        col2_layout.addRow(QLineEdit(objectName='NrMiniBusesIdling'))
-        col2_layout.addRow(QLineEdit(objectName='NrBusesIdling'))
+        col2_layout.addRow(QLabel("Waiting"))
+        col2_layout.addRow(QLineEdit(objectName='NrCarsWaiting'))
+        col2_layout.addRow(QLineEdit(objectName='NrLGVsWaiting'))
+        col2_layout.addRow(QLineEdit(objectName='NrMCLsWaiting'))
+        col2_layout.addRow(QLineEdit(objectName='NrTaxisWaiting'))
+        col2_layout.addRow(QLineEdit(objectName='NrOGVsWaiting'))
+        col2_layout.addRow(QLineEdit(objectName='NrMiniBusesWaiting'))
+        col2_layout.addRow(QLineEdit(objectName='NrBusesWaiting'))
 
-        col3_layout.addRow(QLabel("NOT Correct"))
-        col3_layout.addRow(QLineEdit(objectName='NrCarsParkedIncorrectly'))
-        col3_layout.addRow(QLineEdit(objectName='NrLGVsParkedIncorrectly'))
-        col3_layout.addRow(QLineEdit(objectName='NrMCLsParkedIncorrectly'))
-        col3_layout.addRow(QLineEdit(objectName='NrTaxisParkedIncorrectly'))
-        col3_layout.addRow(QLineEdit(objectName='NrOGVsParkedIncorrectly'))
-        col3_layout.addRow(QLineEdit(objectName='NrMiniBusesParkedIncorrectly'))
-        col3_layout.addRow(QLineEdit(objectName='NrBusesParkedIncorrectly'))
+        col3_layout.addRow(QLabel("Idling"))
+        col3_layout.addRow(QLineEdit(objectName='NrCarsIdling'))
+        col3_layout.addRow(QLineEdit(objectName='NrLGVsIdling'))
+        col3_layout.addRow(QLineEdit(objectName='NrMCLsIdling'))
+        col3_layout.addRow(QLineEdit(objectName='NrTaxisIdling'))
+        col3_layout.addRow(QLineEdit(objectName='NrOGVsIdling'))
+        col3_layout.addRow(QLineEdit(objectName='NrMiniBusesIdling'))
+        col3_layout.addRow(QLineEdit(objectName='NrBusesIdling'))
 
         col4_layout.addRow(QLabel(""))
         col4_layout.addRow(QLabel("PCLs:"), QLineEdit(objectName='NrPCLs'))
@@ -222,50 +222,50 @@ class countWidget(QWidget):
                                    self.countModel.fieldIndex('NrCars'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrCarsIdling"),
                                    self.countModel.fieldIndex('NrCarsIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrCarsParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrCarsParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrCarsWaiting"),
+                                   self.countModel.fieldIndex('NrCarsWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVs"),
                                    self.countModel.fieldIndex('NrLGVs'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVsIdling"),
                                    self.countModel.fieldIndex('NrLGVsIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVsParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrLGVsParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrLGVsWaiting"),
+                                   self.countModel.fieldIndex('NrLGVsWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLs"),
                                    self.countModel.fieldIndex('NrMCLs'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLsIdling"),
                                    self.countModel.fieldIndex('NrMCLsIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLsParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrMCLsParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMCLsWaiting"),
+                                   self.countModel.fieldIndex('NrMCLsWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxis"),
                                    self.countModel.fieldIndex('NrTaxis'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxisIdling"),
                                    self.countModel.fieldIndex('NrTaxisIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxisParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrTaxisParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrTaxisWaiting"),
+                                   self.countModel.fieldIndex('NrTaxisWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVs"),
                                    self.countModel.fieldIndex('NrOGVs'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVsIdling"),
                                    self.countModel.fieldIndex('NrOGVsIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVsParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrOGVsParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrOGVsWaiting"),
+                                   self.countModel.fieldIndex('NrOGVsWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBuses"),
                                    self.countModel.fieldIndex('NrMiniBuses'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBusesIdling"),
                                    self.countModel.fieldIndex('NrMiniBusesIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBusesParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrMiniBusesParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrMiniBusesWaiting"),
+                                   self.countModel.fieldIndex('NrMiniBusesWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrBuses"),
                                    self.countModel.fieldIndex('NrBuses'))
             self.mapper.addMapping(self.findChild(QLineEdit, "NrBusesIdling"),
                                    self.countModel.fieldIndex('NrBusesIdling'))
-            self.mapper.addMapping(self.findChild(QLineEdit, "NrBusesParkedIncorrectly"),
-                                   self.countModel.fieldIndex('NrBusesParkedIncorrectly'))
+            self.mapper.addMapping(self.findChild(QLineEdit, "NrBusesWaiting"),
+                                   self.countModel.fieldIndex('NrBusesWaiting'))
 
             self.mapper.addMapping(self.findChild(QLineEdit, "NrPCLs"),
                                    self.countModel.fieldIndex('NrPCLs'))
