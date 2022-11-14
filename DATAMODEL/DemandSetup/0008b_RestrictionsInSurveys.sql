@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS demand."RestrictionsInSurveys" CASCADE;
 
 CREATE TABLE demand."RestrictionsInSurveys"
 (
+    gid INT GENERATED ALWAYS AS IDENTITY,
     "SurveyID" integer NOT NULL,
     "GeometryID" character varying(12) COLLATE pg_catalog."default" NOT NULL,
     "DemandSurveyDateTime" timestamp without time zone,
@@ -21,16 +22,13 @@ CREATE TABLE demand."RestrictionsInSurveys"
     "Photos_03" character varying (255) COLLATE pg_catalog."default",
     "CaptureSource" character varying (255) COLLATE pg_catalog."default",
     geom geometry(LineString,27700) NOT NULL,
-	CONSTRAINT "RestrictionsInSurveys_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
+    UNIQUE ("SurveyID", "GeometryID")
 )
 
 TABLESPACE pg_default;
 
 ALTER TABLE demand."RestrictionsInSurveys"
     OWNER to postgres;
-
-CREATE UNIQUE INDEX "RiS_unique_idx"
-ON demand."RestrictionsInSurveys"("SurveyID", "GeometryID");
 
 /***
 

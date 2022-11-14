@@ -2,6 +2,7 @@
 DROP TABLE IF EXISTS demand."Counts" CASCADE;
 
 CREATE TABLE "demand"."Counts" (
+  gid INT GENERATED ALWAYS AS IDENTITY,
   "SurveyID" integer NOT NULL,
   "GeometryID" character varying(12) NOT NULL,
 
@@ -31,7 +32,7 @@ CREATE TABLE "demand"."Counts" (
   "NrMiniBuses_Suspended" integer,
   "NrBuses_Suspended" integer,
 
-   CONSTRAINT "Counts_pkey" PRIMARY KEY ("SurveyID", "GeometryID")
+   UNIQUE ("SurveyID", "GeometryID")
 )
 WITH (
   OIDS=FALSE
@@ -39,9 +40,6 @@ WITH (
 
 ALTER TABLE demand."Counts"
   OWNER TO postgres;
-
-CREATE UNIQUE INDEX "Counts_unique_idx"
-ON demand."Counts"("SurveyID", "GeometryID");
 
 -- and populate
 
@@ -66,35 +64,49 @@ ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "SectionID";
  For RBKC
 
 ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrCarsWaiting" integer;
+ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrCarsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrCarsParkedIncorrectly" integer;
 
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrLGVsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrLGVsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrLGVsParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrMCLsWaiting" integer;
+ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMCLsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMCLsParkedIncorrectly" integer;
 
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrTaxisWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrTaxisIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrTaxisParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrOGVsWaiting" integer;
+ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrOGVsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrOGVsParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrMiniBusesWaiting" integer;
+ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMiniBusesIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMiniBusesParkedIncorrectly" integer;	
 
+ALTER TABLE IF EXISTS demand."Counts"
+    ADD COLUMN "NrBusesWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrBusesIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
