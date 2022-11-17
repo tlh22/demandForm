@@ -48,71 +48,67 @@ SELECT "SurveyID", "GeometryID"
 FROM mhtc_operations."Supply" r, demand."Surveys";
 
 
-/***
-UPDATE "demand"."Counts"
-SET
-
-ALTER TABLE "demand"."Counts" DROP CONSTRAINT "Counts_pkey";
-ALTER TABLE "demand"."Counts" ADD PRIMARY KEY ("SurveyID", "GeometryID");
-ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "ID";
-ALTER TABLE IF EXISTS demand."Counts" DROP COLUMN IF EXISTS "SectionID";
-
-***/
-
 
 /***
  For RBKC
+***/
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrCarsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrCarsIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrCarsParkedIncorrectly" integer;
+
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrCarsParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrLGVsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrLGVsIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrLGVsParkedIncorrectly" integer;
+
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrLGVsParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMCLsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMCLsIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMCLsParkedIncorrectly" integer;
+
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrMCLsParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrTaxisWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrTaxisIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrTaxisParkedIncorrectly" integer;
+
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrTaxisParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrOGVsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrOGVsIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrOGVsParkedIncorrectly" integer;
+
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrOGVsParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMiniBusesWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrMiniBusesIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMiniBusesParkedIncorrectly" integer;	
+
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrMiniBusesParkedIncorrectly" integer;
 
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrBusesWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
     ADD COLUMN "NrBusesIdling" integer;
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrBusesParkedIncorrectly" integer;
 
-ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrCarsWithDisabledBadgeParkedInPandD" integer;
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrBusesParkedIncorrectly" integer;
 
- ***/
+--ALTER TABLE IF EXISTS demand."Counts"
+--    ADD COLUMN "NrCarsWithDisabledBadgeParkedInPandD" integer;
+
