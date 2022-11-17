@@ -14,8 +14,9 @@ INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUE
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (8, 'Other', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (9, NULL, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (10, 'Obstruction', 0.0);
-INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (11, 'Minbus', 1.0);
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (11, 'Minibus', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (12, 'E-Scooter', 0.2);
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (13, 'Dockless PCL', 0.2);
 
 -- permit types
 
