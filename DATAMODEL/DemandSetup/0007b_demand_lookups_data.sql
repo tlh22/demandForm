@@ -86,6 +86,7 @@ INSERT INTO "demand_lookups"."InternationalCodes" ("Code", "Description", "Count
 
 -- Parking Activity types
 
+INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (0, NULL);
 INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (1, 'Parked');
 INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (2, 'Waiting');
 INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALUES (3, 'Loading');
@@ -93,6 +94,7 @@ INSERT INTO "demand_lookups"."ParkingActivityTypes" ("Code", "Description") VALU
 
 -- Parking Manner types
 
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (0, NULL);
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (1, 'Parallel');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (2, 'Perpendicular');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (3, 'Echelon');
