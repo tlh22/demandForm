@@ -5,7 +5,7 @@ ALTER SCHEMA "demand_lookups" OWNER TO "postgres";
 -- RestrictionTypes In Use
 
 -- RestrictionTypes In Use
---DROP MATERIALIZED VIEW "demand_lookups"."SupplyRestrictionTypesInUse_View";
+DROP MATERIALIZED VIEW IF EXISTS "demand_lookups"."SupplyRestrictionTypesInUse_View";
 CREATE MATERIALIZED VIEW "demand_lookups"."SupplyRestrictionTypesInUse_View" AS
  SELECT DISTINCT "BayLineTypes"."Code",
     "BayLineTypes"."Description"
@@ -19,6 +19,7 @@ ALTER TABLE "demand_lookups"."SupplyRestrictionTypesInUse_View" OWNER TO "postgr
 
 -- Vehicle types
 
+DROP TABLE IF EXISTS "demand_lookups"."VehicleTypes";
 CREATE TABLE "demand_lookups"."VehicleTypes" (
     "Code" SERIAL,
     "Description" character varying,
@@ -32,6 +33,7 @@ ALTER TABLE demand_lookups."VehicleTypes"
 
 -- permit types
 
+DROP TABLE IF EXISTS "demand_lookups"."PermitTypes";
 CREATE TABLE "demand_lookups"."PermitTypes" (
     "Code" SERIAL,
     "Description" character varying
@@ -44,6 +46,7 @@ ALTER TABLE demand_lookups."PermitTypes"
 
 -- user types
 
+DROP TABLE IF EXISTS "demand_lookups"."UserTypes";
 CREATE TABLE "demand_lookups"."UserTypes" (
     "Code" SERIAL,
     "Description" character varying
@@ -56,6 +59,7 @@ ALTER TABLE demand_lookups."UserTypes"
 
 -- International codes
 
+DROP TABLE IF EXISTS "demand_lookups"."InternationalCodes";
 CREATE TABLE "demand_lookups"."InternationalCodes" (
     "Code" SERIAL,
     "Description" character varying,
@@ -69,6 +73,7 @@ ALTER TABLE demand_lookups."InternationalCodes"
 
 -- Activity Type
 
+DROP TABLE IF EXISTS "demand_lookups"."ParkingActivityTypes";
 CREATE TABLE "demand_lookups"."ParkingActivityTypes" (
     "Code" SERIAL,
     "Description" character varying
@@ -81,6 +86,7 @@ ALTER TABLE demand_lookups."ParkingActivityTypes"
 
 -- Parking Manner Type
 
+DROP TABLE IF EXISTS "demand_lookups"."ParkingMannerTypes";
 CREATE TABLE "demand_lookups"."ParkingMannerTypes" (
     "Code" SERIAL,
     "Description" character varying

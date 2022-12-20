@@ -461,6 +461,8 @@ class countWidget(QWidget):
             "In populateDemandWidget: nr Rows: {} ".format(self.countModel.rowCount()),
             level=Qgis.Info)
 
+        # TODO: Action if no rows returned ...
+
         self.mapper.toFirst()  # TODO: check if this fails ...
 
         TOMsMessageLog.logMessage("In countWidget:populateDemandWidget ... finishing ...",
