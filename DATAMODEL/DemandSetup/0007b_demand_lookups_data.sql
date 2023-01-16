@@ -100,3 +100,4 @@ INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (3, 'Echelon');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (4, '2 Wheels on footpath');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (5, '4 Wheels on footpath');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (6, 'on crossover');
