@@ -23,13 +23,19 @@ DROP TABLE IF EXISTS "demand_lookups"."VehicleTypes";
 CREATE TABLE "demand_lookups"."VehicleTypes" (
     "Code" SERIAL,
     "Description" character varying,
-    "PCU" double precision
+    "PCU" double precision,
+    "PCUinSameTypeBay" double precision
 );
 
 ALTER TABLE "demand_lookups"."VehicleTypes" OWNER TO "postgres";
 
 ALTER TABLE demand_lookups."VehicleTypes"
     ADD PRIMARY KEY ("Code");
+
+/***
+ALTER TABLE IF EXISTS demand_lookups."VehicleTypes"
+    ADD COLUMN "PCUinSameTypeBay" double precision;
+***/
 
 -- permit types
 
