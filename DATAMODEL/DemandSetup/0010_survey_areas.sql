@@ -36,12 +36,17 @@ ORDER BY a."SurveyAreaName";
 -- OR
 
 UPDATE "mhtc_operations"."Supply" AS s
+SET "SurveyAreaID" = NULL;
+
+UPDATE "mhtc_operations"."Supply" AS s
 SET "SurveyAreaID" = a."Code"
 FROM mhtc_operations."SurveyAreas" a
 WHERE ST_WITHIN (s.geom, a.geom);
 
-SELECT a."SurveyAreaName", SUM(s."RestrictionLength"), SUM("Capacity")
+SELECT a."SurveyAreaName", SUM(s."RestrictionLength") AS "RestrictionLength", SUM("Capacity") AS "Total Capacity",
+SUM (CASE WHEN "RestrictionTypeID" > 200 THEN 0 ELSE s."Capacity" END) AS "Bay Capacity"
 FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas" a
 WHERE a."Code" = s."SurveyAreaID"
+--AND a."SurveyAreaName" LIKE 'V%'
 GROUP BY a."SurveyAreaName"
 ORDER BY a."SurveyAreaName";
