@@ -45,8 +45,17 @@ WHERE ST_WITHIN (s.geom, a.geom);
 
 SELECT a."SurveyAreaName", SUM(s."RestrictionLength") AS "RestrictionLength", SUM("Capacity") AS "Total Capacity",
 SUM (CASE WHEN "RestrictionTypeID" > 200 THEN 0 ELSE s."Capacity" END) AS "Bay Capacity"
-FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas" a
+FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas2" a
 WHERE a."Code" = s."SurveyAreaID"
 --AND a."SurveyAreaName" LIKE 'V%'
 GROUP BY a."SurveyAreaName"
 ORDER BY a."SurveyAreaName";
+
+
+SELECT a."CPZ", SUM(s."RestrictionLength") AS "RestrictionLength", SUM("Capacity") AS "Total Capacity",
+SUM (CASE WHEN s."RestrictionTypeID" > 200 THEN 0 ELSE s."Capacity" END) AS "Bay Capacity"
+FROM mhtc_operations."Supply" s, toms."ControlledParkingZones" a
+WHERE ST_WITHIN (s.geom, a.geom)
+--AND a."SurveyAreaName" LIKE 'V%'
+GROUP BY a."CPZ"
+ORDER BY a."CPZ";
