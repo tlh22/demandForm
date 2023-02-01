@@ -30,6 +30,9 @@ TABLESPACE pg_default;
 ALTER TABLE demand."RestrictionsInSurveys"
     OWNER to postgres;
 
+ALTER TABLE demand."RestrictionsInSurveys"
+ADD UNIQUE ("SurveyID", "GeometryID");
+
 /***
 
 ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"

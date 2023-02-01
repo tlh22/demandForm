@@ -41,6 +41,9 @@ WITH (
 ALTER TABLE demand."Counts"
   OWNER TO postgres;
 
+ALTER TABLE demand."Counts"
+ADD UNIQUE ("SurveyID", "GeometryID");
+
 -- and populate
 
 INSERT INTO "demand"."Counts" ("SurveyID", "GeometryID")
