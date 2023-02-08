@@ -53,3 +53,8 @@ ALTER TABLE ONLY demand."VRMs"
 
 ALTER TABLE ONLY demand."VRMs"
     ADD CONSTRAINT "VRMs_ParkingMannerTypeID_fkey" FOREIGN KEY ("ParkingMannerTypeID") REFERENCES "demand_lookups"."ParkingMannerTypes"("Code");
+    
+CREATE INDEX idx_SurveyID_GeometryID ON demand."VRMs"
+(
+    "SurveyID", "GeometryID"
+);
