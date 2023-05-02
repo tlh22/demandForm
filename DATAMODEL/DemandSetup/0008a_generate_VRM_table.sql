@@ -37,6 +37,8 @@ ALTER TABLE ONLY demand."VRMs"
 ALTER TABLE ONLY demand."VRMs"
     ADD CONSTRAINT "VRMs_GeometryID_fkey" FOREIGN KEY ("GeometryID") REFERENCES "mhtc_operations"."Supply"("GeometryID");
 
+-- ALTER TABLE IF EXISTS demand."VRMs" DROP CONSTRAINT IF EXISTS "VRMs_GeometryID_fkey";
+
 ALTER TABLE ONLY demand."VRMs"
     ADD CONSTRAINT "VRMs_InternationalCodeID_fkey" FOREIGN KEY ("InternationalCodeID") REFERENCES "demand_lookups"."InternationalCodes"("Code");
 
@@ -51,3 +53,8 @@ ALTER TABLE ONLY demand."VRMs"
 
 ALTER TABLE ONLY demand."VRMs"
     ADD CONSTRAINT "VRMs_ParkingMannerTypeID_fkey" FOREIGN KEY ("ParkingMannerTypeID") REFERENCES "demand_lookups"."ParkingMannerTypes"("Code");
+    
+CREATE INDEX idx_SurveyID_GeometryID ON demand."VRMs"
+(
+    "SurveyID", "GeometryID"
+);

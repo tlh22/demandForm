@@ -6,17 +6,17 @@
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (0, NULL, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (1, 'Car', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (2, 'LGV', 1.0);
-INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (3, 'MCL', 0.4);
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU", "PCUinSameTypeBay") VALUES (3, 'MCL', 0.2, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (4, 'OGV', 1.5);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (5, 'Bus', 2.0);
-INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (6, 'PCL', 0.2);
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU", "PCUinSameTypeBay") VALUES (6, 'PCL', 0.1, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (7, 'Taxi', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (8, 'Other', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (9, NULL, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (10, 'Obstruction', 0.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (11, 'Minibus', 1.0);
-INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (12, 'E-Scooter', 0.2);
-INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (13, 'Dockless PCL', 0.2);
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU", "PCUinSameTypeBay") VALUES (12, 'E-Scooter', 0.1, 1.0);
+INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU", "PCUinSameTypeBay") VALUES (13, 'Dockless PCL', 0.1, 1.0);
 
 -- permit types
 
@@ -100,3 +100,4 @@ INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (3, 'Echelon');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (4, '2 Wheels on footpath');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (5, '4 Wheels on footpath');
+INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (6, 'on crossover');
