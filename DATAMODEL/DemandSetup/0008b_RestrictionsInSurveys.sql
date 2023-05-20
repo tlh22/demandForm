@@ -70,4 +70,12 @@ SET geom = s.geom
 FROM mhtc_operations."Supply" s
 WHERE RiS."GeometryID" = s."GeometryID";
 
+
+INSERT INTO "demand"."Counts" ("SurveyID", "GeometryID")
+SELECT "SurveyID", "GeometryID"
+FROM mhtc_operations."Supply" r, demand."Surveys"
+WHERE "GeometryID" NOT IN
+(SELECT "GeometryID"
+FROM demand."Counts");
+
 ***/
