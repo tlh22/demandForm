@@ -1,4 +1,5 @@
 -- Demand lookups
+DROP SCHEMA IF EXISTS "demand_lookups" CASCADE;
 CREATE SCHEMA IF NOT EXISTS "demand_lookups";
 ALTER SCHEMA "demand_lookups" OWNER TO "postgres";
 
@@ -102,3 +103,32 @@ ALTER TABLE "demand_lookups"."ParkingMannerTypes" OWNER TO "postgres";
 
 ALTER TABLE demand_lookups."ParkingMannerTypes"
     ADD PRIMARY KEY ("Code");
+
+-- Duration Categories
+
+/***
+DROP TABLE IF EXISTS "demand_lookups"."DurationCategories";
+CREATE TABLE "demand_lookups"."DurationCategories" (
+    "Code" SERIAL,
+    "Description" character varying
+);
+
+ALTER TABLE "demand_lookups"."DurationCategories" OWNER TO "postgres";
+
+ALTER TABLE demand_lookups."DurationCategories"
+    ADD PRIMARY KEY ("Code");
+***/
+
+-- Duration Categories
+
+DROP TABLE IF EXISTS "demand_lookups"."DurationCategories";
+CREATE TABLE "demand_lookups"."DurationCategories" (
+    "DurationCategoryID" SERIAL,
+    "StartTime" INTERVAL,
+    "EndTime" INTERVAL,
+    "Description" character varying
+);
+
+ALTER TABLE "demand_lookups"."DurationCategories"
+    ADD PRIMARY KEY ("DurationCategoryID");
+

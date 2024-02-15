@@ -101,3 +101,31 @@ INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (4, '2 Wheels on footpath');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (5, '4 Wheels on footpath');
 INSERT INTO "demand_lookups"."ParkingMannerTypes" ("Code", "Description") VALUES (6, 'on crossover');
+
+-- Duration categories
+
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (1, '00:00:00', '01:00:00', '<1 hour');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (2, '01:00:00', '02:00:00', '1-2 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (3, '02:00:00', '03:00:00', '2-3 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (4, '03:00:00', '04:00:00', '3-4 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (5, '04:00:00', '05:00:00', '4-5 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (6, '05:00:00', '06:00:00', '5-6 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (7, '06:00:00', '07:00:00', '6-7 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (8, '07:00:00', '08:00:00', '7-8 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (9, '08:00:00', '09:00:00', '8-9 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (10, '09:00:00', '10:00:00', '9-10 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (11, '10:00:00', '11:00:00', '10-11 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (12, '11:00:00', '100000:00:00', '>11 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (0, '00:00:00', '-1000:00:00', 'unknown');
+
+/***
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (1, '00:00:00', '02:00:00', '<2 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (2, '02:00:00', '04:00:00', '2-4 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (3, '04:00:00', '06:00:00', '4-6 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (4, '06:00:00', '08:00:00', '6-8 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (5, '08:00:00', '10:00:00', '8-10 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (6, '10:00:00', '12:00:00', '10-12 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (7, '12:00:00', '14:00:00', '12-14 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (8, '14:00:00', '100000:00:00', '>14 hours');
+INSERT INTO "demand_lookups"."DurationCategories" VALUES (0, '00:00:00', '-1000:00:00', 'unknown');
+***/

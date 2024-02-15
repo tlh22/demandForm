@@ -1,5 +1,6 @@
 
 -- Demand
+DROP SCHEMA IF EXISTS "demand" CASCADE;
 CREATE SCHEMA IF NOT EXISTS "demand";
 ALTER SCHEMA "demand" OWNER TO "postgres";
 
@@ -21,6 +22,7 @@ ALTER TABLE "demand"."Surveys"
 
 
 --
+/***
 ALTER TABLE demand."Surveys"
     ADD COLUMN "SurveyDate" date;
 
@@ -31,3 +33,4 @@ WHERE "SurveyID" = 1;
 UPDATE demand."Surveys"
 SET "SurveyDate" = '2021-11-30'
 WHERE "SurveyID" = 2;
+***/
