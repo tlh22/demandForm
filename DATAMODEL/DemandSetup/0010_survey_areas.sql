@@ -45,7 +45,7 @@ WHERE ST_WITHIN (s.geom, a.geom);
 
 SELECT a."SurveyAreaName", SUM(s."RestrictionLength") AS "RestrictionLength", SUM("Capacity") AS "Total Capacity",
 SUM (CASE WHEN "RestrictionTypeID" > 200 THEN 0 ELSE s."Capacity" END) AS "Bay Capacity"
-FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas2" a
+FROM mhtc_operations."Supply" s, mhtc_operations."SurveyAreas" a
 WHERE a."Code" = s."SurveyAreaID"
 --AND a."SurveyAreaName" LIKE 'V%'
 GROUP BY a."SurveyAreaName"
