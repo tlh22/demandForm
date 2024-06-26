@@ -13,11 +13,15 @@ ALTER TABLE demand."Counts"
 UPDATE demand."RestrictionsInSurveys"
 SET "GeometryID_SurveyID" = CONCAT("GeometryID", '_', "SurveyID"::text);
 
-UPDATE demand."Counts"
-SET "GeometryID_SurveyID" = CONCAT("GeometryID", '_', "SurveyID"::text);
+UPDATE demand."Counts" c
+SET "GeometryID_SurveyID" = RiS."GeometryID_SurveyID"
+FROM demand."RestrictionsInSurveys" RiS
+WHERE c."SurveyID" = RiS."SurveyID"
+AND c."GeometryID" = RiS."GeometryID"
+;
 
 -- Set up indexes
 
-CREATE UNIQUE INDEX geometryid_surveyid_idx ON demand."RestrictionsInSurveys" ("GeometryID_SurveyID");
+CREATE UNIQUE INDEX geometryid_surveyid_ris_idx ON demand."RestrictionsInSurveys" ("GeometryID_SurveyID");
 
-CREATE UNIQUE INDEX geometryid_surveyid_idx ON demand."Counts" ("GeometryID_SurveyID");
+CREATE UNIQUE INDEX geometryid_surveyid_counts_idx ON demand."Counts" ("GeometryID_SurveyID");
