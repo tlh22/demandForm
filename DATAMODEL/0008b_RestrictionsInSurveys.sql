@@ -21,6 +21,23 @@ CREATE TABLE demand."RestrictionsInSurveys"
     "Photos_02" character varying (255) COLLATE pg_catalog."default",
     "Photos_03" character varying (255) COLLATE pg_catalog."default",
     "CaptureSource" character varying (255) COLLATE pg_catalog."default",
+
+    "Demand_ALL" double precision,  -- All vehicles within restriction
+    "Demand" double precision,  -- Vehicles "parked" within restriction (but not in suspended areas) - and not waiting or idling
+    "DemandInSuspendedAreas" double precision,
+    "Demand_Waiting" double precision,  -- vehicles waiting
+    "Demand_Idling" double precision,
+    "Demand_ParkedIncorrectly" double precision,
+    "CapacityAtTimeOfSurvey" double precision,
+    "Stress" double precision,
+
+    "PerceivedAvailableSpaces" double precision,
+    "PerceivedCapacityAtTimeOfSurvey" double precision,
+    "PerceivedStress" double precision,
+
+    "Supply_Notes" character varying(10000),
+    "MCL_Notes" character varying(10000),
+
     geom geometry(LineString,27700) NOT NULL,
     UNIQUE ("SurveyID", "GeometryID")
 )
@@ -34,6 +51,32 @@ ALTER TABLE demand."RestrictionsInSurveys"
 
 ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"
     ADD COLUMN "CaptureSource" character varying(255);
+
+ALTER TABLE demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "Demand" double precision;
+
+ALTER TABLE demand."RestrictionsInSurveys"
+    ADD COLUMN "Demand_Standard" double precision; -- This is the count of all vehicles in the main count tab
+ALTER TABLE demand."RestrictionsInSurveys"
+    ADD COLUMN "DemandInSuspendedAreas" double precision;  -- This is the count of all vehicles in the suspensions tab
+
+ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "Demand_Waiting" double precision;
+
+ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "Demand_Idling" double precision;
+
+ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "Demand_ParkedIncorrectly" double precision;
+
+ALTER TABLE demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "SupplyCapacity" double precision;
+
+ALTER TABLE demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "CapacityAtTimeOfSurvey" double precision;
+
+ALTER TABLE demand."RestrictionsInSurveys"
+    ADD COLUMN IF NOT EXISTS "Stress" double precision;
 
 INSERT INTO demand."RestrictionsInSurveys" ("SurveyID", "GeometryID", geom)
 SELECT "SurveyID", gid::text AS "GeometryID", r.geom As geom
