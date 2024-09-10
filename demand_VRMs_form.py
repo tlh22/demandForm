@@ -74,7 +74,7 @@ class demandForm(DemandUtilsMixin):
 
     def __init__(self, iface, demandToolbar):
 
-        TOMsMessageLog.logMessage("In captureGPSFeatures::init", level=Qgis.Info)
+        TOMsMessageLog.logMessage("In demandForm::init", level=Qgis.Info)
 
         DemandUtilsMixin.__init__(self, iface)
 
@@ -92,7 +92,7 @@ class demandForm(DemandUtilsMixin):
         self.demandGroup = QActionGroup(demandToolbar)
 
         self.actionRestrictionDetails = QAction(QIcon(":/plugins/featureswithgps/resources/mActionGetInfo.svg"),
-                                         QCoreApplication.translate("MyPlugin", "Get Section Details"),
+                                         QCoreApplication.translate("MyPlugin", "Get Demand Details"),
                                          self.iface.mainWindow())
         self.actionRestrictionDetails.setCheckable(True)
         self.demandGroup.addAction(self.actionRestrictionDetails)

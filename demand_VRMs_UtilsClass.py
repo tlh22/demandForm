@@ -251,6 +251,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         self.setMainTabName(restrictionDialog)
 
         if surveyType == 'Count':
+            mainTabColumnNames =
             TOMsMessageLog.logMessage("In setupFieldRestrictionDialog. Calling addCountWidget ...", level=Qgis.Info)
             self.addCountWidget(restrictionDialog, currRestrictionLayer, currRestriction)
         else:
