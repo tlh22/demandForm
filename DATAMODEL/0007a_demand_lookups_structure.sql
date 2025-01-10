@@ -1,5 +1,5 @@
 -- Demand lookups
-DROP SCHEMA IF EXISTS "demand_lookups" CASCADE;
+--DROP SCHEMA IF EXISTS "demand_lookups" CASCADE;
 CREATE SCHEMA IF NOT EXISTS "demand_lookups";
 ALTER SCHEMA "demand_lookups" OWNER TO "postgres";
 
