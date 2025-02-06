@@ -51,19 +51,19 @@ SELECT "SurveyID", "GeometryID"
 FROM mhtc_operations."Supply" r, demand."Surveys";
 
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrCarsWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrCarsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrLGVsWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrLGVsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMCLsWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrMCLsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrTaxisWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrTaxisWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrOGVsWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrOGVsWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMiniBusesWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrMiniBusesWaiting" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrBusesWaiting" integer;
+    ADD COLUMN IF NOT EXISTS "NrBusesWaiting" integer;
 
 /***
  For RBKC
@@ -71,37 +71,37 @@ ALTER TABLE IF EXISTS demand."Counts"
 
 -- Idling
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrCarsIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrCarsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrLGVsIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrLGVsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMCLsIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrMCLsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrTaxisIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrTaxisIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrOGVsIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrOGVsIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMiniBusesIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrMiniBusesIdling" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrBusesIdling" integer;
+    ADD COLUMN IF NOT EXISTS "NrBusesIdling" integer;
 
 -- Parked incorrectly
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrCarsParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrCarsParkedIncorrectly" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrLGVsParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrLGVsParkedIncorrectly" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMCLsParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrMCLsParkedIncorrectly" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrTaxisParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrTaxisParkedIncorrectly" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrOGVsParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrOGVsParkedIncorrectly" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrMiniBusesParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrMiniBusesParkedIncorrectly" integer;
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrBusesParkedIncorrectly" integer;
+    ADD COLUMN IF NOT EXISTS "NrBusesParkedIncorrectly" integer;
 
 -- Disabled in P&D bay
 ALTER TABLE IF EXISTS demand."Counts"
-    ADD COLUMN "NrCarsWithDisabledBadgeParkedInPandD" integer;
+    ADD COLUMN IF NOT EXISTS "NrCarsWithDisabledBadgeParkedInPandD" integer;
 
