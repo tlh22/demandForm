@@ -20,3 +20,7 @@ Demand
   - SupplyRestrictionTypesInUse_View
   - Surveys
   - VehicleTypes
+  
+  
+  ** If the supply layer does not save correctly, will need to manually add to the geopackage:
+   - Within Layers - Supply -> Export 
