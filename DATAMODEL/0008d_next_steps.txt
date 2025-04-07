@@ -22,5 +22,8 @@ Demand
   - VehicleTypes
   
   
-  ** If the supply layer does not save correctly, will need to manually add to the geopackage:
-   - Within Layers - Supply -> Export 
+  ** If the supply layer does not save correctly due to the multiple, will need to manually add to the geopackage (without the additional geometries):
+   - Within Layers:
+   choose Supply
+   Right click and then Export -> Save Features As 
+   Withn the form, use filename as ".. Demand.gpkg" and Layer name as "Supply", unselect the fields label_pos, label_ldr, label_loading_pos, label_loading_ldr and then "Overwrite Layer"
