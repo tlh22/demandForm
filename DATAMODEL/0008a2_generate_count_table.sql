@@ -44,8 +44,8 @@ ALTER TABLE demand."Counts"
 ALTER TABLE demand."Counts"
 ADD UNIQUE ("SurveyID", "GeometryID");
 
-CREATE EXTENSION pg_trgm;
-CREATE EXTENSION btree_gin;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS btree_gin;
 
 CREATE INDEX idx_count_notes ON demand."Counts" USING GIN ("Notes");
 
