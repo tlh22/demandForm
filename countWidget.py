@@ -208,11 +208,13 @@ class countWidget(QWidget):
         TOMsMessageLog.logMessage("In countWidget:setupMainCountTab. Finished layouts ... ",
                                   level=Qgis.Info)
 
+        validator = QIntValidator(0, 99)
         for widget in countLayout.parentWidget().findChildren(QLineEdit):
-            widget.setValidator(QIntValidator(
-                0,  # bottom
-                200  # top
-            ))
+            widget.setValidator(validator)
+            # TO DO: need to set yp slot fucntion to validate based on changed() signal
+            widget.textChanged.connect(lambda: self.doIntValidation(widget))
+            TOMsMessageLog.logMessage("In countWidget:setupMainCountTab. setting validator for ... {}".format(widget.objectName()),
+                                      level=Qgis.Info)
 
         TOMsMessageLog.logMessage("In countWidget:setupMainCountTab. Starting mapping ... ",
                                   level=Qgis.Info)
@@ -292,6 +294,12 @@ class countWidget(QWidget):
         TOMsMessageLog.logMessage("In countWidget:setupMainCountTab ... mapping added ...",
                                   level=Qgis.Info)
 
+    def doIntValidation(self, widget):
+        TOMsMessageLog.logMessage(
+            "In countWidget:doIntValidation. ** validating for ... {}".format(widget.objectName()),
+            level=Qgis.Info)
+        status = widget
+
     def payByPhoneBay(self):
         # check to see if this is a P&D bay
 
@@ -365,8 +373,9 @@ class countWidget(QWidget):
         for widget in countLayout.parentWidget().findChildren(QLineEdit):
             widget.setValidator(QIntValidator(
                 0,  # bottom
-                200  # top
+                99  # top
             ))
+            widget.textChanged.connect(lambda: self.doIntValidation(widget))
 
         TOMsMessageLog.logMessage("In countWidget:setupExtraCountTab ... finishing ...",
                                   level=Qgis.Info)
