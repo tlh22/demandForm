@@ -41,13 +41,16 @@ WITH (
 ALTER TABLE demand."Counts"
   OWNER TO postgres;
 
-ALTER TABLE demand."Counts"
-ADD UNIQUE ("SurveyID", "GeometryID");
+ALTER TABLE "demand"."Counts"
+    ADD PRIMARY KEY ("gid");
+
+CREATE UNIQUE INDEX "idx_Counts_SurveyID_GeometryID" ON demand."Counts" ("SurveyID", "GeometryID");
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS btree_gin;
 
 CREATE INDEX idx_count_notes ON demand."Counts" USING GIN ("Notes");
+
 
 -- and populate
 

@@ -49,6 +49,8 @@ ALTER TABLE demand."RestrictionsInSurveys"
 
 ALTER TABLE demand."RestrictionsInSurveys" ADD PRIMARY KEY ("gid");
 
+CREATE UNIQUE INDEX "idx_RestrictionsInSurveys_SurveyID_GeometryID" ON demand."RestrictionsInSurveys" ("SurveyID", "GeometryID");
+
 CREATE INDEX RiS_geom_idx
   ON demand."RestrictionsInSurveys"
   USING GIST (geom);
