@@ -167,7 +167,7 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         allowedToCopyFromPreviousDay = False
 
         option = self.TOMsConfigFileObject.getTOMsConfigElement('Demand', 'AllowCopyFromPreviousDay')
-        TOMsMessageLog.logMessage("In DemandUtils:getExtraTabName: {}".format(option),
+        TOMsMessageLog.logMessage("In DemandUtils:allowCopyFromPreviousDay: {}".format(option),
                                   level=Qgis.Info)
 
         if option == 'Yes':
@@ -293,14 +293,14 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
             return False
 
         if self.dbConn.driverName() == 'QPSQL':
-            queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), COALESCE(\"Capacity\", 0), \"RestrictionTypeID\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
+            queryString = 'SELECT COALESCE(\"RoadName\",\'No Road Name\'), COALESCE(\"RestrictionLength\", 0), COALESCE(\"Capacity\", 0), \"RestrictionTypeID\", \"Notes\" FROM mhtc_operations.\"Supply\" WHERE \"GeometryID\" = \'{}\''.format(currRestriction.attribute("GeometryID"))
         else:
-            queryString = "SELECT COALESCE(\"RoadName\", '[No Road Name]'), COALESCE(\"RestrictionLength\", '[Not known]'), COALESCE(\"Capacity\", '[Not known]'), \"RestrictionTypeID\" FROM \"Supply\" WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
+            queryString = "SELECT COALESCE(\"RoadName\", '[No Road Name]'), COALESCE(\"RestrictionLength\", '[Not known]'), COALESCE(\"Capacity\", '[Not known]'), \"RestrictionTypeID\", \"Notes\" FROM \"Supply\" WHERE \"GeometryID\" = '{}'".format(currRestriction.attribute("GeometryID"))
 
         TOMsMessageLog.logMessage("In mapOtherFields: queryString: {}".format(queryString), level=Qgis.Info)
         query = QSqlQuery(queryString)
 
-        RoadName, RestrictionLength, Capacity, RestrictionTypeID = range(4)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
+        RoadName, RestrictionLength, Capacity, RestrictionTypeID, SupplyChangesNotes = range(5)  # ?? see https://realpython.com/python-pyqt-database/#executing-dynamic-queries-string-formatting
 
         if not query.next():
             TOMsMessageLog.logMessage(
@@ -321,6 +321,10 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
             CapacityWidget = restrictionDialog.findChild(QWidget, "Capacity")
             CapacityWidget.setText(str(query.value(Capacity)))
+            self.Capacity = Capacity
+
+            SupplyNotesWidget = restrictionDialog.findChild(QWidget, "SupplyChangesNotes")
+            SupplyNotesWidget.setText(str(query.value(SupplyChangesNotes)))
 
         except Exception as e:
             reply = QMessageBox.information(None, "Error",
@@ -370,9 +374,23 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
         currFeatureLayer.updateFeature(currFeature)
 
         try:
-            currFeatureLayer.commitChanges()
+
             if self.getDemandSurveyType() == 'Count':
+
+                # Check that the demand value it not too much more than the capacity
+                demandTotal = self.checkDemand()
+                if demandTotal > self.Capacity:
+                    reply = QMessageBox.question(None, "Question", "There is a difference between Capacity ({}) and Demand: ({}). Is this correct?".format(self.Capacity, demandTotal),
+                                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+                    if reply == QMessageBox.StandardButton.No:
+                        QMessageBox.information(None, "Action Required",
+                                                "Please reopen the restriction and amend the demand values",
+                                                QMessageBox.Ok)
+
                 self.countModel.submitAll()
+
+            currFeatureLayer.commitChanges()
+
         except Exception as e:
             reply = QMessageBox.information(None, "Information", "Problem committing changes: {}".format(e), QMessageBox.Ok)
 
@@ -510,6 +528,8 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         thisCountWidget.populateDemandWidget(extraTabLabel)
 
+        self.countWidget = thisCountWidget
+
     @pyqtSlot()
     def startProgressDialog(self):
         TOMsMessageLog.logMessage("In utils::startProgressDialog ... ", level=Qgis.Info)
@@ -576,3 +596,18 @@ class DemandUtilsMixin(FieldRestrictionTypeUtilsMixin):
 
         if mainTabText:
             demandTab.setTabText (idx_main, mainTabText)
+
+    def checkDemand(self):
+
+        demandTotal = 0
+        for widget in self.countWidget.findChildren(QLineEdit):
+            TOMsMessageLog.logMessage("In checkDemand ... considering: {} {}".format(widget.objectName(), widget.text()), level=Qgis.Info)
+
+            if widget.objectName()[:2] == "Nr":
+                try:
+                    ival = int(widget.text())
+                except ValueError:
+                    ival = 0
+                demandTotal = demandTotal + ival
+
+        return demandTotal

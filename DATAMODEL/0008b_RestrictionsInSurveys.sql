@@ -47,6 +47,14 @@ TABLESPACE pg_default;
 ALTER TABLE demand."RestrictionsInSurveys"
     OWNER to postgres;
 
+ALTER TABLE demand."RestrictionsInSurveys" ADD PRIMARY KEY ("gid");
+
+CREATE UNIQUE INDEX "idx_RestrictionsInSurveys_SurveyID_GeometryID" ON demand."RestrictionsInSurveys" ("SurveyID", "GeometryID");
+
+CREATE INDEX RiS_geom_idx
+  ON demand."RestrictionsInSurveys"
+  USING GIST (geom);
+  
 /***
 
 ALTER TABLE IF EXISTS demand."RestrictionsInSurveys"

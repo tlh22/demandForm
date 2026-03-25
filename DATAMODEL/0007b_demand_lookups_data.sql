@@ -17,6 +17,9 @@ INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUE
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (11, 'Minibus', 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU", "PCUinSameTypeBay") VALUES (12, 'E-Scooter', 0.1, 1.0);
 INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU", "PCUinSameTypeBay") VALUES (13, 'Dockless PCL', 0.1, 1.0);
+--INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (14, 'Campervan', 1.0);
+--INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (15, 'Car+Caravan', 2.0);
+--INSERT INTO "demand_lookups"."VehicleTypes" ("Code", "Description", "PCU") VALUES (16, 'RV', 2.0);
 
 -- permit types
 
@@ -41,6 +44,11 @@ INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (16, '
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (17, 'No permit required (MCL)');
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (18, 'No permit required (Non Resident MCL)');
 INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (19, 'Homes for Haringey');
+
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (20, 'Short stay P&D');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (21, 'Long stay P&D');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (22, 'Councillor');
+INSERT INTO "demand_lookups"."PermitTypes" ("Code", "Description") VALUES (23, 'Police');
 
 -- User types
 
